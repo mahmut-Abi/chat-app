@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/conversation.dart';
 import 'conversation_tags_dialog.dart';
 
@@ -344,7 +345,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
         leading: const Icon(Icons.settings),
         title: const Text('设置'),
         onTap: () {
-          // 导航到设置页面
+          context.push('/settings');
         },
       ),
     );
