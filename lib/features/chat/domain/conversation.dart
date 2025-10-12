@@ -17,6 +17,7 @@ class Conversation with _$Conversation {
     @Default([]) List<String> tags,
     String? groupId,
     int? totalTokens,
+    @Default(false) bool isPinned,
   }) = _Conversation;
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>

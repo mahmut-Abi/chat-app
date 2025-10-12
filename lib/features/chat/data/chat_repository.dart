@@ -307,4 +307,30 @@ class ChatRepository {
     }
     return tags.toList()..sort();
   }
+
+  // 置顶/取消置顶功能
+  Future<void> togglePinConversation(String id) async {
+    final conversation = getConversation(id);
+    if (conversation != null) {
+      final updated = conversation.copyWith(
+        isPinned: !conversation.isPinned,
+        updatedAt: DateTime.now(),
+      );
+      await saveConversation(updated);
+    }
+  }
+
+  // 获取排序后的对话列表（置顶在前）
+  List<Conversation> getSortedConversations() {
+    final conversations = getAllConversations();
+    conversations.sort((a, b) {
+      // 置顶的在前
+      if (a.isPinned != b.isPinned) {
+        return a.isPinned ? -1 : 1;
+      }
+      // 否则按更新时间排序
+      return b.updatedAt.compareTo(a.updatedAt);
+    });
+    return conversations;
+  }
 }
