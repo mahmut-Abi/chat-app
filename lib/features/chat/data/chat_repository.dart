@@ -249,4 +249,62 @@ class ChatRepository {
     final conversations = getAllConversations();
     return MarkdownExport.exportConversations(conversations);
   }
+
+  // Conversation Group management
+  Future<ConversationGroup> createGroup({
+    required String name,
+    String? color,
+    int? sortOrder,
+  }) async {
+    final group = ConversationGroup(
+      id: _uuid.v4(),
+      name: name,
+      createdAt: DateTime.now(),
+      color: color,
+      sortOrder: sortOrder,
+    );
+
+    await _storage.saveGroup(group.id, group.toJson());
+    return group;
+  }
+
+  ConversationGroup? getGroup(String id) {
+    final data = _storage.getGroup(id);
+    if (data == null) return null;
+    return ConversationGroup.fromJson(data);
+  }
+
+  List<ConversationGroup> getAllGroups() {
+    final groups = _storage.getAllGroups();
+    return groups.map((data) => ConversationGroup.fromJson(data)).toList()
+      ..sort((a, b) {
+        if (a.sortOrder != null && b.sortOrder != null) {
+          return a.sortOrder!.compareTo(b.sortOrder!);
+        }
+        return a.createdAt.compareTo(b.createdAt);
+      });
+  }
+
+  Future<void> updateGroup(ConversationGroup group) async {
+    await _storage.saveGroup(group.id, group.toJson());
+  }
+
+  Future<void> deleteGroup(String id) async {
+    // 将分组中的对话移到未分组
+    final conversations = getConversationsByGroup(id);
+    for (final conv in conversations) {
+      await setConversationGroup(conv.id, null);
+    }
+    await _storage.deleteGroup(id);
+  }
+
+  // 获取所有标签
+  List<String> getAllTags() {
+    final conversations = getAllConversations();
+    final tags = <String>{};
+    for (final conv in conversations) {
+      tags.addAll(conv.tags);
+    }
+    return tags.toList()..sort();
+  }
 }

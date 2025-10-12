@@ -7,6 +7,7 @@ import '../../features/settings/data/settings_repository.dart';
 import '../../features/settings/domain/api_config.dart';
 import '../../features/models/data/models_repository.dart';
 import '../constants/app_constants.dart';
+import '../utils/token_counter.dart';
 
 // Storage Service
 final storageServiceProvider = Provider<StorageService>((ref) {
@@ -58,4 +59,9 @@ final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
 final appSettingsProvider = StateProvider<AppSettings>((ref) {
   final settingsRepo = ref.watch(settingsRepositoryProvider);
   return settingsRepo.getSettings();
+});
+
+// Token Counter
+final tokenCounterProvider = Provider<TokenCounter>((ref) {
+  return TokenCounter();
 });

@@ -5,18 +5,21 @@ import 'dart:convert';
 class StorageService {
   static const String _conversationsBox = 'conversations';
   static const String _settingsBox = 'settings';
+  static const String _groupsBox = 'conversation_groups';
   // Used for API config method naming
   // ignore: unused_field
   static const String _apiConfigsBox = 'api_configs';
 
   late Box _conversationsBoxInstance;
   late Box _settingsBoxInstance;
+  late Box _groupsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> init() async {
     await Hive.initFlutter();
     _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
     _settingsBoxInstance = await Hive.openBox(_settingsBox);
+    _groupsBoxInstance = await Hive.openBox(_groupsBox);
   }
 
   // Conversations
@@ -38,6 +41,27 @@ class StorageService {
 
   Future<void> deleteConversation(String id) async {
     await _conversationsBoxInstance.delete(id);
+  }
+
+  // Conversation Groups
+  Future<void> saveGroup(String id, Map<String, dynamic> data) async {
+    await _groupsBoxInstance.put(id, jsonEncode(data));
+  }
+
+  Map<String, dynamic>? getGroup(String id) {
+    final data = _groupsBoxInstance.get(id);
+    if (data == null) return null;
+    return jsonDecode(data as String) as Map<String, dynamic>;
+  }
+
+  List<Map<String, dynamic>> getAllGroups() {
+    return _groupsBoxInstance.values
+        .map((e) => jsonDecode(e as String) as Map<String, dynamic>)
+        .toList();
+  }
+
+  Future<void> deleteGroup(String id) async {
+    await _groupsBoxInstance.delete(id);
   }
 
   // Settings
@@ -79,6 +103,7 @@ class StorageService {
   Future<void> clearAll() async {
     await _conversationsBoxInstance.clear();
     await _settingsBoxInstance.clear();
+    await _groupsBoxInstance.clear();
     await _secureStorage.deleteAll();
   }
 }
