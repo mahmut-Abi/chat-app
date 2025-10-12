@@ -158,7 +158,8 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
                                   decoration: BoxDecoration(
                                     color: Color(
                                       int.parse(
-                                          '0xFF${group.color!.substring(1)}'),
+                                          '0xFF${group.color!.substring(1)}',
+                                      ),
                                     ),
                                     shape: BoxShape.circle,
                                   ),

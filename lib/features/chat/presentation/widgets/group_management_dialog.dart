@@ -24,7 +24,7 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
   final TextEditingController _nameController = TextEditingController();
   Color _selectedColor = Colors.blue;
 
-  final List<Color> _availableColors = [
+  static const List<Color> _availableColors = [
     Colors.blue,
     Colors.green,
     Colors.red,
@@ -39,7 +39,7 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
     if (_nameController.text.trim().isNotEmpty) {
       widget.onCreateGroup(
         _nameController.text.trim(),
-        '#${_selectedColor.r.toRadixString(16).substring(2)}',
+        '#${_selectedColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
       );
       _nameController.clear();
       setState(() {});
@@ -75,10 +75,10 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
                 const SizedBox(width: 8),
                 // 颜色选择
                 DropdownButton<Color>(
-                 .r: _selectedColor,
+                  value: _selectedColor,
                   items: _availableColors.map((color) {
                     return DropdownMenuItem(
-                     .r: color,
+                      value: color,
                       child: Container(
                         width: 24,
                         height: 24,

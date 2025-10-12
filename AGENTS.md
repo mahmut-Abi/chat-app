@@ -196,6 +196,7 @@ Keep business logic in repositories and domain layer, not in widgets.
 - Use `brew` to install Flutter and related dependencies on macOS:
   ```bash
   brew install flutter
+  brew install cocoapods
   brew install --cask android-studio  # If targeting Android
   ```
 - Run `flutter doctor` to verify installation
@@ -207,3 +208,26 @@ Keep business logic in repositories and domain layer, not in widgets.
   ```
 - Fix any compilation errors before committing changes
 - If tests exist, run `flutter test` to ensure they pass
+
+## Common Issues and Solutions
+
+**颜色值转换**
+- 使用 `Color.toARGB32()` 而不是已废弃的 `.value`
+- 例：`color.toARGB32().toRadixString(16)`
+
+**类结构**
+- 确保所有方法都在类内部
+- 检查大括号匹配，避免过早关闭类
+
+**PDF 生成**
+- `pw.BorderRadius` 不能使用 `const`
+- 使用 `pw.BorderRadius.all(pw.Radius.circular(5))` 而不是 `const pw.BorderRadius.all(...)`
+
+**Trailing Commas**
+- 在多行参数列表中始终添加末尾逗号
+- 例：`DropdownMenuItem(...),` 而不是 `DropdownMenuItem(...))`
+
+**DropdownButton 参数**
+- 必须提供 `value` 参数，不能使用 `.r` 等错误语法
+- 正确：`value: _selectedColor`
+- 错误：`.r: _selectedColor`

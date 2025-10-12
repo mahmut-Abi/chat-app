@@ -371,7 +371,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       .map((provider) => DropdownMenuItem(
                             value: provider,
                             child: Text(provider),
-                          ))
+                          ),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -476,7 +477,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       .map((provider) => DropdownMenuItem(
                             value: provider,
                             child: Text(provider),
-                          ))
+                          ),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -611,7 +613,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _loadApiConfigs();
     }
   }
-}
 
   Future<void> _exportToPdf() async {
     final chatRepo = ref.read(chatRepositoryProvider);
@@ -716,3 +717,5 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+}
+

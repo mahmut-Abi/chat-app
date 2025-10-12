@@ -57,7 +57,7 @@ class PdfExport {
               padding: const pw.EdgeInsets.all(10),
               decoration: pw.BoxDecoration(
                 color: PdfColors.grey100,
-                borderRadius: const pw.BorderRadius.all(pw.Radius.circular(5)),
+                borderRadius: pw.BorderRadius.all(pw.Radius.circular(5)),
               ),
               child: pw.Text(conversation.systemPrompt!),
             ),

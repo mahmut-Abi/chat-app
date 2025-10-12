@@ -40,6 +40,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         _messages.addAll(conversation.messages);
       });
+    }
+  }
 
   void _calculateTokens() {
     int total = 0;
@@ -54,8 +56,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         _totalTokens = total;
       });
-    }
-  }
     }
   }
 
@@ -164,6 +164,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             updatedAt: DateTime.now(),
           ),
         );
+        _calculateTokens();
       }
     } catch (e) {
       setState(() {
@@ -246,6 +247,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             updatedAt: DateTime.now(),
           ),
         );
+        _calculateTokens();
       }
     } catch (e) {
       setState(() {
@@ -273,6 +275,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
+      _calculateTokens();
     }
   }
 
@@ -291,6 +294,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
+      _calculateTokens();
     }
   }
 
@@ -300,6 +304,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       appBar: AppBar(
         title: const Text('Chat'),
         actions: [
+          if (_totalTokens > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: Chip(
+                  avatar: const Icon(Icons.token, size: 16),
+                  label: Text('$_totalTokens tokens'),
+                ),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.tune),
             tooltip: '模型配置',
@@ -414,4 +428,3 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 }
-
