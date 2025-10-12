@@ -14,10 +14,27 @@ class Conversation with _$Conversation {
     required DateTime updatedAt,
     String? systemPrompt,
     @Default({}) Map<String, dynamic> settings,
+    @Default([]) List<String> tags,
+    String? groupId,
+    int? totalTokens,
   }) = _Conversation;
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>
       _$ConversationFromJson(json);
+}
+
+@freezed
+class ConversationGroup with _$ConversationGroup {
+  const factory ConversationGroup({
+    required String id,
+    required String name,
+    required DateTime createdAt,
+    String? color,
+    int? sortOrder,
+  }) = _ConversationGroup;
+
+  factory ConversationGroup.fromJson(Map<String, dynamic> json) =>
+      _$ConversationGroupFromJson(json);
 }
 
 @freezed

@@ -68,6 +68,25 @@ class MessageBubble extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (message.tokenCount != null) ...[
+                        Text(
+                          '${message.tokenCount} tokens',
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
+                                        .withValues(alpha: 0.6),
+                                  ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1,
+                          height: 12,
+                          color: Theme.of(context).dividerColor,
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                       MessageActions(
                         isUserMessage: isUser,
                         onCopy: () {

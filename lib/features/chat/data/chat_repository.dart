@@ -4,6 +4,8 @@ import '../domain/message.dart';
 import '../domain/conversation.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/storage/storage_service.dart';
+import '../../../core/utils/token_counter.dart';
+import '../../../core/utils/markdown_export.dart';
 
 class ChatRepository {
   final OpenAIApiClient _apiClient;
@@ -34,12 +36,14 @@ class ChatRepository {
       );
 
       final response = await _apiClient.createChatCompletion(request);
+      final tokenCount = response.usage?.completionTokens;
 
       return Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,
         content: response.choices.first.message.content,
         timestamp: DateTime.now(),
+        tokenCount: tokenCount,
       );
     } catch (e) {
       return Message(
@@ -110,6 +114,8 @@ class ChatRepository {
   Future<Conversation> createConversation({
     String? title,
     String? systemPrompt,
+    List<String>? tags,
+    String? groupId,
   }) async {
     final conversation = Conversation(
       id: _uuid.v4(),
@@ -118,6 +124,8 @@ class ChatRepository {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       systemPrompt: systemPrompt,
+      tags: tags ?? [],
+      groupId: groupId,
     );
 
     await _storage.saveConversation(
@@ -129,9 +137,23 @@ class ChatRepository {
   }
 
   Future<void> saveConversation(Conversation conversation) async {
+    // 计算总 token 数
+    int totalTokens = 0;
+    for (final message in conversation.messages) {
+      if (message.tokenCount != null) {
+        totalTokens += message.tokenCount!;
+      } else {
+        totalTokens += TokenCounter.estimate(message.content);
+      }
+    }
+
+    final updatedConversation = conversation.copyWith(
+      totalTokens: totalTokens,
+    );
+
     await _storage.saveConversation(
-      conversation.id,
-      conversation.toJson(),
+      updatedConversation.id,
+      updatedConversation.toJson(),
     );
   }
 
@@ -160,5 +182,71 @@ class ChatRepository {
       );
       await saveConversation(updated);
     }
+  }
+
+  // 添加标签管理功能
+  Future<void> addTagToConversation(String id, String tag) async {
+    final conversation = getConversation(id);
+    if (conversation != null) {
+      final tags = List<String>.from(conversation.tags);
+      if (!tags.contains(tag)) {
+        tags.add(tag);
+        final updated = conversation.copyWith(
+          tags: tags,
+          updatedAt: DateTime.now(),
+        );
+        await saveConversation(updated);
+      }
+    }
+  }
+
+  Future<void> removeTagFromConversation(String id, String tag) async {
+    final conversation = getConversation(id);
+    if (conversation != null) {
+      final tags = List<String>.from(conversation.tags);
+      tags.remove(tag);
+      final updated = conversation.copyWith(
+        tags: tags,
+        updatedAt: DateTime.now(),
+      );
+      await saveConversation(updated);
+    }
+  }
+
+  Future<void> setConversationGroup(String id, String? groupId) async {
+    final conversation = getConversation(id);
+    if (conversation != null) {
+      final updated = conversation.copyWith(
+        groupId: groupId,
+        updatedAt: DateTime.now(),
+      );
+      await saveConversation(updated);
+    }
+  }
+
+  // 根据标签筛选对话
+  List<Conversation> getConversationsByTag(String tag) {
+    final conversations = getAllConversations();
+    return conversations.where((c) => c.tags.contains(tag)).toList();
+  }
+
+  // 根据分组筛选对话
+  List<Conversation> getConversationsByGroup(String? groupId) {
+    final conversations = getAllConversations();
+    return conversations.where((c) => c.groupId == groupId).toList();
+  }
+
+  // 导出功能
+  String exportToMarkdown(String id) {
+    final conversation = getConversation(id);
+    if (conversation == null) {
+      throw Exception('对话不存在');
+    }
+    return MarkdownExport.exportConversation(conversation);
+  }
+
+  String exportAllToMarkdown() {
+    final conversations = getAllConversations();
+    return MarkdownExport.exportConversations(conversations);
   }
 }

@@ -20,6 +20,7 @@ class Message with _$Message {
     @Default(false) bool hasError,
     String? errorMessage,
     Map<String, dynamic>? metadata,
+    int? tokenCount,
   }) = _Message;
 
   factory Message.fromJson(Map<String, dynamic> json) =>
