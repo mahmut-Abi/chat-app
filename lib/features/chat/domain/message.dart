@@ -64,8 +64,7 @@ class Choice with _$Choice {
     String? finishReason,
   }) = _Choice;
 
-  factory Choice.fromJson(Map<String, dynamic> json) =>
-      _$ChoiceFromJson(json);
+  factory Choice.fromJson(Map<String, dynamic> json) => _$ChoiceFromJson(json);
 }
 
 @freezed

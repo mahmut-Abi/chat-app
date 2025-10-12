@@ -4,9 +4,8 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
-import '../../../shared/widgets/markdown_message.dart';
-import '../../../shared/widgets/message_actions.dart';
-import 'package:flutter/services.dart';
+import 'widgets/model_config_dialog.dart';
+import 'widgets/message_bubble.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -23,6 +22,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final List<Message> _messages = [];
   bool _isLoading = false;
   final _uuid = const Uuid();
+  ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
 
   @override
   void initState() {
@@ -42,11 +42,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  Future<void> _showModelConfigDialog() async {
+    final config = await showDialog<ModelConfig>(
+      context: context,
+      builder: (context) => ModelConfigDialog(initialConfig: _currentConfig),
+    );
+
+    if (config != null) {
+      setState(() {
+        _currentConfig = config;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('模型已切换为: ${config.model}')),
+        );
+      }
     }
   }
 
@@ -68,7 +90,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _messageController.clear();
     _scrollToBottom();
 
-    // Create streaming assistant message
     final assistantMessage = Message(
       id: _uuid.v4(),
       role: MessageRole.assistant,
@@ -82,23 +103,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     final chatRepo = ref.read(chatRepositoryProvider);
-    const config = ModelConfig(model: 'gpt-3.5-turbo');
 
     try {
       final stream = chatRepo.sendMessageStream(
         conversationId: widget.conversationId,
         content: userMessage.content,
-        config: config,
-        conversationHistory: _messages
-            .where((m) => !m.isStreaming)
-            .toList(),
+        config: _currentConfig,
+        conversationHistory: _messages.where((m) => !m.isStreaming).toList(),
       );
 
       String fullContent = '';
       await for (final chunk in stream) {
         fullContent += chunk;
         setState(() {
-          final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
+          final index =
+              _messages.indexWhere((m) => m.id == assistantMessage.id);
           if (index != -1) {
             _messages[index] = assistantMessage.copyWith(
               content: fullContent,
@@ -108,7 +127,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _scrollToBottom();
       }
 
-      // Mark as complete
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
         if (index != -1) {
@@ -119,7 +137,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
-      // Save conversation
       final conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation != null) {
         await chatRepo.saveConversation(
@@ -134,13 +151,127 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
         if (index != -1) {
           _messages[index] = assistantMessage.copyWith(
-            content: 'Error: ${e.toString()}',
+            content: '错误: ${e.toString()}',
             hasError: true,
             isStreaming: false,
           );
         }
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _regenerateMessage(int messageIndex) async {
+    if (messageIndex < 1) return;
+
+    final userMessage = _messages[messageIndex - 1];
+    if (userMessage.role != MessageRole.user) return;
+
+    setState(() {
+      _messages.removeAt(messageIndex);
+      _isLoading = true;
+    });
+
+    final assistantMessage = Message(
+      id: _uuid.v4(),
+      role: MessageRole.assistant,
+      content: '',
+      timestamp: DateTime.now(),
+      isStreaming: true,
+    );
+
+    setState(() {
+      _messages.insert(messageIndex, assistantMessage);
+    });
+
+    final chatRepo = ref.read(chatRepositoryProvider);
+
+    try {
+      final history = _messages
+          .sublist(0, messageIndex)
+          .where((m) => !m.isStreaming)
+          .toList();
+      final stream = chatRepo.sendMessageStream(
+        conversationId: widget.conversationId,
+        content: userMessage.content,
+        config: _currentConfig,
+        conversationHistory: history,
+      );
+
+      String fullContent = '';
+      await for (final chunk in stream) {
+        fullContent += chunk;
+        setState(() {
+          final index =
+              _messages.indexWhere((m) => m.id == assistantMessage.id);
+          if (index != -1) {
+            _messages[index] = assistantMessage.copyWith(content: fullContent);
+          }
+        });
+        _scrollToBottom();
+      }
+
+      setState(() {
+        final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
+        if (index != -1) {
+          _messages[index] = _messages[index].copyWith(isStreaming: false);
+        }
+        _isLoading = false;
+      });
+
+      final conversation = chatRepo.getConversation(widget.conversationId);
+      if (conversation != null) {
+        await chatRepo.saveConversation(
+          conversation.copyWith(
+            messages: _messages,
+            updatedAt: DateTime.now(),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
+        if (index != -1) {
+          _messages[index] = assistantMessage.copyWith(
+            content: '错误: ${e.toString()}',
+            hasError: true,
+            isStreaming: false,
+          );
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteMessage(int messageIndex) async {
+    setState(() {
+      _messages.removeAt(messageIndex);
+    });
+
+    final chatRepo = ref.read(chatRepositoryProvider);
+    final conversation = chatRepo.getConversation(widget.conversationId);
+    if (conversation != null) {
+      await chatRepo.saveConversation(
+        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      );
+    }
+  }
+
+  Future<void> _editMessage(int messageIndex, String newContent) async {
+    if (newContent.trim().isEmpty) return;
+
+    setState(() {
+      _messages[messageIndex] = _messages[messageIndex].copyWith(
+        content: newContent,
+      );
+    });
+
+    final chatRepo = ref.read(chatRepositoryProvider);
+    final conversation = chatRepo.getConversation(widget.conversationId);
+    if (conversation != null) {
+      await chatRepo.saveConversation(
+        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      );
     }
   }
 
@@ -151,10 +282,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         title: const Text('Chat'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Navigate to settings
-            },
+            icon: const Icon(Icons.tune),
+            tooltip: '模型配置',
+            onPressed: _showModelConfigDialog,
           ),
         ],
       ),
@@ -163,9 +293,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Expanded(
             child: _messages.isEmpty
                 ? Center(
-                    child: Text(
-                      'Start a conversation',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '开始新对话',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '输入消息开始与 AI 交流',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
                     ),
                   )
                 : ListView.builder(
@@ -174,7 +320,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       final message = _messages[index];
-                      return MessageBubble(message: message);
+                      return MessageBubble(
+                        message: message,
+                        onDelete: () => _deleteMessage(index),
+                        onRegenerate: message.role == MessageRole.assistant
+                            ? () => _regenerateMessage(index)
+                            : null,
+                        onEdit: (newContent) => _editMessage(index, newContent),
+                      );
                     },
                   ),
           ),
@@ -190,10 +343,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.05),
+          blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -202,11 +355,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Expanded(
             child: TextField(
               controller: _messageController,
-              decoration: const InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(),
-              ),
               maxLines: null,
+              decoration: InputDecoration(
+                hintText: '输入消息...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
@@ -234,106 +393,5 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-}
-
-class MessageBubble extends StatelessWidget {
-  final Message message;
-
-  const MessageBubble({super.key, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.role == MessageRole.user;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isUser) _buildAvatar(context, isUser),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isUser
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).dividerColor,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (message.hasError)
-                    Text(
-                      message.content,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    )
-                  else if (message.role == MessageRole.assistant)
-                    MarkdownMessage(
-                      content: message.content,
-                      isDarkMode: Theme.of(context).brightness == Brightness.dark,
-                    )
-                  else
-                    SelectableText(
-                      message.content,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  const SizedBox(height: 8),
-                  MessageActions(
-                    isUserMessage: isUser,
-                    onCopy: () {
-                      Clipboard.setData(ClipboardData(text: message.content));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('消息已复制'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
-                  ),
-                  if (message.isStreaming)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          if (isUser) _buildAvatar(context, isUser),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvatar(BuildContext context, bool isUser) {
-    return CircleAvatar(
-      radius: 16,
-      backgroundColor: isUser
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.secondary,
-      child: Icon(
-        isUser ? Icons.person : Icons.smart_toy,
-        size: 18,
-        color: Colors.white,
-      ),
-    );
   }
 }

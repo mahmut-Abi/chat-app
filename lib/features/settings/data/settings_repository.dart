@@ -52,7 +52,7 @@ class SettingsRepository {
 
   Future<void> setActiveApiConfig(String id) async {
     final configs = await getAllApiConfigs();
-    
+
     for (final config in configs) {
       final updated = config.copyWith(isActive: config.id == id);
       await saveApiConfig(updated);
@@ -61,6 +61,27 @@ class SettingsRepository {
 
   Future<void> deleteApiConfig(String id) async {
     await _storage.deleteApiConfig(id);
+  }
+
+  Future<void> updateApiConfig(
+    String id, {
+    required String name,
+    required String provider,
+    required String baseUrl,
+    required String apiKey,
+    String? organization,
+  }) async {
+    final config = await getApiConfig(id);
+    if (config != null) {
+      final updated = config.copyWith(
+        name: name,
+        provider: provider,
+        baseUrl: baseUrl,
+        apiKey: apiKey,
+        organization: organization,
+      );
+      await saveApiConfig(updated);
+    }
   }
 
   // App Settings

@@ -27,7 +27,7 @@ final activeApiConfigProvider = FutureProvider<ApiConfig?>((ref) async {
 // DIO Client
 final dioClientProvider = Provider<DioClient>((ref) {
   final apiConfig = ref.watch(activeApiConfigProvider).value;
-  
+
   return DioClient(
     baseUrl: apiConfig?.baseUrl ?? AppConstants.defaultApiUrl,
     apiKey: apiConfig?.apiKey ?? '',

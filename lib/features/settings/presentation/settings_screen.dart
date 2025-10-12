@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/api_config.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import '../../../core/utils/data_export_import.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -12,6 +15,8 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   List<ApiConfig> _apiConfigs = [];
+  bool _isExporting = false;
+  bool _isImporting = false;
 
   @override
   void initState() {
@@ -29,64 +34,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(appSettingsProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('设置'),
       ),
       body: ListView(
         children: [
           _buildSection(
-            title: 'API Configuration',
+            title: 'API 配置',
             children: [
               ..._apiConfigs.map((config) => _buildApiConfigTile(config)),
               ListTile(
                 leading: const Icon(Icons.add),
-                title: const Text('Add API Configuration'),
+                title: const Text('添加 API 配置'),
                 onTap: _showAddApiConfigDialog,
               ),
             ],
           ),
           const Divider(),
           _buildSection(
-            title: 'Appearance',
+            title: '外观',
             children: [
               ListTile(
                 leading: const Icon(Icons.palette),
-                title: const Text('Theme'),
-                subtitle: const Text('System default'),
+                title: const Text('主题模式'),
+                subtitle: Text(_getThemeModeText(settings.themeMode)),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // TODO: Implement theme picker
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.text_fields),
-                title: const Text('Font Size'),
-                subtitle: const Text('Medium'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // TODO: Implement font size picker
-                },
+                onTap: _showThemeDialog,
               ),
             ],
           ),
           const Divider(),
           _buildSection(
-            title: 'Data',
+            title: '数据管理',
             children: [
               ListTile(
                 leading: const Icon(Icons.download),
-                title: const Text('Export Data'),
-                onTap: () {
-                  // TODO: Implement export
-                },
+                title: const Text('导出数据'),
+                subtitle: const Text('导出所有对话和配置'),
+                trailing: _isExporting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : null,
+                onTap: _isExporting ? null : _exportData,
               ),
               ListTile(
                 leading: const Icon(Icons.upload),
-                title: const Text('Import Data'),
-                onTap: () {
-                  // TODO: Implement import
-                },
+                title: const Text('导入数据'),
+                subtitle: const Text('从文件恢复数据'),
+                trailing: _isImporting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : null,
+                onTap: _isImporting ? null : _importData,
               ),
               ListTile(
                 leading: Icon(
@@ -94,7 +102,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 title: Text(
-                  'Clear All Data',
+                  '清除所有数据',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -105,16 +113,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const Divider(),
           _buildSection(
-            title: 'About',
+            title: '关于',
             children: [
               const ListTile(
                 leading: Icon(Icons.info),
-                title: Text('Version'),
+                title: Text('版本'),
                 subtitle: Text('1.0.0'),
               ),
               ListTile(
                 leading: const Icon(Icons.description),
-                title: const Text('Licenses'),
+                title: const Text('开源许可'),
                 onTap: () {
                   showLicensePage(context: context);
                 },
@@ -137,9 +145,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
                 ),
           ),
         ),
@@ -150,60 +158,181 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildApiConfigTile(ApiConfig config) {
     return ListTile(
-      leading: Icon(
-        config.isActive ? Icons.check_circle : Icons.circle_outlined,
-        color: config.isActive
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).disabledColor,
-      ),
+      leading: const Icon(Icons.api),
       title: Text(config.name),
-      subtitle: Text('${config.provider} - ${config.baseUrl}'),
-      trailing: PopupMenuButton(
-        itemBuilder: (context) => [
-          if (!config.isActive)
-            const PopupMenuItem(
-              value: 'activate',
-              child: Text('Set as Active'),
-            ),
-          const PopupMenuItem(
-            value: 'edit',
-            child: Text('Edit'),
+      subtitle: Text(config.provider),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _showEditApiConfigDialog(config),
           ),
-          const PopupMenuItem(
-            value: 'delete',
-            child: Text('Delete'),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deleteApiConfig(config),
           ),
         ],
-        onSelected: (value) async {
-          if (value == 'activate') {
-            final settingsRepo = ref.read(settingsRepositoryProvider);
-            await settingsRepo.setActiveApiConfig(config.id);
-            _loadApiConfigs();
-          } else if (value == 'edit') {
-            _showEditApiConfigDialog(config);
-          } else if (value == 'delete') {
-            final confirm = await _showDeleteConfirmDialog();
-            if (confirm == true) {
-              final settingsRepo = ref.read(settingsRepositoryProvider);
-              await settingsRepo.deleteApiConfig(config.id);
-              _loadApiConfigs();
-            }
-          }
-        },
       ),
-      onTap: () async {
-        final settingsRepo = ref.read(settingsRepositoryProvider);
-        await settingsRepo.setActiveApiConfig(config.id);
-        _loadApiConfigs();
-      },
     );
+  }
+
+  String _getThemeModeText(String mode) {
+    switch (mode) {
+      case 'light':
+        return '浅色';
+      case 'dark':
+        return '深色';
+      default:
+        return '跟随系统';
+    }
+  }
+
+  Future<void> _showThemeDialog() async {
+    final settings = ref.read(appSettingsProvider);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('选择主题'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('浅色'),
+              leading: Radio<String>(
+                value: 'light',
+                groupValue: settings.themeMode,
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+              onTap: () => Navigator.pop(context, 'light'),
+            ),
+            ListTile(
+              title: const Text('深色'),
+              leading: Radio<String>(
+                value: 'dark',
+                groupValue: settings.themeMode,
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+              onTap: () => Navigator.pop(context, 'dark'),
+            ),
+            ListTile(
+              title: const Text('跟随系统'),
+              leading: Radio<String>(
+                value: 'system',
+                groupValue: settings.themeMode,
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+              onTap: () => Navigator.pop(context, 'system'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      final storage = ref.read(storageServiceProvider);
+      await storage.saveSetting('themeMode', result);
+      ref.invalidate(appSettingsProvider);
+    }
+  }
+
+  Future<void> _exportData() async {
+    setState(() => _isExporting = true);
+
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final exporter = DataExportImport(storage);
+      final jsonData = await exporter.exportAllData();
+
+      final fileName =
+          'chat_app_export_${DateTime.now().toIso8601String().split('T')[0]}.json';
+
+      if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+        final path = await FilePicker.platform.saveFile(
+          dialogTitle: '保存导出文件',
+          fileName: fileName,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+
+        if (path != null) {
+          final file = File(path);
+          await file.writeAsString(jsonData);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('数据已导出到: $path')),
+            );
+          }
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('当前平台暂不支持导出功能')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('导出失败: ${e.toString()}')),
+        );
+      }
+    } finally {
+      setState(() => _isExporting = false);
+    }
+  }
+
+  Future<void> _importData() async {
+    setState(() => _isImporting = true);
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        final jsonData = await file.readAsString();
+
+        final storage = ref.read(storageServiceProvider);
+        final importer = DataExportImport(storage);
+        final importResult = await importer.importData(jsonData);
+
+        if (mounted) {
+          if (importResult['success'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '成功导入 ${importResult['conversationsCount']} 个对话和 ${importResult['apiConfigsCount']} 个配置',
+                ),
+              ),
+            );
+            _loadApiConfigs();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('导入失败: ${importResult['error']}'),
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('导入失败: ${e.toString()}')),
+        );
+      }
+    } finally {
+      setState(() => _isImporting = false);
+    }
   }
 
   Future<void> _showAddApiConfigDialog() async {
     final nameController = TextEditingController();
-    final baseUrlController = TextEditingController(
-      text: 'https://api.openai.com/v1',
-    );
+    final baseUrlController = TextEditingController();
     final apiKeyController = TextEditingController();
     String selectedProvider = 'OpenAI';
 
@@ -211,7 +340,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Add API Configuration'),
+          title: const Text('添加 API 配置'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -219,7 +348,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Name',
+                    labelText: '配置名称',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -227,14 +356,119 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selectedProvider,
                   decoration: const InputDecoration(
-                    labelText: 'Provider',
+                    labelText: '提供商',
                     border: OutlineInputBorder(),
                   ),
                   items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
                       .map((provider) => DropdownMenuItem(
                             value: provider,
                             child: Text(provider),
-                          ),)
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedProvider = value;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: baseUrlController,
+                  decoration: const InputDecoration(
+                    labelText: 'Base URL',
+                    border: OutlineInputBorder(),
+                    hintText: 'https://api.openai.com/v1',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: apiKeyController,
+                  decoration: const InputDecoration(
+                    labelText: 'API Key',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (nameController.text.isNotEmpty &&
+                    baseUrlController.text.isNotEmpty &&
+                    apiKeyController.text.isNotEmpty) {
+                  Navigator.pop(context, {
+                    'name': nameController.text,
+                    'provider': selectedProvider,
+                    'baseUrl': baseUrlController.text,
+                    'apiKey': apiKeyController.text,
+                  });
+                }
+              },
+              child: const Text('添加'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      await settingsRepo.createApiConfig(
+        name: result['name']!,
+        provider: result['provider']!,
+        baseUrl: result['baseUrl']!,
+        apiKey: result['apiKey']!,
+      );
+      _loadApiConfigs();
+    }
+
+    nameController.dispose();
+    baseUrlController.dispose();
+    apiKeyController.dispose();
+  }
+
+  Future<void> _showEditApiConfigDialog(ApiConfig config) async {
+    final nameController = TextEditingController(text: config.name);
+    final baseUrlController = TextEditingController(text: config.baseUrl);
+    final apiKeyController = TextEditingController(text: config.apiKey);
+    String selectedProvider = config.provider;
+
+    final result = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('编辑 API 配置'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: '配置名称',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedProvider,
+                  decoration: const InputDecoration(
+                    labelText: '提供商',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
+                      .map((provider) => DropdownMenuItem(
+                            value: provider,
+                            child: Text(provider),
+                          ))
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -267,7 +501,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('取消'),
             ),
             FilledButton(
               onPressed: () {
@@ -278,7 +512,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   'apiKey': apiKeyController.text,
                 });
               },
-              child: const Text('Add'),
+              child: const Text('保存'),
             ),
           ],
         ),
@@ -287,7 +521,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (result != null) {
       final settingsRepo = ref.read(settingsRepositoryProvider);
-      await settingsRepo.createApiConfig(
+      await settingsRepo.updateApiConfig(
+        config.id,
         name: result['name']!,
         provider: result['provider']!,
         baseUrl: result['baseUrl']!,
@@ -301,27 +536,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     apiKeyController.dispose();
   }
 
-  Future<void> _showEditApiConfigDialog(ApiConfig config) async {
-    // TODO: Implement edit dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit not implemented yet')),
-    );
+  Future<void> _deleteApiConfig(ApiConfig config) async {
+    final confirm = await _showDeleteConfirmDialog();
+    if (confirm == true) {
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      await settingsRepo.deleteApiConfig(config.id);
+      _loadApiConfigs();
+    }
   }
 
   Future<bool?> _showDeleteConfirmDialog() {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete API Configuration'),
-        content: const Text('Are you sure you want to delete this configuration?'),
+        title: const Text('删除 API 配置'),
+        content: const Text('确定要删除此配置吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -332,21 +572,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Data'),
+        title: const Text('清除所有数据'),
         content: const Text(
-          'This will delete all conversations and settings. This action cannot be undone.',
+          '这将删除所有对话和设置。此操作无法撤销。',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Clear All'),
+            child: const Text('清除'),
           ),
         ],
       ),
@@ -357,9 +597,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await storage.clearAll();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('All data cleared')),
+          const SnackBar(content: Text('所有数据已清除')),
         );
       }
+      _loadApiConfigs();
     }
   }
 }

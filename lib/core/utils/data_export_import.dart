@@ -9,7 +9,7 @@ class DataExportImport {
   Future<String> exportAllData() async {
     final conversations = _storage.getAllConversations();
     final apiConfigs = await _storage.getAllApiConfigs();
-    
+
     final data = {
       'version': '1.0.0',
       'exportDate': DateTime.now().toIso8601String(),
@@ -23,7 +23,7 @@ class DataExportImport {
   Future<Map<String, dynamic>> importData(String jsonData) async {
     try {
       final data = jsonDecode(jsonData) as Map<String, dynamic>;
-      
+
       int conversationsCount = 0;
       int apiConfigsCount = 0;
 

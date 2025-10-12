@@ -29,8 +29,7 @@ class MessageActions extends StatelessWidget {
           onPressed: onCopy,
           tooltip: 'Copy',
         ),
-        if (onEdit != null)
-          const SizedBox(width: 8),
+        if (onEdit != null) const SizedBox(width: 8),
         if (onEdit != null)
           IconButton(
             icon: const Icon(Icons.edit, size: 16),
@@ -40,8 +39,7 @@ class MessageActions extends StatelessWidget {
             onPressed: onEdit,
             tooltip: 'Edit',
           ),
-        if (onRegenerate != null)
-          const SizedBox(width: 8),
+        if (onRegenerate != null) const SizedBox(width: 8),
         if (onRegenerate != null)
           IconButton(
             icon: const Icon(Icons.refresh, size: 16),
@@ -51,8 +49,7 @@ class MessageActions extends StatelessWidget {
             onPressed: onRegenerate,
             tooltip: 'Regenerate',
           ),
-        if (onDelete != null)
-          const SizedBox(width: 8),
+        if (onDelete != null) const SizedBox(width: 8),
         if (onDelete != null)
           IconButton(
             icon: Icon(

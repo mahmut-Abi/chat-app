@@ -17,8 +17,10 @@ class ModelsRepository {
 
   AiModel _createModelFromId(String id) {
     final contextLength = _getContextLength(id);
-    final supportsFunctions = id.contains('gpt-4') || id.contains('gpt-3.5-turbo');
-    final supportsVision = id.contains('vision') || id == 'gpt-4-turbo' || id == 'gpt-4o';
+    final supportsFunctions =
+        id.contains('gpt-4') || id.contains('gpt-3.5-turbo');
+    final supportsVision =
+        id.contains('vision') || id == 'gpt-4-turbo' || id == 'gpt-4o';
 
     return AiModel(
       id: id,

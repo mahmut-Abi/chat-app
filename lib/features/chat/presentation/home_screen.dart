@@ -37,12 +37,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final conversation = await chatRepo.createConversation(
       title: 'New Chat',
     );
-    
+
     setState(() {
       _conversations.insert(0, conversation);
       _selectedConversation = conversation;
     });
-    
+
     if (mounted) {
       context.push('/chat/${conversation.id}');
     }
@@ -137,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildConversationItem(Conversation conversation) {
     final isSelected = _selectedConversation?.id == conversation.id;
-    
+
     return ListTile(
       selected: isSelected,
       leading: const Icon(Icons.chat_bubble_outline),
@@ -235,7 +235,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    
+
     if (diff.inDays == 0) {
       return 'Today';
     } else if (diff.inDays == 1) {
@@ -271,7 +271,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _showRenameDialog(Conversation conversation) async {
     final controller = TextEditingController(text: conversation.title);
-    
+
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -302,7 +302,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       await chatRepo.updateConversationTitle(conversation.id, result);
       _loadConversations();
     }
-    
+
     controller.dispose();
   }
 }

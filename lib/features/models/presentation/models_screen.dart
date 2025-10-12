@@ -51,7 +51,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         title: const Text('Model Management'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadModels,
           ),
         ],
@@ -69,7 +69,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _loadModels,
-                        child: const Text('Retry'),
+                        child: Text('Retry'),
                       ),
                     ],
                   ),
@@ -128,8 +128,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
                   ),
                 if (model.supportsFunctions)
                   _buildChip(Icons.functions, 'Functions'),
-                if (model.supportsVision)
-                  _buildChip(Icons.image, 'Vision'),
+                if (model.supportsVision) _buildChip(Icons.image, 'Vision'),
               ],
             ),
           ],

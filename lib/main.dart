@@ -7,7 +7,7 @@ import 'core/providers/providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize storage
   final storage = StorageService();
   await storage.init();
@@ -28,7 +28,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsProvider);
-    
+
     return MaterialApp.router(
       title: 'Chat App',
       debugShowCheckedModeBanner: false,

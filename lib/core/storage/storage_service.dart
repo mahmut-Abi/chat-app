@@ -7,8 +7,8 @@ class StorageService {
   static const String _settingsBox = 'settings';
   // Used for API config method naming
   // ignore: unused_field
-  static const String _apiConfigsBox = 'api_configs'; 
-  
+  static const String _apiConfigsBox = 'api_configs';
+
   late Box _conversationsBoxInstance;
   late Box _settingsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();

@@ -21,7 +21,7 @@ class ChatRepository {
   }) async {
     try {
       final messages = _buildMessageList(conversationHistory, content);
-      
+
       final request = ChatCompletionRequest(
         model: config.model,
         messages: messages,
@@ -34,7 +34,7 @@ class ChatRepository {
       );
 
       final response = await _apiClient.createChatCompletion(request);
-      
+
       return Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,
@@ -62,7 +62,7 @@ class ChatRepository {
   }) async* {
     try {
       final messages = _buildMessageList(conversationHistory, content);
-      
+
       final request = ChatCompletionRequest(
         model: config.model,
         messages: messages,
@@ -74,7 +74,8 @@ class ChatRepository {
         stream: true,
       );
 
-      await for (final chunk in _apiClient.createChatCompletionStream(request)) {
+      await for (final chunk
+          in _apiClient.createChatCompletionStream(request)) {
         yield chunk;
       }
     } catch (e) {
@@ -87,7 +88,7 @@ class ChatRepository {
     String newContent,
   ) {
     final messages = <Map<String, String>>[];
-    
+
     if (history != null) {
       for (final msg in history) {
         messages.add({
@@ -96,12 +97,12 @@ class ChatRepository {
         });
       }
     }
-    
+
     messages.add({
       'role': 'user',
       'content': newContent,
     });
-    
+
     return messages;
   }
 
@@ -142,9 +143,7 @@ class ChatRepository {
 
   List<Conversation> getAllConversations() {
     final conversations = _storage.getAllConversations();
-    return conversations
-        .map((data) => Conversation.fromJson(data))
-        .toList()
+    return conversations.map((data) => Conversation.fromJson(data)).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 

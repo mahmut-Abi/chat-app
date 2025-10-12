@@ -32,8 +32,10 @@ class _ConversationSearchState extends State<ConversationSearch> {
       } else {
         _filteredConversations = widget.conversations.where((conv) {
           return conv.title.toLowerCase().contains(query.toLowerCase()) ||
-              conv.messages.any((msg) =>
-                  msg.content.toLowerCase().contains(query.toLowerCase()));
+              conv.messages.any(
+                (msg) =>
+                    msg.content.toLowerCase().contains(query.toLowerCase()),
+              );
         }).toList();
       }
     });

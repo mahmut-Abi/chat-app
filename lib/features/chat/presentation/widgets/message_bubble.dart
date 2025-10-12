@@ -56,7 +56,8 @@ class MessageBubble extends StatelessWidget {
                   else if (message.role == MessageRole.assistant)
                     MarkdownMessage(
                       content: message.content,
-                      isDarkMode: Theme.of(context).brightness == Brightness.dark,
+                      isDarkMode:
+                          Theme.of(context).brightness == Brightness.dark,
                     )
                   else
                     SelectableText(
@@ -70,7 +71,9 @@ class MessageBubble extends StatelessWidget {
                       MessageActions(
                         isUserMessage: isUser,
                         onCopy: () {
-                          Clipboard.setData(ClipboardData(text: message.content));
+                          Clipboard.setData(
+                            ClipboardData(text: message.content),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('消息已复制'),

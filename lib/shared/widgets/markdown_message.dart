@@ -19,7 +19,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
       String lg = element.attributes['class'] as String;
       language = lg.substring(9);
     }
-    
+
     return CodeBlock(
       code: element.textContent,
       language: language,
@@ -58,9 +58,7 @@ class CodeBlock extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.grey.shade900
-                  : Colors.grey.shade100,
+              color: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
