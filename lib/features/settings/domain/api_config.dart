@@ -12,6 +12,9 @@ class ApiConfig with _$ApiConfig {
     required String baseUrl,
     required String apiKey,
     String? organization,
+    String? proxyUrl,
+    String? proxyUsername,
+    String? proxyPassword,
     @Default(true) bool isActive,
     Map<String, dynamic>? metadata,
   }) = _ApiConfig;

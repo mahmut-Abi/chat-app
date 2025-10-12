@@ -15,6 +15,9 @@ class SettingsRepository {
     required String baseUrl,
     required String apiKey,
     String? organization,
+    String? proxyUrl,
+    String? proxyUsername,
+    String? proxyPassword,
   }) async {
     final config = ApiConfig(
       id: _uuid.v4(),
@@ -23,6 +26,9 @@ class SettingsRepository {
       baseUrl: baseUrl,
       apiKey: apiKey,
       organization: organization,
+      proxyUrl: proxyUrl,
+      proxyUsername: proxyUsername,
+      proxyPassword: proxyPassword,
       isActive: true,
     );
 
@@ -70,6 +76,9 @@ class SettingsRepository {
     required String baseUrl,
     required String apiKey,
     String? organization,
+    String? proxyUrl,
+    String? proxyUsername,
+    String? proxyPassword,
   }) async {
     final config = await getApiConfig(id);
     if (config != null) {
@@ -79,6 +88,9 @@ class SettingsRepository {
         baseUrl: baseUrl,
         apiKey: apiKey,
         organization: organization,
+        proxyUrl: proxyUrl,
+        proxyUsername: proxyUsername,
+        proxyPassword: proxyPassword,
       );
       await saveApiConfig(updated);
     }

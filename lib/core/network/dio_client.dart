@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'dart:io';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'api_exception.dart';
 
@@ -8,6 +10,9 @@ class DioClient {
   DioClient({
     required String baseUrl,
     required String apiKey,
+    String? proxyUrl,
+    String? proxyUsername,
+    String? proxyPassword,
     int connectTimeout = 30000,
     int receiveTimeout = 30000,
   }) {
@@ -18,10 +23,30 @@ class DioClient {
         receiveTimeout: Duration(milliseconds: receiveTimeout),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer \$apiKey',
+          'Authorization': 'Bearer $apiKey',
         },
       ),
     );
+
+    if (proxyUrl != null && proxyUrl.isNotEmpty) {
+      (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+        final client = HttpClient();
+        client.findProxy = (uri) {
+          if (proxyUsername != null && proxyUsername.isNotEmpty) {
+            final credentials = '$proxyUsername:$proxyPassword';
+            final auth = Uri.parse(proxyUrl).replace(
+              userInfo: credentials,
+            );
+            return 'PROXY ${auth.host}:${auth.port}';
+          }
+          final proxy = Uri.parse(proxyUrl);
+          return 'PROXY ${proxy.host}:${proxy.port}';
+        };
+        client.badCertificateCallback = 
+            (X509Certificate cert, String host, int port) => true;
+        return client;
+      };
+    }
 
     _dio.interceptors.add(
       PrettyDioLogger(

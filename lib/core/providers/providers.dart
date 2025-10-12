@@ -32,6 +32,9 @@ final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient(
     baseUrl: apiConfig?.baseUrl ?? AppConstants.defaultApiUrl,
     apiKey: apiConfig?.apiKey ?? '',
+    proxyUrl: apiConfig?.proxyUrl,
+    proxyUsername: apiConfig?.proxyUsername,
+    proxyPassword: apiConfig?.proxyPassword,
     connectTimeout: AppConstants.defaultTimeout,
     receiveTimeout: AppConstants.streamTimeout,
   );

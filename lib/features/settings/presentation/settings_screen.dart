@@ -339,12 +339,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _showAddApiConfigDialog() async {
-    final nameController = TextEditingController();
-    final baseUrlController = TextEditingController();
-    final apiKeyController = TextEditingController();
-    String selectedProvider = 'OpenAI';
+  final nameController = TextEditingController();
+  final baseUrlController = TextEditingController();
+  final apiKeyController = TextEditingController();
+  final proxyUrlController = TextEditingController();
+  final proxyUsernameController = TextEditingController();
+  final proxyPasswordController = TextEditingController();
+  String selectedProvider = 'OpenAI';
+  bool enableProxy = false;
 
-    final result = await showDialog<Map<String, String>>(
+  final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -400,6 +404,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   obscureText: true,
                 ),
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  title: const Text('启用 HTTP 代理'),
+                  value: enableProxy,
+                  onChanged: (value) {
+                    setState(() {
+                      enableProxy = value;
+                    });
+                  },
+                ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyUrlController,
+                    decoration: const InputDecoration(
+                      labelText: '代理地址',
+                      border: OutlineInputBorder(),
+                      hintText: 'http://proxy.example.com:8080',
+                    ),
+                  ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyUsernameController,
+                    decoration: const InputDecoration(
+                      labelText: '代理用户名（可选）',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: '代理密码（可选）',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                  ),
               ],
             ),
           ),
@@ -413,12 +459,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 if (nameController.text.isNotEmpty &&
                     baseUrlController.text.isNotEmpty &&
                     apiKeyController.text.isNotEmpty) {
-                  Navigator.pop(context, {
+                  final result = <String, String>{
                     'name': nameController.text,
                     'provider': selectedProvider,
                     'baseUrl': baseUrlController.text,
                     'apiKey': apiKeyController.text,
-                  });
+                  };
+                  if (enableProxy && proxyUrlController.text.isNotEmpty) {
+                    result['proxyUrl'] = proxyUrlController.text;
+                    if (proxyUsernameController.text.isNotEmpty) {
+                      result['proxyUsername'] = proxyUsernameController.text;
+                    }
+                    if (proxyPasswordController.text.isNotEmpty) {
+                      result['proxyPassword'] = proxyPasswordController.text;
+                    }
+                  }
+                  Navigator.pop(context, result);
                 }
               },
               child: const Text('添加'),
@@ -429,28 +485,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (result != null) {
-      final settingsRepo = ref.read(settingsRepositoryProvider);
-      await settingsRepo.createApiConfig(
-        name: result['name']!,
-        provider: result['provider']!,
-        baseUrl: result['baseUrl']!,
-        apiKey: result['apiKey']!,
-      );
-      _loadApiConfigs();
-    }
-
-    nameController.dispose();
-    baseUrlController.dispose();
-    apiKeyController.dispose();
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    await settingsRepo.createApiConfig(
+      name: result['name']!,
+      provider: result['provider']!,
+      baseUrl: result['baseUrl']!,
+      apiKey: result['apiKey']!,
+      proxyUrl: result['proxyUrl'],
+      proxyUsername: result['proxyUsername'],
+      proxyPassword: result['proxyPassword'],
+    );
+    _loadApiConfigs();
   }
 
-  Future<void> _showEditApiConfigDialog(ApiConfig config) async {
-    final nameController = TextEditingController(text: config.name);
-    final baseUrlController = TextEditingController(text: config.baseUrl);
-    final apiKeyController = TextEditingController(text: config.apiKey);
-    String selectedProvider = config.provider;
+  nameController.dispose();
+  baseUrlController.dispose();
+  apiKeyController.dispose();
+  proxyUrlController.dispose();
+  proxyUsernameController.dispose();
+  proxyPasswordController.dispose();
+}
 
-    final result = await showDialog<Map<String, String>>(
+  Future<void> _showEditApiConfigDialog(ApiConfig config) async {
+  final nameController = TextEditingController(text: config.name);
+  final baseUrlController = TextEditingController(text: config.baseUrl);
+  final apiKeyController = TextEditingController(text: config.apiKey);
+  final proxyUrlController = TextEditingController(text: config.proxyUrl ?? '');
+  final proxyUsernameController = TextEditingController(text: config.proxyUsername ?? '');
+  final proxyPasswordController = TextEditingController(text: config.proxyPassword ?? '');
+  String selectedProvider = config.provider;
+  bool enableProxy = config.proxyUrl != null && config.proxyUrl!.isNotEmpty;
+
+  final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -505,6 +571,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   obscureText: true,
                 ),
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  title: const Text('启用 HTTP 代理'),
+                  value: enableProxy,
+                  onChanged: (value) {
+                    setState(() {
+                      enableProxy = value;
+                    });
+                  },
+                ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyUrlController,
+                    decoration: const InputDecoration(
+                      labelText: '代理地址',
+                      border: OutlineInputBorder(),
+                      hintText: 'http://proxy.example.com:8080',
+                    ),
+                  ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyUsernameController,
+                    decoration: const InputDecoration(
+                      labelText: '代理用户名（可选）',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                if (enableProxy)
+                  const SizedBox(height: 16),
+                if (enableProxy)
+                  TextField(
+                    controller: proxyPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: '代理密码（可选）',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                  ),
               ],
             ),
           ),
@@ -515,12 +623,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             FilledButton(
               onPressed: () {
-                Navigator.pop(context, {
+                final result = <String, String>{
                   'name': nameController.text,
                   'provider': selectedProvider,
                   'baseUrl': baseUrlController.text,
                   'apiKey': apiKeyController.text,
-                });
+                };
+                if (enableProxy && proxyUrlController.text.isNotEmpty) {
+                  result['proxyUrl'] = proxyUrlController.text;
+                  if (proxyUsernameController.text.isNotEmpty) {
+                    result['proxyUsername'] = proxyUsernameController.text;
+                  }
+                  if (proxyPasswordController.text.isNotEmpty) {
+                    result['proxyPassword'] = proxyPasswordController.text;
+                  }
+                }
+                Navigator.pop(context, result);
               },
               child: const Text('保存'),
             ),
@@ -530,21 +648,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (result != null) {
-      final settingsRepo = ref.read(settingsRepositoryProvider);
-      await settingsRepo.updateApiConfig(
-        config.id,
-        name: result['name']!,
-        provider: result['provider']!,
-        baseUrl: result['baseUrl']!,
-        apiKey: result['apiKey']!,
-      );
-      _loadApiConfigs();
-    }
-
-    nameController.dispose();
-    baseUrlController.dispose();
-    apiKeyController.dispose();
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    await settingsRepo.updateApiConfig(
+      config.id,
+      name: result['name']!,
+      provider: result['provider']!,
+      baseUrl: result['baseUrl']!,
+      apiKey: result['apiKey']!,
+      proxyUrl: result['proxyUrl'],
+      proxyUsername: result['proxyUsername'],
+      proxyPassword: result['proxyPassword'],
+    );
+    _loadApiConfigs();
   }
+
+  nameController.dispose();
+  baseUrlController.dispose();
+  apiKeyController.dispose();
+  proxyUrlController.dispose();
+  proxyUsernameController.dispose();
+  proxyPasswordController.dispose();
+}
 
   Future<void> _deleteApiConfig(ApiConfig config) async {
     final confirm = await _showDeleteConfirmDialog();
@@ -718,4 +842,3 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 }
-
