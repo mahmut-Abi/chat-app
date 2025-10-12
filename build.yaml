@@ -1,6 +1,0 @@
-targets:
-$default:
-  builders:
-    freezed|freezed:
-      options:
-        line_length: 120

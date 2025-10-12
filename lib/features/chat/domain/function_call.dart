@@ -1,86 +1,73 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'function_call.freezed.dart';
 part 'function_call.g.dart';
-
-// ignore_for_file: non_abstract_class_inherits_abstract_member
 
 // Function Calling 相关数据模型
 
-@freezed
-class FunctionDefinition with _$FunctionDefinition {
-  const factory FunctionDefinition({
-    required String name,
-    String? description,
-    required Map<String, dynamic> parameters,
-  }) = _FunctionDefinition;
+@JsonSerializable()
+class FunctionDefinition {
+  final String name;
+  final String description;
+  final Map<String, dynamic> parameters;
+
+  const FunctionDefinition({
+    required this.name,
+    required this.description,
+    required this.parameters,
+  });
 
   factory FunctionDefinition.fromJson(Map<String, dynamic> json) =>
       _$FunctionDefinitionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$FunctionDefinitionToJson(this);
 }
 
-@freezed
-class ToolDefinition with _$ToolDefinition {
-  const factory ToolDefinition({
-    required String type,
-    required FunctionDefinition function,
-  }) = _ToolDefinition;
+@JsonSerializable(explicitToJson: true)
+class ToolDefinition {
+  final String type;
+  final FunctionDefinition function;
+
+  const ToolDefinition({
+    required this.type,
+    required this.function,
+  });
 
   factory ToolDefinition.fromJson(Map<String, dynamic> json) =>
       _$ToolDefinitionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToolDefinitionToJson(this);
 }
 
-@freezed
-class FunctionCall with _$FunctionCall {
-  const factory FunctionCall({
-    required String name,
-    required String arguments,
-  }) = _FunctionCall;
+@JsonSerializable()
+class FunctionCall {
+  final String name;
+  final String arguments;
+
+  const FunctionCall({
+    required this.name,
+    required this.arguments,
+  });
 
   factory FunctionCall.fromJson(Map<String, dynamic> json) =>
       _$FunctionCallFromJson(json);
+
+  Map<String, dynamic> toJson() => _$FunctionCallToJson(this);
 }
 
-@freezed
-class ToolCall with _$ToolCall {
-  const factory ToolCall({
-    required String id,
-    required String type,
-    required FunctionCall function,
-  }) = _ToolCall;
+@JsonSerializable(explicitToJson: true)
+class ToolCall {
+  final String id;
+  final String type;
+  final FunctionCall function;
+
+  const ToolCall({
+    required this.id,
+    required this.type,
+    required this.function,
+  });
 
   factory ToolCall.fromJson(Map<String, dynamic> json) =>
       _$ToolCallFromJson(json);
-}
 
-// 内置工具的定义
-class BuiltInTools {
-  // 获取当前时间
-  static ToolDefinition get currentTime => const ToolDefinition(
-    type: 'function',
-    function: FunctionDefinition(
-      name: 'get_current_time',
-      description: '获取当前的日期和时间',
-      parameters: {'type': 'object', 'properties': {}},
-    ),
-  );
-
-  // 计算器
-  static ToolDefinition get calculator => const ToolDefinition(
-    type: 'function',
-    function: FunctionDefinition(
-      name: 'calculate',
-      description: '执行数学计算',
-      parameters: {
-        'type': 'object',
-        'properties': {
-          'expression': {'type': 'string', 'description': '要计算的数学表达式'},
-        },
-        'required': ['expression'],
-      },
-    ),
-  );
-
-  // 获取所有内置工具
-  static List<ToolDefinition> get all => [currentTime, calculator];
+  Map<String, dynamic> toJson() => _$ToolCallToJson(this);
 }
