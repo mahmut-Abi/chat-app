@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'function_call.freezed.dart';
 part 'function_call.g.dart';
 
+// ignore_for_file: non_abstract_class_inherits_abstract_member
+
 // Function Calling 相关数据模型
 
 @freezed

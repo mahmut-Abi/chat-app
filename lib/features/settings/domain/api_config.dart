@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'api_config.freezed.dart';
 part 'api_config.g.dart';
 
+// ignore_for_file: non_abstract_class_inherits_abstract_member
+
 @freezed
 class ApiConfig with _$ApiConfig {
   const factory ApiConfig({

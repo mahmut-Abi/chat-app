@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'message.freezed.dart';
 part 'message.g.dart';
 
+// ignore_for_file: non_abstract_class_inherits_abstract_member
+
 enum MessageRole { system, user, assistant }
 
 @freezed
