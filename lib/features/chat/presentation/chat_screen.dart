@@ -5,6 +5,8 @@ import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
 import '../../../shared/widgets/markdown_message.dart';
+import '../../../shared/widgets/message_actions.dart';
+import 'package:flutter/services.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -285,6 +287,19 @@ class MessageBubble extends StatelessWidget {
                       message.content,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
+                  const SizedBox(height: 8),
+                  MessageActions(
+                    isUserMessage: isUser,
+                    onCopy: () {
+                      Clipboard.setData(ClipboardData(text: message.content));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('消息已复制'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  ),
                   if (message.isStreaming)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
