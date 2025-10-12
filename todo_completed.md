@@ -157,11 +157,23 @@
 - **开发进度**: Phase 1-6 基本完成
 - **代码质量**: 通过 Flutter analyze (仅有 info 级别警告)
 - **编译状态**: ✅ macOS 和 Web 平台编译成功
+- **移动平台**: ✅ iOS 和 Android 支持已添加
 - **核心功能**: ✅ 完全可用
 - **UI/UX**: ✅ 现代化、响应式设计
 - **数据持久化**: ✅ 完全实现
 - **会话管理**: ✅ 分组、标签、搜索全部实现
 - **数据导出**: ✅ 支持 JSON/Markdown/PDF 多种格式
+
+### 平台兼容性
+
+| 平台 | 支持状态 | SDK 版本 | 备注 |
+|---------|----------|----------|------|
+| Web | ✅ 完全支持 | - | 所有功能可用 |
+| macOS | ✅ 完全支持 | 10.14+ | 需要 CocoaPods |
+| iOS | ✅ 完全支持 | 12.0+ | 需要 Xcode 14.0+ |
+| Android | ✅ 完全支持 | API 21+ | Android 5.0 及以上 |
+| Windows | ⏳ 基础支持 | 10+ | 未全面测试 |
+| Linux | ⏳ 基础支持 | - | 未全面测试 |
 
 ## 🎯 下一步建议
 
@@ -182,10 +194,15 @@
 # Web 平台
 flutter run -d chrome
 
-# macOS 平台(需要先安装 CocoaPods)
 # macOS 平台
 brew install cocoapods
 flutter run -d macos
+
+# iOS 平台
+flutter run -d ios
+
+# Android 平台
+flutter run -d android
 ```
 
 ### 配置 API

@@ -32,12 +32,23 @@
 - Flutter SDK >= 3.0.0
 - Dart SDK >= 3.0.0
 - 对于 macOS 构建：需要安装 CocoaPods
+- 对于 iOS 构建：需要 Xcode 14.0 或更高版本
+- 对于 Android 构建：需要 Android SDK，minSdkVersion 21 (Android 5.0)
 
 建议使用 Homebrew 安装 Flutter：
 ```bash
 brew install flutter
 brew install cocoapods
 ```
+
+### 平台支持
+
+✅ **Web** - 完全支持
+✅ **macOS** - 完全支持
+✅ **iOS** - 完全支持 (iOS 12.0+)
+✅ **Android** - 完全支持 (Android 5.0+, API 21+)
+⏳ **Windows** - 基础支持
+⏳ **Linux** - 基础支持
 
 ### 安装依赖
 
@@ -62,6 +73,12 @@ flutter run -d chrome
 # macOS 平台
 flutter run -d macos
 
+# iOS 平台（需要 Xcode 和 iOS 模拟器/真机）
+flutter run -d ios
+
+# Android 平台（需要 Android SDK 和模拟器/真机）
+flutter run -d android
+
 # 其他平台
 flutter run
 ```
@@ -74,6 +91,15 @@ flutter build web --release
 
 # macOS
 flutter build macos --release
+
+# iOS
+flutter build ios --release
+
+# Android APK
+flutter build apk --release
+
+# Android App Bundle
+flutter build appbundle --release
 
 # Windows
 flutter build windows --release
@@ -347,16 +373,21 @@ MIT License - 详见 `LICENSE` 文件
 - ✅ Token 计数器
 - ✅ 消息编辑和重新生成
 - ✅ 上下文管理（分支对话）
+- ✅ 对话置顶功能
+- ✅ 消息搜索功能
+- ✅ iOS 和 Android 平台支持
 
 **优化**
 - 🚀 改进侧边栏 UI，增加快捷操作
 - 🚀 优化流式响应性能
 - 🚀 增强错误处理和提示
+- 🚀 移除未使用的 Isar 依赖，减小包体积
 
 **修复**
 - 🐛 修复颜色选择器编译错误
 - 🐛 修复 settings_screen.dart 类结构问题
 - 🐛 修复 PDF 导出时的废弃 API 警告
+- 🐛 解决依赖包版本冲突
 
 ### v0.1.0 (2024-01-10)
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MessageActions extends StatelessWidget {
   final bool isUserMessage;
   final VoidCallback onCopy;
+  final VoidCallback? onShare;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onRegenerate;
@@ -11,6 +12,7 @@ class MessageActions extends StatelessWidget {
     super.key,
     required this.isUserMessage,
     required this.onCopy,
+    this.onShare,
     this.onEdit,
     this.onDelete,
     this.onRegenerate,
@@ -29,6 +31,16 @@ class MessageActions extends StatelessWidget {
           onPressed: onCopy,
           tooltip: 'Copy',
         ),
+        if (onShare != null) const SizedBox(width: 8),
+        if (onShare != null)
+          IconButton(
+            icon: const Icon(Icons.share, size: 16),
+            iconSize: 16,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: onShare,
+            tooltip: '分享',
+          ),
         if (onEdit != null) const SizedBox(width: 8),
         if (onEdit != null)
           IconButton(

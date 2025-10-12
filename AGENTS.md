@@ -200,11 +200,15 @@ Keep business logic in repositories and domain layer, not in widgets.
   brew install --cask android-studio  # If targeting Android
   ```
 - Run `flutter doctor` to verify installation
+- For iOS development, install Xcode from App Store
+- For Android development, configure Android SDK through Android Studio
 - Always test compilation before committing:
   ```bash
   flutter analyze          # Check for errors
   flutter build macos      # Test macOS build
   flutter build web        # Test web build
+  flutter build apk        # Test Android build (if targeting Android)
+  flutter build ios        # Test iOS build (if targeting iOS)
   ```
 - Fix any compilation errors before committing changes
 - If tests exist, run `flutter test` to ensure they pass
@@ -231,3 +235,21 @@ Keep business logic in repositories and domain layer, not in widgets.
 - 必须提供 `value` 参数，不能使用 `.r` 等错误语法
 - 正确：`value: _selectedColor`
 - 错误：`.r: _selectedColor`
+
+## Mobile Platform Configuration
+
+**Android 配置**
+- 应用 ID: `com.aichat.app`
+- minSdkVersion: 21 (Android 5.0)
+- 必须权限: INTERNET, ACCESS_NETWORK_STATE
+- 文件访问: READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE (API 32 及以下)
+
+**iOS 配置**
+- Bundle ID: 需要在 Xcode 中配置
+- 最低支持: iOS 12.0
+- 权限描述: 相册、相机、麦克风（为未来功能预留）
+
+**平台特定注意事项**
+- Android 需要配置签名证书用于发布版本
+- iOS 需要 Apple Developer 账号用于真机调试和发布
+- 所有平台均已配置必要的权限和设置

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../domain/message.dart';
 import '../../../../shared/widgets/enhanced_markdown_message.dart';
 import '../../../../shared/widgets/message_actions.dart';
@@ -96,6 +97,11 @@ class MessageBubble extends StatelessWidget {
                               content: Text('消息已复制'),
                               duration: Duration(seconds: 1),
                             ),
+                          );
+                        },
+                        onShare: () {
+                          Share.share(
+                            message.content,
                           );
                         },
                         onEdit: isUser && onEdit != null

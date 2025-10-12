@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter/services.dart';
+import '../../core/providers/providers.dart';
 
 // 增强的 Markdown 消息渲染组件，支持 LaTeX
-class EnhancedMarkdownMessage extends StatelessWidget {
+class EnhancedMarkdownMessage extends ConsumerWidget {
   final String content;
   final bool selectable;
 
@@ -18,19 +20,23 @@ class EnhancedMarkdownMessage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsProvider);
+    final enableLatex = settings.enableLatex;
+    final enableCodeHighlight = settings.enableCodeHighlight;
+
     return MarkdownBody(
       data: content,
       selectable: selectable,
       builders: {
-        'code': CodeBlockBuilder(),
-        'latex': LaTeXBuilder(),
+        'code': CodeBlockBuilder(enableHighlight: enableCodeHighlight),
+        if (enableLatex) 'latex': LaTeXBuilder(),
       },
       extensionSet: md.ExtensionSet(
         md.ExtensionSet.gitHubFlavored.blockSyntaxes,
         [
           ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
-          LaTeXInlineSyntax(),
+          if (enableLatex) LaTeXInlineSyntax(),
         ],
       ),
       styleSheet: MarkdownStyleSheet(
@@ -90,6 +96,10 @@ class LaTeXBuilder extends MarkdownElementBuilder {
 
 // 代码块构建器，支持语法高亮和复制
 class CodeBlockBuilder extends MarkdownElementBuilder {
+  final bool enableHighlight;
+
+  CodeBlockBuilder({this.enableHighlight = true});
+
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     final code = element.textContent;
@@ -137,16 +147,24 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
           // 代码内容
           Container(
             padding: const EdgeInsets.all(12),
-            child: HighlightView(
-              code,
-              language: language,
-              theme: githubTheme,
-              padding: EdgeInsets.zero,
-              textStyle: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14,
-              ),
-            ),
+            child: enableHighlight
+                ? HighlightView(
+                    code,
+                    language: language,
+                    theme: githubTheme,
+                    padding: EdgeInsets.zero,
+                    textStyle: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                    ),
+                  )
+                : SelectableText(
+                    code,
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                    ),
+                  ),
           ),
         ],
       ),
