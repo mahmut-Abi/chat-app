@@ -8,7 +8,7 @@
 
 **错误信息:**
 ```
-Unable to determine Flutter version for platform: stable version: 3.35.6 architecture: arm64
+Unable to determine Flutter version for channel: stable version: 3.35.6 architecture: arm64
 Error: Process completed with exit code 1
 ```
 
@@ -54,7 +54,44 @@ Error: Process completed with exit code 1
 - 如果项目依赖特定 Flutter 版本特性,需要在 `pubspec.yaml` 中声明 SDK 版本约束
 - 建议在本地使用与 CI 相同的 Flutter 版本进行测试
 
-### 问题 2: 代码格式检查失败
+### 问题 2: Android 构建命令不存在
+
+**错误信息:**
+```
+Run flutter build android --release
+Could not find an option named "--release".
+Error: Process completed with exit code 64
+```
+
+**原因分析:**
+- `flutter build android` 不是有效的构建命令
+- Flutter 需要使用具体的构建目标,如 `apk`、`appbundle` 或 `aar`
+
+**解决方案:**
+
+使用正确的 Android 构建命令:
+
+```yaml
+# 构建 APK 文件
+- name: Build Android APK
+  run: flutter build apk --release
+
+# 或构建 App Bundle (推荐用于 Play Store)
+- name: Build Android App Bundle
+  run: flutter build appbundle --release
+```
+
+**可用的 Android 构建选项:**
+- `flutter build apk` - 构建 APK 文件
+- `flutter build appbundle` - 构建 App Bundle
+- `flutter build aar` - 构建 Android 库
+
+**最佳实践:**
+- 对于 Google Play Store 发布,使用 `appbundle`
+- 对于直接分发,使用 `apk`
+- 使用 `--split-per-abi` 可以减小 APK 大小
+
+### 问题 3: 代码格式检查失败
 
 **错误信息:**
 ```
@@ -76,7 +113,7 @@ flutter format .
 flutter format .
 ```
 
-### 问题 3: 构建超时
+### 问题 4: 构建超时
 
 **症状:**
 - GitHub Actions 运行时间过长
@@ -128,13 +165,52 @@ flutter test --coverage
 - 监控构建时间趋势
 - 及时处理失败的构建
 
+## Flutter 构建命令参考
+
+### 移动平台
+
+```bash
+# Android
+flutter build apk --release                    # 构建 APK
+flutter build appbundle --release              # 构建 App Bundle
+flutter build apk --split-per-abi              # 按 ABI 分割 APK
+
+# iOS
+flutter build ios --release                    # 构建 iOS 应用
+flutter build ipa --release                    # 构建 IPA 文件
+flutter build ios --release --no-codesign      # 构建但不签名
+```
+
+### 桌面平台
+
+```bash
+# macOS
+flutter build macos --release
+
+# Windows
+flutter build windows --release
+
+# Linux
+flutter build linux --release
+```
+
+### Web
+
+```bash
+flutter build web --release
+flutter build web --release --web-renderer canvaskit  # 使用 CanvasKit
+flutter build web --release --web-renderer html       # 使用 HTML
+```
+
 ## 相关资源
 
 - [Flutter 官方发布列表](https://flutter.dev/docs/development/tools/sdk/releases)
+- [Flutter 构建命令文档](https://docs.flutter.dev/deployment/android)
 - [subosito/flutter-action 文档](https://github.com/subosito/flutter-action)
-- [GitHub Actions 文档](https://github.com/features/actions)
+- [GitHub Actions 文档](https://docs.github.com/en/actions)
 
 ## 更新日志
 
 - 2025-01-XX: 修复 Flutter 3.35.6 arm64 架构兼容性问题
-- 2025-01-XX: 添加 CI/CD 故障排查文档
+- 2025-01-XX: 修复 Android 构建命令错误 (android -> apk)
+- 2025-01-XX: 添加 CI/CD 故障排查文档和构建命令参考
