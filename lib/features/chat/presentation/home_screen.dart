@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import 'chat_screen.dart';
+import 'widgets/enhanced_sidebar.dart';
+import 'widgets/group_management_dialog.dart';
+import 'widgets/conversation_tags_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -14,19 +17,21 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Conversation> _conversations = [];
+  List<ConversationGroup> _groups = [];
   Conversation? _selectedConversation;
 
   @override
   void initState() {
     super.initState();
-    _loadConversations();
+    _loadData();
   }
 
-  void _loadConversations() {
+  void _loadData() {
     final chatRepo = ref.read(chatRepositoryProvider);
     setState(() {
       _conversations = chatRepo.getAllConversations();
-      if (_conversations.isNotEmpty) {
+      _groups = chatRepo.getAllGroups();
+      if (_conversations.isNotEmpty && _selectedConversation == null) {
         _selectedConversation = _conversations.first;
       }
     });
@@ -35,7 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _createNewConversation() async {
     final chatRepo = ref.read(chatRepositoryProvider);
     final conversation = await chatRepo.createConversation(
-      title: 'New Chat',
+      title: '新建对话',
     );
 
     setState(() {
@@ -49,9 +54,90 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _deleteConversation(String id) async {
+    final confirmed = await _showDeleteDialog();
+    if (confirmed == true) {
+      final chatRepo = ref.read(chatRepositoryProvider);
+      await chatRepo.deleteConversation(id);
+      _loadData();
+
+      if (_selectedConversation?.id == id) {
+        setState(() {
+          _selectedConversation =
+              _conversations.isNotEmpty ? _conversations.first : null;
+        });
+      }
+    }
+  }
+
+  Future<void> _showRenameDialog(Conversation conversation) async {
+    final controller = TextEditingController(text: conversation.title);
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('重命名对话'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: '标题',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      final chatRepo = ref.read(chatRepositoryProvider);
+      await chatRepo.updateConversationTitle(conversation.id, result);
+      _loadData();
+    }
+
+    controller.dispose();
+  }
+
+  Future<void> _updateConversationTags(
+    Conversation conversation,
+    List<String> tags,
+  ) async {
     final chatRepo = ref.read(chatRepositoryProvider);
-    await chatRepo.deleteConversation(id);
-    _loadConversations();
+    final updated = conversation.copyWith(tags: tags);
+    await chatRepo.saveConversation(updated);
+    _loadData();
+  }
+
+  Future<void> _showGroupManagement() async {
+    await showDialog(
+      context: context,
+      builder: (context) => GroupManagementDialog(
+        groups: _groups,
+        onCreateGroup: (name, color) async {
+          final chatRepo = ref.read(chatRepositoryProvider);
+          await chatRepo.createGroup(name: name, color: color);
+          _loadData();
+        },
+        onUpdateGroup: (group) async {
+          final chatRepo = ref.read(chatRepositoryProvider);
+          await chatRepo.updateGroup(group);
+          _loadData();
+        },
+        onDeleteGroup: (id) async {
+          final chatRepo = ref.read(chatRepositoryProvider);
+          await chatRepo.deleteGroup(id);
+          _loadData();
+        },
+      ),
+    );
   }
 
   @override
@@ -59,144 +145,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Row(
         children: [
-          _buildSidebar(),
+          EnhancedSidebar(
+            conversations: _conversations,
+            groups: _groups,
+            selectedConversation: _selectedConversation,
+            onConversationSelected: (conversation) {
+              setState(() {
+                _selectedConversation = conversation;
+              });
+              context.push('/chat/${conversation.id}');
+            },
+            onCreateConversation: _createNewConversation,
+            onDeleteConversation: _deleteConversation,
+            onRenameConversation: _showRenameDialog,
+            onUpdateTags: _updateConversationTags,
+            onManageGroups: _showGroupManagement,
+          ),
           Expanded(
             child: _selectedConversation == null
                 ? _buildWelcomeScreen()
                 : ChatScreen(conversationId: _selectedConversation!.id),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSidebar() {
-    return Container(
-      width: 280,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border(
-          right: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
-      ),
-      child: Column(
-        children: [
-          _buildSidebarHeader(),
-          Expanded(
-            child: _conversations.isEmpty
-                ? Center(
-                    child: Text(
-                      'No conversations yet',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _conversations.length,
-                    itemBuilder: (context, index) {
-                      final conversation = _conversations[index];
-                      return _buildConversationItem(conversation);
-                    },
-                  ),
-          ),
-          _buildSidebarFooter(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSidebarHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                'Chat App',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _createNewConversation,
-              icon: const Icon(Icons.add),
-              label: const Text('New Chat'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildConversationItem(Conversation conversation) {
-    final isSelected = _selectedConversation?.id == conversation.id;
-
-    return ListTile(
-      selected: isSelected,
-      leading: const Icon(Icons.chat_bubble_outline),
-      title: Text(
-        conversation.title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        _formatDate(conversation.updatedAt),
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      trailing: PopupMenuButton(
-        icon: const Icon(Icons.more_vert, size: 20),
-        itemBuilder: (context) => [
-          const PopupMenuItem(
-            value: 'rename',
-            child: Text('Rename'),
-          ),
-          const PopupMenuItem(
-            value: 'delete',
-            child: Text('Delete'),
-          ),
-        ],
-        onSelected: (value) async {
-          if (value == 'delete') {
-            final confirm = await _showDeleteDialog();
-            if (confirm == true) {
-              await _deleteConversation(conversation.id);
-            }
-          } else if (value == 'rename') {
-            _showRenameDialog(conversation);
-          }
-        },
-      ),
-      onTap: () {
-        setState(() {
-          _selectedConversation = conversation;
-        });
-      },
-    );
-  }
-
-  Widget _buildSidebarFooter() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
-      ),
-      child: ListTile(
-        leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
-        onTap: () {
-          context.push('/settings');
-        },
       ),
     );
   }
@@ -213,96 +183,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Welcome to Chat App',
+            '欢迎使用 Chat App',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Create a new conversation to get started',
+            '创建一个新对话开始聊天',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: _createNewConversation,
             icon: const Icon(Icons.add),
-            label: const Text('Start New Chat'),
+            label: const Text('开始新对话'),
           ),
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-
-    if (diff.inDays == 0) {
-      return 'Today';
-    } else if (diff.inDays == 1) {
-      return 'Yesterday';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays} days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
   }
 
   Future<bool?> _showDeleteDialog() {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Conversation'),
-        content: const Text(
-          'Are you sure you want to delete this conversation? This action cannot be undone.',
-        ),
+        title: const Text('删除对话'),
+        content: const Text('确定要删除这个对话吗？此操作无法撤销。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: const Text('删除'),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _showRenameDialog(Conversation conversation) async {
-    final controller = TextEditingController(text: conversation.title);
-
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rename Conversation'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Title',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      final chatRepo = ref.read(chatRepositoryProvider);
-      await chatRepo.updateConversationTitle(conversation.id, result);
-      _loadConversations();
-    }
-
-    controller.dispose();
   }
 }

@@ -6,6 +6,7 @@ import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
 import 'widgets/model_config_dialog.dart';
 import 'widgets/message_bubble.dart';
+import '../../../core/utils/token_counter.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -23,11 +24,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _isLoading = false;
   final _uuid = const Uuid();
   ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
+  int _totalTokens = 0;
 
   @override
   void initState() {
     super.initState();
     _loadConversation();
+    Future.microtask(() => _calculateTokens());
   }
 
   void _loadConversation() {
@@ -37,6 +40,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         _messages.addAll(conversation.messages);
       });
+
+  void _calculateTokens() {
+    int total = 0;
+    for (final message in _messages) {
+      if (message.tokenCount != null) {
+        total += message.tokenCount!;
+      } else {
+        total += TokenCounter.estimate(message.content);
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _totalTokens = total;
+      });
+    }
+  }
     }
   }
 
@@ -395,3 +414,4 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 }
+

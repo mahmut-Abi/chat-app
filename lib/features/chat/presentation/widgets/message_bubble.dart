@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../domain/message.dart';
-import '../../../../shared/widgets/markdown_message.dart';
+import '../../../../shared/widgets/enhanced_markdown_message.dart';
 import '../../../../shared/widgets/message_actions.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -54,10 +54,8 @@ class MessageBubble extends StatelessWidget {
                       ),
                     )
                   else if (message.role == MessageRole.assistant)
-                    MarkdownMessage(
+                    EnhancedMarkdownMessage(
                       content: message.content,
-                      isDarkMode:
-                          Theme.of(context).brightness == Brightness.dark,
                     )
                   else
                     SelectableText(
