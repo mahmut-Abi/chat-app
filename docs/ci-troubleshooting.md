@@ -91,7 +91,61 @@ Error: Process completed with exit code 64
 - 对于直接分发,使用 `apk`
 - 使用 `--split-per-abi` 可以减小 APK 大小
 
-### 问题 3: 代码格式检查失败
+### 问题 3: iOS 代码签名失败
+
+**错误信息:**
+```
+Error: No signing certificate "iOS Development" found
+Error: Unable to find a destination matching the provided destination specifier
+```
+
+**原因分析:**
+- iOS 构建默认需要代码签名证书
+- GitHub Actions 环境中没有配置 Apple Developer 证书
+- CI 环境无法访问钥匙串中的签名身份
+
+**解决方案:**
+
+#### 方案 1: 使用 --no-codesign 参数 (推荐用于 CI)
+
+在 CI 环境中构建但不进行签名:
+
+```yaml
+- name: Build iOS (no signing)
+  run: flutter build ios --release --no-codesign
+```
+
+这会生成未签名的应用,适合用于:
+- CI/CD 构建验证
+- 代码质量检查
+- 构建产物归档
+
+#### 方案 2: 配置代码签名 (用于发布)
+
+如果需要生成可分发的 IPA 文件:
+
+```yaml
+- name: Import Code-Signing Certificates
+  uses: Apple-Actions/import-codesign-certs@v2
+  with:
+    p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
+    p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
+
+- name: Download Provisioning Profiles
+  run: |
+    mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+    echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+- name: Build iOS IPA
+  run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+```
+
+**注意事项:**
+- 生产环境发布需要有效的 Apple Developer 账号
+- 证书和配置文件需要存储在 GitHub Secrets 中
+- 推荐使用 Fastlane 管理 iOS 签名和发布流程
+
+### 问题 4: 代码格式检查失败
 
 **错误信息:**
 ```
@@ -113,7 +167,7 @@ flutter format .
 flutter format .
 ```
 
-### 问题 4: 构建超时
+### 问题 5: 构建超时
 
 **症状:**
 - GitHub Actions 运行时间过长
@@ -165,6 +219,22 @@ flutter test --coverage
 - 监控构建时间趋势
 - 及时处理失败的构建
 
+### 5. 平台特定配置
+
+```yaml
+# 根据平台执行不同的构建命令
+- name: Build for ${{ matrix.platform }}
+  run: |
+    if [ "${{ matrix.platform }}" = "ios" ]; then
+      flutter build ios --release --no-codesign
+    elif [ "${{ matrix.platform }}" = "apk" ]; then
+      flutter build apk --release --split-per-abi
+    else
+      flutter build ${{ matrix.platform }} --release
+    fi
+  shell: bash
+```
+
 ## Flutter 构建命令参考
 
 ### 移动平台
@@ -174,11 +244,13 @@ flutter test --coverage
 flutter build apk --release                    # 构建 APK
 flutter build appbundle --release              # 构建 App Bundle
 flutter build apk --split-per-abi              # 按 ABI 分割 APK
+flutter build apk --target-platform android-arm64  # 指定目标平台
 
 # iOS
-flutter build ios --release                    # 构建 iOS 应用
-flutter build ipa --release                    # 构建 IPA 文件
-flutter build ios --release --no-codesign      # 构建但不签名
+flutter build ios --release                    # 构建 iOS 应用 (需要签名)
+flutter build ios --release --no-codesign      # 构建但不签名 (CI 推荐)
+flutter build ipa --release                    # 构建 IPA 文件 (需要签名)
+flutter build ipa --export-options-plist=ios/ExportOptions.plist  # 使用导出选项
 ```
 
 ### 桌面平台
@@ -198,19 +270,76 @@ flutter build linux --release
 
 ```bash
 flutter build web --release
-flutter build web --release --web-renderer canvaskit  # 使用 CanvasKit
-flutter build web --release --web-renderer html       # 使用 HTML
+flutter build web --release --web-renderer canvaskit  # 使用 CanvasKit (更好的性能)
+flutter build web --release --web-renderer html       # 使用 HTML (更小的体积)
+flutter build web --release --base-href /app/         # 设置基础路径
+```
+
+## CI/CD 工作流示例
+
+### 基础多平台构建
+
+```yaml
+name: Flutter CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - platform: web
+            os: ubuntu-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+          - platform: macos
+            os: macos-latest
+          - platform: windows
+            os: windows-latest
+          - platform: linux
+            os: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      
+      - run: flutter pub get
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+      - run: flutter analyze
+      - run: flutter test
+      
+      - name: Build
+        run: |
+          if [ "${{ matrix.platform }}" = "ios" ]; then
+            flutter build ios --release --no-codesign
+          else
+            flutter build ${{ matrix.platform }} --release
+          fi
+        shell: bash
 ```
 
 ## 相关资源
 
 - [Flutter 官方发布列表](https://flutter.dev/docs/development/tools/sdk/releases)
-- [Flutter 构建命令文档](https://docs.flutter.dev/deployment/android)
+- [Flutter 构建和发布文档](https://docs.flutter.dev/deployment)
+- [iOS 部署文档](https://docs.flutter.dev/deployment/ios)
+- [Android 部署文档](https://docs.flutter.dev/deployment/android)
 - [subosito/flutter-action 文档](https://github.com/subosito/flutter-action)
 - [GitHub Actions 文档](https://docs.github.com/en/actions)
+- [Fastlane 自动化工具](https://fastlane.tools/)
 
 ## 更新日志
 
+- 2025-01-XX: 添加 iOS 构建支持和代码签名问题解决方案
 - 2025-01-XX: 修复 Flutter 3.35.6 arm64 架构兼容性问题
 - 2025-01-XX: 修复 Android 构建命令错误 (android -> apk)
 - 2025-01-XX: 添加 CI/CD 故障排查文档和构建命令参考
