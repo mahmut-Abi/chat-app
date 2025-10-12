@@ -7,6 +7,7 @@ import 'dart:io';
 import '../../../core/utils/data_export_import.dart';
 import '../../../core/utils/pdf_export.dart';
 import '../../chat/domain/conversation.dart';
+import '../../../shared/themes/app_theme.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -65,6 +66,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 subtitle: Text(_getThemeModeText(settings.themeMode)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _showThemeDialog,
+              ),
+              ListTile(
+                leading: const Icon(Icons.color_lens),
+                title: const Text('主题颜色'),
+                subtitle: Text(settings.themeColor ?? '默认'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _showThemeColorDialog,
               ),
               ListTile(
                 leading: const Icon(Icons.format_size),
@@ -287,6 +295,73 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await storage.saveSetting('themeMode', result);
       ref.invalidate(appSettingsProvider);
     }
+  }
+
+  Future<void> _showThemeColorDialog() async {
+    final settings = ref.read(appSettingsProvider);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('选择主题颜色'),
+        content: SizedBox(
+          width: 300,
+          child: GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+            ),
+            itemCount: AppTheme.predefinedColors.length,
+            itemBuilder: (context, index) {
+              final entry =
+                  AppTheme.predefinedColors.entries.elementAt(index);
+              final isSelected = settings.themeColor == entry.key;
+              return InkWell(
+                onTap: () => Navigator.pop(context, entry.key),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: entry.value,
+                    borderRadius: BorderRadius.circular(8),
+                    border: isSelected
+                        ? Border.all(
+                            color: Colors.white,
+                            width: 3,
+                          )
+                        : null,
+                  ),
+                  child: isSelected
+                      ? const Center(
+                          child: Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        )
+                      : null,
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      _updateThemeColor(result);
+    }
+  }
+
+  Future<void> _updateThemeColor(String colorKey) async {
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    await settingsRepo.updateThemeColor(colorKey);
+    ref.invalidate(appSettingsProvider);
   }
 
   Future<void> _exportData() async {

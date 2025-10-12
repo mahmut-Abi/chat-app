@@ -6,6 +6,7 @@ class StorageService {
   static const String _conversationsBox = 'conversations';
   static const String _settingsBox = 'settings';
   static const String _groupsBox = 'conversation_groups';
+  static const String _promptsBox = 'prompt_templates';
   // Used for API config method naming
   // ignore: unused_field
   static const String _apiConfigsBox = 'api_configs';
@@ -13,6 +14,7 @@ class StorageService {
   late Box _conversationsBoxInstance;
   late Box _settingsBoxInstance;
   late Box _groupsBoxInstance;
+  late Box _promptsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> init() async {
@@ -20,6 +22,7 @@ class StorageService {
     _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
     _settingsBoxInstance = await Hive.openBox(_settingsBox);
     _groupsBoxInstance = await Hive.openBox(_groupsBox);
+    _promptsBoxInstance = await Hive.openBox(_promptsBox);
   }
 
   // Conversations
@@ -64,6 +67,27 @@ class StorageService {
     await _groupsBoxInstance.delete(id);
   }
 
+  // Prompt Templates
+  Future<void> savePromptTemplate(String id, Map<String, dynamic> data) async {
+    await _promptsBoxInstance.put(id, jsonEncode(data));
+  }
+
+  Future<Map<String, dynamic>?> getPromptTemplate(String id) async {
+    final data = _promptsBoxInstance.get(id);
+    if (data == null) return null;
+    return jsonDecode(data as String) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAllPromptTemplates() async {
+    return _promptsBoxInstance.values
+        .map((e) => jsonDecode(e as String) as Map<String, dynamic>)
+        .toList();
+  }
+
+  Future<void> deletePromptTemplate(String id) async {
+    await _promptsBoxInstance.delete(id);
+  }
+
   // Settings
   Future<void> saveSetting(String key, dynamic value) async {
     await _settingsBoxInstance.put(key, value);
@@ -104,6 +128,7 @@ class StorageService {
     await _conversationsBoxInstance.clear();
     await _settingsBoxInstance.clear();
     await _groupsBoxInstance.clear();
+    await _promptsBoxInstance.clear();
     await _secureStorage.deleteAll();
   }
 }

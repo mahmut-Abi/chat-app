@@ -5,6 +5,28 @@ part 'message.g.dart';
 
 enum MessageRole { system, user, assistant }
 
+// 图片附件模型
+@JsonSerializable()
+class ImageAttachment extends Equatable {
+  final String path;
+  final String? base64Data;
+  final String? mimeType;
+
+  const ImageAttachment({
+    required this.path,
+    this.base64Data,
+    this.mimeType,
+  });
+
+  factory ImageAttachment.fromJson(Map<String, dynamic> json) =>
+      _$ImageAttachmentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ImageAttachmentToJson(this);
+
+  @override
+  List<Object?> get props => [path, base64Data, mimeType];
+}
+
 @JsonSerializable()
 class Message extends Equatable {
   final String id;
@@ -16,6 +38,7 @@ class Message extends Equatable {
   final String? errorMessage;
   final Map<String, dynamic>? metadata;
   final int? tokenCount;
+  final List<ImageAttachment>? images;
 
   const Message({
     required this.id,
@@ -27,6 +50,7 @@ class Message extends Equatable {
     this.errorMessage,
     this.metadata,
     this.tokenCount,
+    this.images,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
@@ -44,6 +68,7 @@ class Message extends Equatable {
     String? errorMessage,
     Map<String, dynamic>? metadata,
     int? tokenCount,
+    List<ImageAttachment>? images,
   }) {
     return Message(
       id: id ?? this.id,
@@ -55,6 +80,7 @@ class Message extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       metadata: metadata ?? this.metadata,
       tokenCount: tokenCount ?? this.tokenCount,
+      images: images ?? this.images,
     );
   }
 
@@ -69,6 +95,7 @@ class Message extends Equatable {
         errorMessage,
         metadata,
         tokenCount,
+        images,
       ];
 }
 

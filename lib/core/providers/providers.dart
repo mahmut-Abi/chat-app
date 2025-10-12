@@ -6,6 +6,8 @@ import '../../features/chat/data/chat_repository.dart';
 import '../../features/settings/data/settings_repository.dart';
 import '../../features/settings/domain/api_config.dart';
 import '../../features/models/data/models_repository.dart';
+import '../../features/prompts/data/prompts_repository.dart';
+import '../../features/prompts/domain/prompt_template.dart';
 import '../constants/app_constants.dart';
 import '../utils/token_counter.dart';
 
@@ -78,4 +80,16 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 // Token Counter
 final tokenCounterProvider = Provider<TokenCounter>((ref) {
   return TokenCounter();
+});
+
+// Prompts Repository Provider
+final promptsRepositoryProvider = Provider<PromptsRepository>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return PromptsRepository(storage);
+});
+
+// Prompt Templates Provider
+final promptTemplatesProvider = FutureProvider<List<PromptTemplate>>((ref) async {
+  final promptsRepo = ref.watch(promptsRepositoryProvider);
+  return await promptsRepo.getAllTemplates();
 });

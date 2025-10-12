@@ -7,6 +7,9 @@ import 'package:uuid/uuid.dart';
 import 'widgets/model_config_dialog.dart';
 import 'widgets/message_bubble.dart';
 import '../../../core/utils/token_counter.dart';
+import 'widgets/image_picker_widget.dart';
+import 'dart:io';
+import '../../../core/utils/image_utils.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -25,6 +28,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _uuid = const Uuid();
   ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
   int _totalTokens = 0;
+  List<File> _selectedImages = [];
 
   @override
   void initState() {
@@ -92,18 +96,43 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty) return;
+    if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty) return;
+
+    // 处理图片附件
+    List<ImageAttachment>? imageAttachments;
+    if (_selectedImages.isNotEmpty) {
+      imageAttachments = [];
+      for (final imageFile in _selectedImages) {
+        try {
+          final base64Data = await ImageUtils.imageToBase64(imageFile);
+          final mimeType = ImageUtils.getImageMimeType(imageFile.path);
+          imageAttachments.add(ImageAttachment(
+            path: imageFile.path,
+            base64Data: base64Data,
+            mimeType: mimeType,
+          ));
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('图片处理失败: $e')),
+            );
+          }
+        }
+      }
+    }
 
     final userMessage = Message(
       id: _uuid.v4(),
       role: MessageRole.user,
       content: _messageController.text.trim(),
       timestamp: DateTime.now(),
+      images: imageAttachments,
     );
 
     setState(() {
       _messages.add(userMessage);
       _isLoading = true;
+      _selectedImages = []; // 清空已选择的图片
     });
 
     _messageController.clear();
@@ -383,38 +412,74 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              maxLines: null,
-              decoration: InputDecoration(
-                hintText: '输入消息...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+          // 图片选择器
+          if (_selectedImages.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: ImagePickerWidget(
+                selectedImages: _selectedImages,
+                onImagesSelected: (images) {
+                  setState(() {
+                    _selectedImages = images;
+                  });
+                },
+              ),
+            ),
+          Row(
+            children: [
+              // 图片按钮
+              IconButton(
+                icon: Icon(
+                  Icons.image,
+                  color: _selectedImages.isNotEmpty
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                tooltip: '添加图片',
+                onPressed: () async {
+                  final images = await ImageUtils.pickImages();
+                  if (images != null && images.isNotEmpty) {
+                    setState(() {
+                      _selectedImages.addAll(images);
+                    });
+                  }
+                },
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: '输入消息...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
-              onSubmitted: (_) => _sendMessage(),
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton.filled(
-            icon: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.send),
-            onPressed: _isLoading ? null : _sendMessage,
+              const SizedBox(width: 8),
+              IconButton.filled(
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.send),
+                onPressed: _isLoading ? null : _sendMessage,
+              ),
+            ],
           ),
         ],
       ),

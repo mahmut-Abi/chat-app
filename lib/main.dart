@@ -4,6 +4,7 @@ import 'core/routing/app_router.dart';
 import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
 import 'core/providers/providers.dart';
+import 'features/settings/domain/api_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,15 +29,26 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsProvider);
+    final themeColor = _getThemeColor(settings);
 
     return MaterialApp.router(
       title: 'Chat App',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.getLightTheme(themeColor),
+      darkTheme: AppTheme.getDarkTheme(themeColor),
       themeMode: _getThemeMode(settings.themeMode),
       routerConfig: AppRouter.router,
-    );
+  );
+}
+
+  Color? _getThemeColor(AppSettings settings) {
+    if (settings.customThemeColor != null) {
+      return Color(settings.customThemeColor!);
+    }
+    if (settings.themeColor != null) {
+      return AppTheme.predefinedColors[settings.themeColor];
+    }
+    return null;
   }
 
   ThemeMode _getThemeMode(String mode) {

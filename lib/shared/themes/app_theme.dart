@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF6366F1);
-  static const Color secondaryColor = Color(0xFF8B5CF6);
-  static const Color accentColor = Color(0xFF06B6D4);
+  // 预设主题颜色
+  static const Map<String, Color> predefinedColors = {
+    'indigo': Color(0xFF6366F1),
+    'purple': Color(0xFF8B5CF6),
+    'blue': Color(0xFF3B82F6),
+    'cyan': Color(0xFF06B6D4),
+    'teal': Color(0xFF14B8A6),
+    'green': Color(0xFF10B981),
+    'orange': Color(0xFFF97316),
+    'red': Color(0xFFEF4444),
+    'pink': Color(0xFFEC4899),
+  };
 
-  static ThemeData lightTheme = ThemeData(
+  static ThemeData getLightTheme([Color? seedColor]) {
+    final color = seedColor ?? predefinedColors['indigo']!;
+    return ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
+      seedColor: color,
       brightness: Brightness.light,
     ),
     scaffoldBackgroundColor: const Color(0xFFF8FAFC),
@@ -35,7 +46,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: BorderSide(color: color, width: 2),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -48,11 +59,14 @@ class AppTheme {
       ),
     ),
   );
+  }
 
-  static ThemeData darkTheme = ThemeData(
+  static ThemeData getDarkTheme([Color? seedColor]) {
+    final color = seedColor ?? predefinedColors['indigo']!;
+    return ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColor,
+      seedColor: color,
       brightness: Brightness.dark,
     ),
     scaffoldBackgroundColor: const Color(0xFF0F172A),
@@ -80,7 +94,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: BorderSide(color: color, width: 2),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -93,4 +107,9 @@ class AppTheme {
       ),
     ),
   );
+  }
+
+  // 为了向后兼容
+  static ThemeData get lightTheme => getLightTheme();
+  static ThemeData get darkTheme => getDarkTheme();
 }

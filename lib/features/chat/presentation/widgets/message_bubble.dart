@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../domain/message.dart';
 import '../../../../shared/widgets/enhanced_markdown_message.dart';
 import '../../../../shared/widgets/message_actions.dart';
+import 'dart:io';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -47,6 +48,11 @@ class MessageBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 显示图片附件
+                  if (message.images != null && message.images!.isNotEmpty)
+                    _buildImageAttachments(context),
+                  if (message.images != null && message.images!.isNotEmpty)
+                    const SizedBox(height: 8),
                   if (message.hasError)
                     Text(
                       message.content,
@@ -132,6 +138,37 @@ class MessageBubble extends StatelessWidget {
           if (isUser) _buildAvatar(context, isUser),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageAttachments(BuildContext context) {
+    final images = message.images!;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: images.map((image) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 200,
+              maxHeight: 200,
+            ),
+            child: Image.file(
+              File(image.path),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 100,
+                  height: 100,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.broken_image),
+                );
+              },
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

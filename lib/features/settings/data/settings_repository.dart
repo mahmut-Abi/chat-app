@@ -1,6 +1,7 @@
 import '../domain/api_config.dart';
 import '../../../core/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/material.dart';
 
 class SettingsRepository {
   final StorageService _storage;
@@ -122,6 +123,18 @@ class SettingsRepository {
   Future<void> updateFontSize(double fontSize) async {
     final settings = getSettings();
     final updated = settings.copyWith(fontSize: fontSize);
+    await saveSettings(updated);
+  }
+
+  Future<void> updateThemeColor(String colorKey) async {
+    final settings = getSettings();
+    final updated = settings.copyWith(themeColor: colorKey);
+    await saveSettings(updated);
+  }
+
+  Future<void> updateCustomThemeColor(Color color) async {
+    final settings = getSettings();
+    final updated = settings.copyWith(customThemeColor: color.toARGB32());
     await saveSettings(updated);
   }
 }

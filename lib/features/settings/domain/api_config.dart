@@ -88,6 +88,8 @@ class AppSettings extends Equatable {
   final bool enableMarkdown;
   final bool enableCodeHighlight;
   final bool enableLatex;
+  final String? themeColor;
+  final int? customThemeColor;
 
   const AppSettings({
     this.themeMode = 'system',
@@ -96,6 +98,8 @@ class AppSettings extends Equatable {
     this.enableMarkdown = true,
     this.enableCodeHighlight = true,
     this.enableLatex = false,
+    this.themeColor,
+    this.customThemeColor,
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) =>
@@ -110,6 +114,8 @@ class AppSettings extends Equatable {
     bool? enableMarkdown,
     bool? enableCodeHighlight,
     bool? enableLatex,
+    String? themeColor,
+    int? customThemeColor,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -118,6 +124,8 @@ class AppSettings extends Equatable {
       enableMarkdown: enableMarkdown ?? this.enableMarkdown,
       enableCodeHighlight: enableCodeHighlight ?? this.enableCodeHighlight,
       enableLatex: enableLatex ?? this.enableLatex,
+      themeColor: themeColor ?? this.themeColor,
+      customThemeColor: customThemeColor ?? this.customThemeColor,
     );
   }
 
@@ -129,5 +137,7 @@ class AppSettings extends Equatable {
         enableMarkdown,
         enableCodeHighlight,
         enableLatex,
+        themeColor,
+        customThemeColor,
       ];
 }
