@@ -100,9 +100,7 @@ class MessageBubble extends StatelessWidget {
                           );
                         },
                         onShare: () {
-                          Share.share(
-                            message.content,
-                          );
+                          Share.share(message.content);
                         },
                         onEdit: isUser && onEdit != null
                             ? () => _showEditDialog(context)

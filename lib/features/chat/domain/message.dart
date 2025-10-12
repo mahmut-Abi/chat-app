@@ -3,11 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'message.freezed.dart';
 part 'message.g.dart';
 
-enum MessageRole {
-  system,
-  user,
-  assistant,
-}
+enum MessageRole { system, user, assistant }
 
 @freezed
 class Message with _$Message {
@@ -70,10 +66,8 @@ class Choice with _$Choice {
 
 @freezed
 class MessageData with _$MessageData {
-  const factory MessageData({
-    required String role,
-    required String content,
-  }) = _MessageData;
+  const factory MessageData({required String role, required String content}) =
+      _MessageData;
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>
       _$MessageDataFromJson(json);

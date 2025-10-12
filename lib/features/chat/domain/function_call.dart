@@ -55,39 +55,30 @@ class ToolCall with _$ToolCall {
 class BuiltInTools {
   // 获取当前时间
   static ToolDefinition get currentTime => const ToolDefinition(
-        type: 'function',
-        function: FunctionDefinition(
-          name: 'get_current_time',
-          description: '获取当前的日期和时间',
-          parameters: {
-            'type': 'object',
-            'properties': {},
-          },
-        ),
-      );
+    type: 'function',
+    function: FunctionDefinition(
+      name: 'get_current_time',
+      description: '获取当前的日期和时间',
+      parameters: {'type': 'object', 'properties': {}},
+    ),
+  );
 
   // 计算器
   static ToolDefinition get calculator => const ToolDefinition(
-        type: 'function',
-        function: FunctionDefinition(
-          name: 'calculate',
-          description: '执行数学计算',
-          parameters: {
-            'type': 'object',
-            'properties': {
-              'expression': {
-                'type': 'string',
-                'description': '要计算的数学表达式',
-              },
-            },
-            'required': ['expression'],
-          },
-        ),
-      );
+    type: 'function',
+    function: FunctionDefinition(
+      name: 'calculate',
+      description: '执行数学计算',
+      parameters: {
+        'type': 'object',
+        'properties': {
+          'expression': {'type': 'string', 'description': '要计算的数学表达式'},
+        },
+        'required': ['expression'],
+      },
+    ),
+  );
 
   // 获取所有内置工具
-  static List<ToolDefinition> get all => [
-        currentTime,
-        calculator,
-      ];
+  static List<ToolDefinition> get all => [currentTime, calculator];
 }

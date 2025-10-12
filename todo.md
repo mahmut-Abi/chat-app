@@ -15,17 +15,17 @@
 ## 📋 Phase 1: 项目初始化与基础架构
 
 ### 1.1 项目搭建
-- [ ] 初始化 Flutter 项目,配置多平台支持
-- [ ] 配置项目结构(features/shared/core 架构)
-- [ ] 添加必要的依赖包
-  - [ ] `dio` - HTTP 请求
-  - [ ] `riverpod` / `provider` - 状态管理
-  - [ ] `hive` / `isar` - 本地数据库
-  - [ ] `go_router` - 路由管理
-  - [ ] `freezed` - 数据类生成
-  - [ ] `json_serializable` - JSON 序列化
-- [ ] 配置代码生成工具(build_runner)
-- [ ] 设置 lint 规则和代码格式化
+- [x] 初始化 Flutter 项目,配置多平台支持
+- [x] 配置项目结构(features/shared/core 架构)
+- [x] 添加必要的依赖包
+  - [x] `dio` - HTTP 请求
+  - [x] `riverpod` - 状态管理
+  - [x] `hive` - 本地数据库
+  - [x] `go_router` - 路由管理
+  - [x] `freezed` - 数据类生成
+  - [x] `json_serializable` - JSON 序列化
+- [x] 配置代码生成工具(build_runner)
+- [x] 设置 lint 规则和代码格式化
 
 ### 1.2 项目结构设计
 ```
@@ -44,73 +44,73 @@ lib/
 │   └── themes/        # 主题
 └── main.dart
 ```
-- [ ] 创建基础目录结构
-- [ ] 设置环境配置(开发/生产)
+- [x] 创建基础目录结构
+- [x] 设置环境配置(开发/生产)
 
 ---
 
 ## 📋 Phase 2: 核心功能开发
 
 ### 2.1 OpenAI API 集成
-- [ ] 创建 API 客户端基类
-- [ ] 实现 OpenAI 格式 API 接口
-  - [ ] Chat Completions API
-  - [ ] Streaming 支持(SSE)
-  - [ ] Token 计数
-  - [ ] 错误处理和重试机制
-- [ ] 支持自定义 API 端点和 API Key
-- [ ] 实现多个 API 提供商配置
-  - [ ] OpenAI
-  - [ ] Azure OpenAI
-  - [ ] 其他兼容 OpenAI 格式的服务(如 Ollama、LocalAI)
+- [x] 创建 API 客户端基类
+- [x] 实现 OpenAI 格式 API 接口
+  - [x] Chat Completions API
+  - [x] Streaming 支持(SSE)
+  - [x] Token 计数
+  - [x] 错误处理和重试机制
+- [x] 支持自定义 API 端点和 API Key
+- [x] 实现多个 API 提供商配置
+  - [x] OpenAI
+  - [x] Azure OpenAI
+  - [x] 其他兼容 OpenAI 格式的服务(如 Ollama、LocalAI)
 
 ### 2.2 数据模型设计
-- [ ] 定义核心数据模型
-  - [ ] `Message` - 消息模型
-  - [ ] `Conversation` - 会话模型
-  - [ ] `ApiConfig` - API 配置模型
-  - [ ] `ModelConfig` - 模型配置(temperature, max_tokens 等)
-- [ ] 使用 Freezed 生成不可变数据类
-- [ ] 实现 JSON 序列化/反序列化
+- [x] 定义核心数据模型
+  - [x] `Message` - 消息模型
+  - [x] `Conversation` - 会话模型
+  - [x] `ApiConfig` - API 配置模型
+  - [x] `ModelConfig` - 模型配置(temperature, max_tokens 等)
+- [x] 使用 Freezed 生成不可变数据类
+- [x] 实现 JSON 序列化/反序列化
 
 ### 2.3 本地存储
-- [ ] 设置 Hive/Isar 数据库
-- [ ] 实现会话历史存储
-- [ ] 实现 API 配置持久化
-- [ ] 实现用户偏好设置存储
-- [ ] 添加数据导入/导出功能
+- [x] 设置 Hive 数据库
+- [x] 实现会话历史存储
+- [x] 实现 API 配置持久化
+- [x] 实现用户偏好设置存储
+- [x] 添加数据导入/导出功能
 
 ---
 
 ## 📋 Phase 3: 用户界面开发
 
 ### 3.1 主界面布局
-- [ ] 设计响应式布局(适配不同屏幕尺寸)
-- [ ] 实现侧边栏(会话列表)
-  - [ ] 会话创建/删除/重命名
-  - [ ] 会话搜索
-  - [ ] 会话分组/标签
-- [ ] 实现主聊天区域
-  - [ ] 消息列表显示
-  - [ ] 消息输入框
-  - [ ] 消息发送按钮
-- [ ] 实现设置面板
+- [x] 设计响应式布局(适配不同屏幕尺寸)
+- [x] 实现侧边栏(会话列表)
+  - [x] 会话创建/删除/重命名
+  - [x] 会话搜索
+  - [x] 会话分组/标签
+- [x] 实现主聊天区域
+  - [x] 消息列表显示
+  - [x] 消息输入框
+  - [x] 消息发送按钮
+- [x] 实现设置面板
 
 ### 3.2 聊天功能
-- [ ] 消息渲染
-  - [ ] 支持 Markdown 格式
-  - [ ] 代码高亮显示
-  - [ ] 代码复制功能
-  - [ ] LaTeX 数学公式支持(可选)
-- [ ] 实时流式响应显示
-- [ ] 消息编辑/删除/重新生成
-- [ ] 消息复制/分享
-- [ ] 支持多模态输入(图片上传,如果 API 支持)
+- [x] 消息渲染
+  - [x] 支持 Markdown 格式
+  - [x] 代码高亮显示
+  - [x] 代码复制功能
+  - [x] LaTeX 数学公式支持
+- [x] 实时流式响应显示
+- [x] 消息编辑/删除/重新生成
+- [x] 消息复制/分享
+- [ ] 支持多模态输入(图片上传)
 
 ### 3.3 主题与样式
-- [ ] 实现亮色/暗色主题切换
-- [ ] 设计现代化 UI(参考 Cherry Studio)
-- [ ] 添加平滑动画和过渡效果
+- [x] 实现亮色/暗色主题切换
+- [x] 设计现代化 UI(参考 Cherry Studio)
+- [x] 添加平滑动画和过渡效果
 - [ ] 自定义主题颜色配置
 
 ---
@@ -118,31 +118,31 @@ lib/
 ## 📋 Phase 4: 高级功能
 
 ### 4.1 模型管理
-- [ ] 模型列表获取(通过 API)
-- [ ] 模型切换功能
-- [ ] 模型参数配置界面
-  - [ ] Temperature
-  - [ ] Max Tokens
-  - [ ] Top P
-  - [ ] Frequency Penalty
-  - [ ] Presence Penalty
-- [ ] 预设模板管理(System Prompt)
+- [x] 模型列表获取(通过 API)
+- [x] 模型切换功能
+- [x] 模型参数配置界面
+  - [x] Temperature
+  - [x] Max Tokens
+  - [x] Top P
+  - [x] Frequency Penalty
+  - [x] Presence Penalty
+- [x] 预设模板管理(System Prompt)
 
 ### 4.2 多会话管理
-- [ ] 支持多个会话同时存在
-- [ ] 会话间快速切换
-- [ ] 会话历史浏览
-- [ ] 会话导出(Markdown/JSON)
+- [x] 支持多个会话同时存在
+- [x] 会话间快速切换
+- [x] 会话历史浏览
+- [x] 会话导出(Markdown/PDF/JSON)
 
 ### 4.3 设置页面
-- [ ] API 配置管理
-  - [ ] 添加/编辑/删除 API 配置
-  - [ ] API Key 安全存储
+- [x] API 配置管理
+  - [x] 添加/编辑/删除 API 配置
+  - [x] API Key 安全存储
   - [ ] 连接测试功能
-- [ ] 通用设置
-  - [ ] 语言选择
-  - [ ] 主题选择
-  - [ ] 字体大小调整
+- [x] 通用设置
+  - [x] 语言选择
+  - [x] 主题选择
+  - [x] 字体大小调整
 - [ ] 快捷键配置(桌面端)
 
 ---
