@@ -5,6 +5,7 @@ import '../network/openai_api_client.dart';
 import '../../features/chat/data/chat_repository.dart';
 import '../../features/settings/data/settings_repository.dart';
 import '../../features/settings/domain/api_config.dart';
+import '../../features/models/data/models_repository.dart';
 import '../constants/app_constants.dart';
 
 // Storage Service
@@ -46,6 +47,11 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
     ref.watch(openAIApiClientProvider),
     ref.watch(storageServiceProvider),
   );
+});
+
+// Models Repository
+final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
+  return ModelsRepository(ref.watch(openAIApiClientProvider));
 });
 
 // App Settings

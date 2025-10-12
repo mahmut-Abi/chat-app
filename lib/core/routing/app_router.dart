@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/models/presentation/models_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -21,6 +22,10 @@ class AppRouter {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/models',
+        builder: (context, state) => const ModelsScreen(),
       ),
     ],
   );

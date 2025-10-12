@@ -20,6 +20,14 @@ class AppConstants {
   static const double defaultTopP = 1.0;
   static const double defaultFrequencyPenalty = 0.0;
   static const double defaultPresencePenalty = 0.0;
+  
+  // Supported API Providers
+  static const List<String> supportedProviders = [
+    'OpenAI',
+    'Azure OpenAI',
+    'Ollama',
+    'Custom',
+  ];
 }
 
 class ApiProviders {
