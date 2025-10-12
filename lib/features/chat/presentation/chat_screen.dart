@@ -4,6 +4,7 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
+import '../../../shared/widgets/markdown_message.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -274,8 +275,13 @@ class MessageBubble extends StatelessWidget {
                         color: Theme.of(context).colorScheme.error,
                       ),
                     )
+                  else if (message.role == MessageRole.assistant)
+                    MarkdownMessage(
+                      content: message.content,
+                      isDarkMode: Theme.of(context).brightness == Brightness.dark,
+                    )
                   else
-                    Text(
+                    SelectableText(
                       message.content,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
