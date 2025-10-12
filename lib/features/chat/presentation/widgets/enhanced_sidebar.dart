@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../domain/conversation.dart';
-import '../../domain/message.dart';
 import 'conversation_tags_dialog.dart';
 
 // 增强版侧边栏组件
@@ -35,7 +34,6 @@ class EnhancedSidebar extends StatefulWidget {
 class _EnhancedSidebarState extends State<EnhancedSidebar> {
   String? _selectedGroupId;
   String? _selectedTag;
-  bool _showGroupedView = false;
 
   List<Conversation> get _filteredConversations {
     var filtered = widget.conversations;
@@ -132,7 +130,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 分组筛选
-          if (widget.groups.isNotEmpty) ..[
+          if (widget.groups.isNotEmpty) ...[
             Row(
               children: [
                 const Icon(Icons.folder, size: 16),
@@ -183,7 +181,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
             const SizedBox(height: 8),
           ],
           // 标签筛选
-          if (_allTags.isNotEmpty) ..[
+          if (_allTags.isNotEmpty) ...[
             Row(
               children: [
                 const Icon(Icons.label, size: 16),
@@ -319,7 +317,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
           Icon(
             Icons.chat_bubble_outline,
             size: 64,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(

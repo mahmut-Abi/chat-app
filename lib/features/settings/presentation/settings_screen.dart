@@ -5,6 +5,8 @@ import '../domain/api_config.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../../../core/utils/data_export_import.dart';
+import '../../../core/utils/pdf_export.dart';
+import '../../chat/domain/conversation.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -82,6 +84,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       )
                     : null,
                 onTap: _isExporting ? null : _exportData,
+              ),
+              ListTile(
+                leading: const Icon(Icons.picture_as_pdf),
+                title: const Text('导出为 PDF'),
+                subtitle: const Text('将对话导出为 PDF 文件'),
+                onTap: _exportToPdf,
               ),
               ListTile(
                 leading: const Icon(Icons.upload),
@@ -604,3 +612,107 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 }
+
+  Future<void> _exportToPdf() async {
+    final chatRepo = ref.read(chatRepositoryProvider);
+    final conversations = chatRepo.getAllConversations();
+
+    if (conversations.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('没有可导出的对话')),
+        );
+      }
+      return;
+    }
+
+    final selectedConversations = await _showSelectConversationsDialog(conversations);
+    
+    if (selectedConversations != null && selectedConversations.isNotEmpty) {
+      try {
+        if (selectedConversations.length == 1) {
+          await PdfExport.exportConversationToPdf(selectedConversations.first);
+        } else {
+          await PdfExport.exportConversationsToPdf(selectedConversations);
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('PDF 导出成功')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('PDF 导出失败: ${e.toString()}')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<List<Conversation>?> _showSelectConversationsDialog(
+    List<Conversation> conversations,
+  ) async {
+    final selected = <String>{};
+    return showDialog<List<Conversation>>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('选择要导出的对话'),
+          content: SizedBox(
+            width: 400,
+            height: 400,
+            child: ListView.builder(
+              itemCount: conversations.length,
+              itemBuilder: (context, index) {
+                final conv = conversations[index];
+                return CheckboxListTile(
+                  title: Text(conv.title),
+                  subtitle: Text('${conv.messages.length} 条消息'),
+                  value: selected.contains(conv.id),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked == true) {
+                        selected.add(conv.id);
+                      } else {
+                        selected.remove(conv.id);
+                      }
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  if (selected.length == conversations.length) {
+                    selected.clear();
+                  } else {
+                    selected.addAll(conversations.map((c) => c.id));
+                  }
+                });
+              },
+              child: Text(selected.length == conversations.length ? '取消全选' : '全选'),
+            ),
+            FilledButton(
+              onPressed: selected.isEmpty
+                  ? null
+                  : () {
+                      final result = conversations
+                          .where((c) => selected.contains(c.id))
+                          .toList();
+                      Navigator.pop(context, result);
+                    },
+              child: const Text('导出'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }

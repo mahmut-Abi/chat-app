@@ -39,7 +39,7 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
     if (_nameController.text.trim().isNotEmpty) {
       widget.onCreateGroup(
         _nameController.text.trim(),
-        '#${_selectedColor.value.toRadixString(16).substring(2)}',
+        '#${_selectedColor.r.toRadixString(16).substring(2)}',
       );
       _nameController.clear();
       setState(() {});
@@ -75,10 +75,10 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
                 const SizedBox(width: 8),
                 // 颜色选择
                 DropdownButton<Color>(
-                  value: _selectedColor,
+                 .r: _selectedColor,
                   items: _availableColors.map((color) {
                     return DropdownMenuItem(
-                      value: color,
+                     .r: color,
                       child: Container(
                         width: 24,
                         height: 24,

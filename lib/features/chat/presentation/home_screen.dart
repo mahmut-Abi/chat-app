@@ -6,7 +6,6 @@ import '../domain/conversation.dart';
 import 'chat_screen.dart';
 import 'widgets/enhanced_sidebar.dart';
 import 'widgets/group_management_dialog.dart';
-import 'widgets/conversation_tags_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

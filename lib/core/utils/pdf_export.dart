@@ -48,9 +48,7 @@ class PdfExport {
             ),
           ),
           pw.SizedBox(height: 20),
-          // 系统提示词
-          if (conversation.systemPrompt != null &&
-              conversation.systemPrompt!.isNotEmpty) ..[
+          if (conversation.systemPrompt != null && conversation.systemPrompt!.isNotEmpty) ...[
             pw.Header(
               level: 1,
               child: pw.Text('系统提示词'),
