@@ -153,6 +153,16 @@ Example: feat(chat): add streaming response support
 - Commit messages must use Chinese descriptions
 - Variable names, function names, and code itself remain in English
 
+**Documentation File Organization**
+- `AGENTS.md`, `README.md`, and `todo.md` should be placed in the project root directory
+- All other newly generated markdown files must be placed in the `docs/` directory
+- Examples of files that belong in `docs/`:
+  - Architecture documentation (e.g., `docs/architecture.md`)
+  - API documentation (e.g., `docs/api.md`)
+  - Deployment guides (e.g., `docs/deployment.md`)
+  - Feature specifications (e.g., `docs/features.md`)
+- When creating new documentation, always place it in `docs/` unless it's one of the three exceptions above
+
 **Example**:
 ```dart
 // 发送聊天消息到服务器
