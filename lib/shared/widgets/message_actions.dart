@@ -1,68 +1,72 @@
 import 'package:flutter/material.dart';
 
 class MessageActions extends StatelessWidget {
-  final VoidCallback? onCopy;
-  final VoidCallback? onRegenerate;
-  final VoidCallback? onDelete;
   final bool isUserMessage;
+  final VoidCallback onCopy;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onRegenerate;
 
   const MessageActions({
     super.key,
-    this.onCopy,
-    this.onRegenerate,
+    required this.isUserMessage,
+    required this.onCopy,
+    this.onEdit,
     this.onDelete,
-    this.isUserMessage = false,
+    this.onRegenerate,
   });
 
   @override
   Widget build(BuildContext context) {
-    final actions = <Widget>[];
-    
-    if (onCopy != null) {
-      actions.add(
-        IconButton(
-          icon: const Icon(Icons.copy, size: 16),
-          onPressed: onCopy,
-          tooltip: '复制',
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-      );
-    }
-    
-    if (!isUserMessage && onRegenerate != null) {
-      if (actions.isNotEmpty) {
-        actions.add(const SizedBox(width: 8));
-      }
-      actions.add(
-        IconButton(
-          icon: const Icon(Icons.refresh, size: 16),
-          onPressed: onRegenerate,
-          tooltip: '重新生成',
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-      );
-    }
-    
-    if (onDelete != null) {
-      if (actions.isNotEmpty) {
-        actions.add(const SizedBox(width: 8));
-      }
-      actions.add(
-        IconButton(
-          icon: const Icon(Icons.delete_outline, size: 16),
-          onPressed: onDelete,
-          tooltip: '删除',
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-      );
-    }
-    
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: actions,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.copy, size: 16),
+          iconSize: 16,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          onPressed: onCopy,
+          tooltip: '复制',
+        ),
+        if (onEdit != null) ..[
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.edit, size: 16),
+            iconSize: 16,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: onEdit,
+            tooltip: '编辑',
+          ),
+        ],
+        if (onRegenerate != null) ..[
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.refresh, size: 16),
+            iconSize: 16,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: onRegenerate,
+            tooltip: '重新生成',
+          ),
+        ],
+        if (onDelete != null) ..[
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              size: 16,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            iconSize: 16,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: onDelete,
+            tooltip: '删除',
+          ),
+        ],
+      ],
     );
   }
 }
