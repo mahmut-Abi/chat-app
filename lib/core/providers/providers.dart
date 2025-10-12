@@ -59,10 +59,21 @@ final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
 });
 
 // App Settings
-final appSettingsProvider = StateProvider<AppSettings>((ref) {
-  final settingsRepo = ref.watch(settingsRepositoryProvider);
-  return settingsRepo.getSettings();
+final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(() {
+  return AppSettingsNotifier();
 });
+
+class AppSettingsNotifier extends Notifier<AppSettings> {
+  @override
+  AppSettings build() {
+    final settingsRepo = ref.watch(settingsRepositoryProvider);
+    return settingsRepo.getSettings();
+  }
+  
+  void updateSettings(AppSettings settings) {
+    state = settings;
+  }
+}
 
 // Token Counter
 final tokenCounterProvider = Provider<TokenCounter>((ref) {
