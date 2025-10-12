@@ -27,32 +27,33 @@ class MessageActions extends StatelessWidget {
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
           onPressed: onCopy,
-          tooltip: '复制',
+          tooltip: 'Copy',
         ),
-        if (onEdit != null) ..[
+        if (onEdit != null)
           const SizedBox(width: 8),
+        if (onEdit != null)
           IconButton(
             icon: const Icon(Icons.edit, size: 16),
             iconSize: 16,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: onEdit,
-            tooltip: '编辑',
+            tooltip: 'Edit',
           ),
-        ],
-        if (onRegenerate != null) ..[
+        if (onRegenerate != null)
           const SizedBox(width: 8),
+        if (onRegenerate != null)
           IconButton(
             icon: const Icon(Icons.refresh, size: 16),
             iconSize: 16,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: onRegenerate,
-            tooltip: '重新生成',
+            tooltip: 'Regenerate',
           ),
-        ],
-        if (onDelete != null) ..[
+        if (onDelete != null)
           const SizedBox(width: 8),
+        if (onDelete != null)
           IconButton(
             icon: Icon(
               Icons.delete,
@@ -63,9 +64,8 @@ class MessageActions extends StatelessWidget {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: onDelete,
-            tooltip: '删除',
+            tooltip: 'Delete',
           ),
-        ],
       ],
     );
   }
