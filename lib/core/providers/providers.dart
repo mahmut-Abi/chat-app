@@ -10,6 +10,7 @@ import '../../features/prompts/data/prompts_repository.dart';
 import '../../features/prompts/domain/prompt_template.dart';
 import '../constants/app_constants.dart';
 import '../utils/token_counter.dart';
+import 'package:flutter/foundation.dart';
 
 // Storage Service
 final storageServiceProvider = Provider<StorageService>((ref) {
@@ -70,16 +71,30 @@ final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(
 class AppSettingsNotifier extends Notifier<AppSettings> {
   @override
   AppSettings build() {
+    if (kDebugMode) {
+      print('AppSettingsNotifier.build() called');
+    }
     try {
       final settingsRepo = ref.watch(settingsRepositoryProvider);
-      return settingsRepo.getSettings();
+      final settings = settingsRepo.getSettings();
+      if (kDebugMode) {
+        print('Loaded settings: ${settings.toJson()}');
+      }
+      return settings;
     } catch (e) {
+      if (kDebugMode) {
+        print('Failed to load settings: $e');
+      }
       // 如果加载设置失败,返回默认设置
       return const AppSettings();
     }
   }
 
   void updateSettings(AppSettings settings) {
+    if (kDebugMode) {
+      print('AppSettingsNotifier.updateSettings() called');
+      print('New settings: ${settings.toJson()}');
+    }
     state = settings;
   }
 }

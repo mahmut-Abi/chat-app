@@ -307,24 +307,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
+    // 移动端：禁用右划手势返回，但保留 AppBar 返回按钮
+    // 桌面端/设置页面：允许正常返回
     return PopScope(
-      canPop: false,
+      canPop: !isMobile,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) return;
-        // 仅在移动端阻止右划手势返回，但允许通过 AppBar 返回按钮返回
-        if (!isMobile) {
-          Navigator.of(context).pop();
-        }
+        // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          leading: isMobile
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              : null,
           title: const Text('Chat'),
           actions: [
             if (_totalTokens > 0)
