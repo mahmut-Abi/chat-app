@@ -247,27 +247,71 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildApiConfigTile(ApiConfig config) {
-    return ListTile(
-      leading: const Icon(Icons.api),
-      title: Text(config.name),
-      subtitle: Text(config.provider),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.wifi_tethering),
-            tooltip: '测试连接',
-            onPressed: () => _testApiConnection(config),
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showEditApiConfigDialog(config),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _deleteApiConfig(config),
-          ),
-        ],
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListTile(
+        leading: const Icon(Icons.api),
+        title: Text(config.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(config.provider),
+            const SizedBox(height: 4),
+            Text(
+              config.baseUrl,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+        trailing: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            switch (value) {
+              case 'test':
+                _testApiConnection(config);
+                break;
+              case 'edit':
+                _showEditApiConfigDialog(config);
+                break;
+              case 'delete':
+                _deleteApiConfig(config);
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'test',
+              child: Row(
+                children: [
+                  Icon(Icons.wifi_tethering),
+                  SizedBox(width: 8),
+                  Text('测试连接'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'edit',
+              child: Row(
+                children: [Icon(Icons.edit), SizedBox(width: 8), Text('编辑')],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('删除', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        isThreeLine: true,
       ),
     );
   }
