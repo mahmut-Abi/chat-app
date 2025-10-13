@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chat_app/features/chat/data/chat_repository.dart';
 import 'package:chat_app/features/chat/domain/conversation.dart';
+import 'package:chat_app/features/chat/domain/message.dart';
 import 'package:chat_app/core/network/openai_api_client.dart';
 import 'package:chat_app/core/storage/storage_service.dart';
 import 'package:mockito/mockito.dart';
@@ -29,16 +30,42 @@ void main() {
       expect(conversation.title, 'Test Conversation');
       expect(conversation.messages, isEmpty);
       expect(conversation.id, isNotEmpty);
+      
+      // 验证空对话不会被保存
+      verifyNever(mockStorage.saveConversation(any, any));
     });
 
-    test('应该正确保存会话', () async {
-      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async => {});
-
+    test('应该跳过保存空对话', () async {
       final conversation = await repository.createConversation(title: 'Test');
-
+      
+      // 尝试保存空对话
       await repository.saveConversation(conversation);
+      
+      // 验证没有调用保存
+      verifyNever(mockStorage.saveConversation(any, any));
+    });
 
-      verify(mockStorage.saveConversation(conversation.id, any)).called(2);
+    test('应该正确保存非空对话', () async {
+      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async => {});
+      
+      final conversation = await repository.createConversation(title: 'Test');
+      
+      // 添加一条消息
+      final updatedConversation = conversation.copyWith(
+        messages: [
+          Message(
+            id: 'msg-1',
+            role: MessageRole.user,
+            content: 'Hello',
+            timestamp: DateTime.now(),
+          )
+        ],
+      );
+
+      await repository.saveConversation(updatedConversation);
+
+      // 验证保存被调用
+      verify(mockStorage.saveConversation(updatedConversation.id, any)).called(1);
     });
 
     test('应该正确获取所有会话', () {
@@ -111,10 +138,18 @@ void main() {
 
   group('ChatRepository - Pin Feature', () {
     test('应该正确置顶会话', () async {
+      // 创建一个非空对话（包含消息）
       final conversation = Conversation(
         id: 'conv-1',
         title: 'Test',
-        messages: [],
+        messages: [
+          Message(
+            id: 'msg-1',
+            role: MessageRole.user,
+            content: 'Test message',
+            timestamp: DateTime.now(),
+          ),
+        ],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         isPinned: false,

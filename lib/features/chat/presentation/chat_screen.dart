@@ -12,6 +12,7 @@ import '../../../core/utils/image_utils.dart';
 import '../../../shared/widgets/background_container.dart';
 import 'widgets/enhanced_sidebar.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/glass_container.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -485,13 +486,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildInputArea() {
-    return Container(
+    return GlassContainer(
+      blur: 15.0,
+      opacity: 0.15,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withValues(alpha: 0.9),
-        border: Border(
-          top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
-        ),
+      border: Border(
+        top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
