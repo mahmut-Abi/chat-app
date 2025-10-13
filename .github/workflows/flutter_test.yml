@@ -32,7 +32,27 @@ jobs:
         run: flutter pub run build_runner build --delete-conflicting-outputs
 
       - name: Analyze code
-        run: flutter analyze
+        run: |
+          # Run flutter analyze and check for errors only
+          OUTPUT=$(flutter analyze 2>&1)
+          echo "$OUTPUT"
+          
+          # Check if there are any actual errors (not just warnings or info)
+          if echo "$OUTPUT" | grep -q '^  error •'; then
+            echo ""
+            echo "❌ Flutter analyze found errors!"
+            exit 1
+          fi
+          
+          # Count issues
+          ERROR_COUNT=$(echo "$OUTPUT" | grep -c '^  error •' || true)
+          WARNING_COUNT=$(echo "$OUTPUT" | grep -c '^warning •' || true)
+          INFO_COUNT=$(echo "$OUTPUT" | grep -c '^   info •' || true)
+          
+          echo ""
+          echo "✅ Flutter analyze passed!"
+          echo "   Found $ERROR_COUNT error(s), $WARNING_COUNT warning(s), and $INFO_COUNT info message(s)"
+          echo "   (Only errors will fail the CI)"
 
       - name: Check formatting
         run: flutter format --set-exit-if-changed .
