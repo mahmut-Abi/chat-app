@@ -290,46 +290,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Widget _buildMobileLayout() {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.black.withValues(alpha: 0.5),
-      appBar: AppBar(
-        title: const Text('Chat App'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+    return BackgroundContainer(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        drawerScrimColor: Colors.black.withValues(alpha: 0.5),
+        appBar: AppBar(
+          title: const Text('Chat App'),
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
+          actions: [
+            IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
+          ],
+        ),
+        drawer: Drawer(
+          backgroundColor: Theme.of(context).cardColor,
+          child: EnhancedSidebar(
+            conversations: _conversations,
+            groups: _groups,
+            selectedConversation: _selectedConversation,
+            onConversationSelected: (conversation) {
+              setState(() {
+                _selectedConversation = conversation;
+              });
+              Navigator.of(context).pop();
+              context.push('/chat/${conversation.id}');
+            },
+            onCreateConversation: () {
+              Navigator.of(context).pop();
+              _createNewConversation();
+            },
+            onDeleteConversation: _deleteConversation,
+            onRenameConversation: _showRenameDialog,
+            onUpdateTags: _updateConversationTags,
+            onManageGroups: _showGroupManagement,
           ),
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
-        ],
-      ),
-      drawer: Drawer(
-        backgroundColor: Theme.of(context).cardColor,
-        child: EnhancedSidebar(
-          conversations: _conversations,
-          groups: _groups,
-          selectedConversation: _selectedConversation,
-          onConversationSelected: (conversation) {
-            setState(() {
-              _selectedConversation = conversation;
-            });
-            Navigator.of(context).pop();
-            context.push('/chat/${conversation.id}');
-          },
-          onCreateConversation: () {
-            Navigator.of(context).pop();
-            _createNewConversation();
-          },
-          onDeleteConversation: _deleteConversation,
-          onRenameConversation: _showRenameDialog,
-          onUpdateTags: _updateConversationTags,
-          onManageGroups: _showGroupManagement,
-        ),
-      ),
-      body: BackgroundContainer(
-        child: _selectedConversation == null
+        body: _selectedConversation == null
             ? _buildWelcomeScreen()
             : ChatScreen(conversationId: _selectedConversation!.id),
       ),
