@@ -256,7 +256,7 @@ Keep business logic in repositories and domain layer, not in widgets.
 
 ## Git Hooks
 
-本项目配置了 Git pre-commit hook，会在每次提交前自动运行 `flutter analyze` 检查代码质量。
+本项目配置了 Git pre-commit hook，会在每次提交前自动运行代码格式和质量检查。
 
 ### 安装 Hooks
 
@@ -268,8 +268,13 @@ Keep business logic in repositories and domain layer, not in widgets.
 
 ### Hook 行为
 
-- ✅ **允许提交**: 如果只有 warning 和 info 级别的问题
-- ❌ **阻止提交**: 如果存在 error 级别的问题
+**1. Dart 代码格式检查**
+- ✅ **允许提交**: 如果所有暂存的 Dart 文件都已格式化
+- ❌ **阻止提交**: 如果有未格式化的 Dart 文件
+
+**2. Flutter Analyze 代码质量检查**
+- ✅ **允许提交**: 如果只有 warning 和 info 级别的问题  
+- ❌ **阻止提交**: 如果存在 error 级别的问题  
 
 ### 跳过 Hook
 
