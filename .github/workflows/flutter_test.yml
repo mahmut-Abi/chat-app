@@ -34,7 +34,7 @@ jobs:
       - name: Analyze code
         run: |
           # Run flutter analyze and check for errors only
-          OUTPUT=$(flutter analyze 2>&1)
+          OUTPUT=$(flutter analyze 2>&1 || true)
           echo "$OUTPUT"
           
           # Check if there are any actual errors (not just warnings or info)
