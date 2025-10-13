@@ -1,8 +1,40 @@
 #!/bin/sh
 #
 # Git pre-commit hook for Flutter projects
-# Runs flutter analyze and only blocks on errors (not warnings or info)
+# Runs flutter analyze and dart format checks
+# - Blocks on analyze errors (warnings/info allowed)
+# - Blocks if code is not formatted
 #
+
+echo "🎨 Checking Dart formatting..."
+echo ""
+
+# Get list of staged Dart files
+STAGED_DART_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.dart$' || true)
+
+if [ -n "$STAGED_DART_FILES" ]; then
+    # Check if files are formatted
+    FORMAT_OUTPUT=$(dart format --output=none --set-exit-if-changed $STAGED_DART_FILES 2>&1)
+    FORMAT_EXIT_CODE=$?
+    
+    if [ $FORMAT_EXIT_CODE -ne 0 ]; then
+        echo "❌ Some Dart files are not formatted!"
+        echo ""
+        echo "Please run: flutter format ."
+        echo "Or format specific files:"
+        echo "$STAGED_DART_FILES" | while read -r file; do
+            echo "  dart format $file"
+        done
+        echo ""
+        exit 1
+    else
+        echo "✅ All Dart files are formatted!"
+        echo ""
+    fi
+else
+    echo "ℹ️  No Dart files to check"
+    echo ""
+fi
 
 echo "🔍 Running Flutter analyze..."
 echo ""
