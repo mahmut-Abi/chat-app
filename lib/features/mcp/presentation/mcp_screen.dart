@@ -10,7 +10,7 @@ class McpScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final configsAsync = ref.watch(mcpConfigsProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('MCP 配置'),
@@ -26,9 +26,7 @@ class McpScreen extends ConsumerWidget {
             ? _buildEmptyState(context)
             : _buildConfigList(context, ref, configs),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('加载失败: $error'),
-        ),
+        error: (error, stack) => Center(child: Text('加载失败: $error')),
       ),
     );
   }
@@ -44,21 +42,19 @@ class McpScreen extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          Text(
-            '暂无 MCP 服务器',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text('暂无 MCP 服务器', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          Text(
-            '点击右上角添加按钮创建配置',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text('点击右上角添加按钮创建配置', style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
   }
 
-  Widget _buildConfigList(BuildContext context, WidgetRef ref, List<McpConfig> configs) {
+  Widget _buildConfigList(
+    BuildContext context,
+    WidgetRef ref,
+    List<McpConfig> configs,
+  ) {
     return ListView.builder(
       itemCount: configs.length,
       itemBuilder: (context, index) {
@@ -66,7 +62,7 @@ class McpScreen extends ConsumerWidget {
         final connectionStatus = ref.watch(
           mcpConnectionStatusProvider(config.id),
         );
-        
+
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ListTile(
@@ -100,7 +96,9 @@ class McpScreen extends ConsumerWidget {
                   ),
                   onPressed: () async {
                     if (connectionStatus == McpConnectionStatus.connected) {
-                      await ref.read(mcpRepositoryProvider).disconnect(config.id);
+                      await ref
+                          .read(mcpRepositoryProvider)
+                          .disconnect(config.id);
                     } else {
                       await ref.read(mcpRepositoryProvider).connect(config);
                     }
@@ -122,7 +120,7 @@ class McpScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   Color _getStatusColor(McpConnectionStatus status) {
     switch (status) {
       case McpConnectionStatus.connected:
@@ -135,7 +133,7 @@ class McpScreen extends ConsumerWidget {
         return Colors.grey;
     }
   }
-  
+
   String _getStatusText(McpConnectionStatus status) {
     switch (status) {
       case McpConnectionStatus.connected:
@@ -206,7 +204,7 @@ class McpScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Future<void> _addConfig(
     BuildContext context,
     WidgetRef ref,
@@ -215,12 +213,12 @@ class McpScreen extends ConsumerWidget {
     String description,
   ) async {
     if (name.isEmpty || endpoint.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写名称和端点')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写名称和端点')));
       return;
     }
-    
+
     try {
       final repository = ref.read(mcpRepositoryProvider);
       await repository.createConfig(
@@ -228,29 +226,35 @@ class McpScreen extends ConsumerWidget {
         endpoint: endpoint,
         description: description.isEmpty ? null : description,
       );
-      
+
       ref.invalidate(mcpConfigsProvider);
-      
+
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('添加成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('添加成功')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('添加失败: $e')));
       }
     }
   }
-  
-  Future<void> _showEditDialog(BuildContext context, WidgetRef ref, McpConfig config) async {
+
+  Future<void> _showEditDialog(
+    BuildContext context,
+    WidgetRef ref,
+    McpConfig config,
+  ) async {
     final nameController = TextEditingController(text: config.name);
     final endpointController = TextEditingController(text: config.endpoint);
-    final descriptionController = TextEditingController(text: config.description ?? '');
-    
+    final descriptionController = TextEditingController(
+      text: config.description ?? '',
+    );
+
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -260,23 +264,17 @@ class McpScreen extends ConsumerWidget {
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                labelText: '名称',
-              ),
+              decoration: const InputDecoration(labelText: '名称'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: endpointController,
-              decoration: const InputDecoration(
-                labelText: '端点',
-              ),
+              decoration: const InputDecoration(labelText: '端点'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(
-                labelText: '描述（可选）',
-              ),
+              decoration: const InputDecoration(labelText: '描述（可选）'),
               maxLines: 2,
             ),
           ],
@@ -303,7 +301,7 @@ class McpScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Future<void> _updateConfig(
     BuildContext context,
     WidgetRef ref,
@@ -313,12 +311,12 @@ class McpScreen extends ConsumerWidget {
     String description,
   ) async {
     if (name.isEmpty || endpoint.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写名称和端点')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写名称和端点')));
       return;
     }
-    
+
     try {
       final repository = ref.read(mcpRepositoryProvider);
       final updated = config.copyWith(
@@ -327,20 +325,20 @@ class McpScreen extends ConsumerWidget {
         description: description.isEmpty ? null : description,
       );
       await repository.updateConfig(updated);
-      
+
       ref.invalidate(mcpConfigsProvider);
-      
+
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('保存成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('保存成功')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     }
   }
@@ -361,20 +359,20 @@ class McpScreen extends ConsumerWidget {
               try {
                 final repository = ref.read(mcpRepositoryProvider);
                 await repository.deleteConfig(id);
-                
+
                 ref.invalidate(mcpConfigsProvider);
-                
+
                 if (context.mounted) {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('删除成功')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('删除成功')));
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('删除失败: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('删除失败: $e')));
                 }
               }
             },

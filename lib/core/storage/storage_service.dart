@@ -96,12 +96,12 @@ class StorageService {
   T? getSetting<T>(String key) {
     return _settingsBoxInstance.get(key) as T?;
   }
-  
+
   // Get all setting keys
   Future<List<String>> getAllKeys() async {
     return _settingsBoxInstance.keys.cast<String>().toList();
   }
-  
+
   // Delete setting
   Future<void> deleteSetting(String key) async {
     await _settingsBoxInstance.delete(key);

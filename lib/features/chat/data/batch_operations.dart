@@ -22,15 +22,15 @@ class BatchOperations {
   ) async {
     final content = MarkdownExport.exportConversations(conversations);
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/conversations_export_${DateTime.now().millisecondsSinceEpoch}.md');
+    final file = File(
+      '${directory.path}/conversations_export_${DateTime.now().millisecondsSinceEpoch}.md',
+    );
     await file.writeAsString(content);
     return file;
   }
 
   /// 批量导出为 PDF
-  static Future<void> batchExportPdf(
-    List<Conversation> conversations,
-  ) async {
+  static Future<void> batchExportPdf(List<Conversation> conversations) async {
     await PdfExport.exportConversationsToPdf(conversations);
   }
 
@@ -54,7 +54,9 @@ class BatchOperations {
     Future<void> Function(Conversation) saveFunc,
   ) async {
     for (final conversation in conversations) {
-      final updatedTags = conversation.tags.where((t) => !tags.contains(t)).toList();
+      final updatedTags = conversation.tags
+          .where((t) => !tags.contains(t))
+          .toList();
       final updated = conversation.copyWith(tags: updatedTags);
       await saveFunc(updated);
     }

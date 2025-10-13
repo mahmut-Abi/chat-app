@@ -50,12 +50,12 @@ class AiModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        contextLength,
-        supportsFunctions,
-        supportsVision,
-        metadata,
-      ];
+    id,
+    name,
+    description,
+    contextLength,
+    supportsFunctions,
+    supportsVision,
+    metadata,
+  ];
 }

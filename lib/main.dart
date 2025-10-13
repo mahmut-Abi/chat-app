@@ -22,9 +22,7 @@ void main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        storageServiceProvider.overrideWithValue(storage),
-      ],
+      overrides: [storageServiceProvider.overrideWithValue(storage)],
       child: const MyApp(),
     ),
   );
@@ -45,8 +43,8 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.getDarkTheme(themeColor),
       themeMode: _getThemeMode(settings.themeMode),
       routerConfig: AppRouter.router,
-  );
-}
+    );
+  }
 
   Color? _getThemeColor(AppSettings settings) {
     if (settings.customThemeColor != null) {

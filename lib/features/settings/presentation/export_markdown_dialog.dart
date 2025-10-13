@@ -27,9 +27,7 @@ class ExportMarkdownDialog extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: SingleChildScrollView(
                   child: SelectableText(

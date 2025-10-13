@@ -5,11 +5,7 @@ class LoadingWidget extends StatelessWidget {
   final String? message;
   final double size;
 
-  const LoadingWidget({
-    super.key,
-    this.message,
-    this.size = 40.0,
-  });
+  const LoadingWidget({super.key, this.message, this.size = 40.0});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +25,7 @@ class LoadingWidget extends StatelessWidget {
           ),
           if (message != null) ...[
             const SizedBox(height: 16),
-            Text(
-              message!,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text(message!, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ],
       ),
@@ -125,11 +118,7 @@ class ErrorStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
+            Icon(icon, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text(
               message,
@@ -177,25 +166,23 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.38),
             ),
             const SizedBox(height: 16),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.6),
-                  ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
-              FilledButton(
-                onPressed: onAction,
-                child: Text(actionLabel!),
-              ),
+              FilledButton(onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],
         ),

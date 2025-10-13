@@ -27,10 +27,7 @@ class ToolDefinition {
   final String type;
   final FunctionDefinition function;
 
-  const ToolDefinition({
-    required this.type,
-    required this.function,
-  });
+  const ToolDefinition({required this.type, required this.function});
 
   factory ToolDefinition.fromJson(Map<String, dynamic> json) =>
       _$ToolDefinitionFromJson(json);
@@ -43,10 +40,7 @@ class FunctionCall {
   final String name;
   final String arguments;
 
-  const FunctionCall({
-    required this.name,
-    required this.arguments,
-  });
+  const FunctionCall({required this.name, required this.arguments});
 
   factory FunctionCall.fromJson(Map<String, dynamic> json) =>
       _$FunctionCallFromJson(json);

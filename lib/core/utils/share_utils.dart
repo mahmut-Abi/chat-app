@@ -5,10 +5,10 @@ import 'dart:io';
 /// 分享工具类
 class ShareUtils {
   /// 分享文本
- static Future<void> shareText(String text) async {
-   try {
+  static Future<void> shareText(String text) async {
+    try {
       await Share.share(text);
-   } catch (e) {
+    } catch (e) {
       debugPrint('分享失败: $e');
     }
   }
@@ -24,10 +24,7 @@ class ShareUtils {
   }
 
   /// 分享多个文件
-  static Future<void> shareFiles(
-    List<String> filePaths, {
-    String? text,
-  }) async {
+  static Future<void> shareFiles(List<String> filePaths, {String? text}) async {
     try {
       final files = filePaths.map((path) => XFile(path)).toList();
       await Share.shareXFiles(files, text: text ?? '');

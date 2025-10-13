@@ -21,10 +21,7 @@ class PdfExport {
             level: 0,
             child: pw.Text(
               conversation.title,
-              style: pw.TextStyle(
-                fontSize: 24,
-                fontWeight: pw.FontWeight.bold,
-              ),
+              style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
             ),
           ),
           pw.SizedBox(height: 20),
@@ -48,11 +45,9 @@ class PdfExport {
             ),
           ),
           pw.SizedBox(height: 20),
-          if (conversation.systemPrompt != null && conversation.systemPrompt!.isNotEmpty) ...[
-            pw.Header(
-              level: 1,
-              child: pw.Text('系统提示词'),
-            ),
+          if (conversation.systemPrompt != null &&
+              conversation.systemPrompt!.isNotEmpty) ...[
+            pw.Header(level: 1, child: pw.Text('系统提示词')),
             pw.Container(
               padding: const pw.EdgeInsets.all(10),
               decoration: pw.BoxDecoration(
@@ -64,10 +59,7 @@ class PdfExport {
             pw.SizedBox(height: 20),
           ],
           // 对话内容
-          pw.Header(
-            level: 1,
-            child: pw.Text('对话内容'),
-          ),
+          pw.Header(level: 1, child: pw.Text('对话内容')),
           pw.SizedBox(height: 10),
           ...conversation.messages.map((message) {
             if (message.role == MessageRole.system) {
@@ -93,8 +85,9 @@ class PdfExport {
                           color: isUser
                               ? PdfColors.blue100
                               : PdfColors.green100,
-                          borderRadius:
-                              pw.BorderRadius.all(pw.Radius.circular(3)),
+                          borderRadius: pw.BorderRadius.all(
+                            pw.Radius.circular(3),
+                          ),
                         ),
                         child: pw.Text(
                           roleLabel,
@@ -119,8 +112,7 @@ class PdfExport {
                     padding: const pw.EdgeInsets.all(10),
                     decoration: pw.BoxDecoration(
                       color: PdfColors.grey50,
-                      borderRadius:
-                          pw.BorderRadius.all(pw.Radius.circular(5)),
+                      borderRadius: pw.BorderRadius.all(pw.Radius.circular(5)),
                       border: pw.Border.all(color: PdfColors.grey300),
                     ),
                     child: pw.Text(

@@ -88,15 +88,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _currentConfig = config;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('模型已切换为: ${config.model}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('模型已切换为: ${config.model}')));
       }
     }
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty) return;
+    if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty)
+      return;
 
     // 处理图片附件
     List<ImageAttachment>? imageAttachments;
@@ -106,16 +107,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         try {
           final base64Data = await ImageUtils.imageToBase64(imageFile);
           final mimeType = ImageUtils.getImageMimeType(imageFile.path);
-          imageAttachments.add(ImageAttachment(
-            path: imageFile.path,
-            base64Data: base64Data,
-            mimeType: mimeType,
-          ));
+          imageAttachments.add(
+            ImageAttachment(
+              path: imageFile.path,
+              base64Data: base64Data,
+              mimeType: mimeType,
+            ),
+          );
         } catch (e) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('图片处理失败: $e')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('图片处理失败: $e')));
           }
         }
       }
@@ -164,12 +167,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await for (final chunk in stream) {
         fullContent += chunk;
         setState(() {
-          final index =
-              _messages.indexWhere((m) => m.id == assistantMessage.id);
+          final index = _messages.indexWhere(
+            (m) => m.id == assistantMessage.id,
+          );
           if (index != -1) {
-            _messages[index] = assistantMessage.copyWith(
-              content: fullContent,
-            );
+            _messages[index] = assistantMessage.copyWith(content: fullContent);
           }
         });
         _scrollToBottom();
@@ -178,9 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
         if (index != -1) {
-          _messages[index] = _messages[index].copyWith(
-            isStreaming: false,
-          );
+          _messages[index] = _messages[index].copyWith(isStreaming: false);
         }
         _isLoading = false;
       });
@@ -188,10 +188,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation != null) {
         await chatRepo.saveConversation(
-          conversation.copyWith(
-            messages: _messages,
-            updatedAt: DateTime.now(),
-          ),
+          conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
         );
         _calculateTokens();
       }
@@ -251,8 +248,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await for (final chunk in stream) {
         fullContent += chunk;
         setState(() {
-          final index =
-              _messages.indexWhere((m) => m.id == assistantMessage.id);
+          final index = _messages.indexWhere(
+            (m) => m.id == assistantMessage.id,
+          );
           if (index != -1) {
             _messages[index] = assistantMessage.copyWith(content: fullContent);
           }
@@ -271,10 +269,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation != null) {
         await chatRepo.saveConversation(
-          conversation.copyWith(
-            messages: _messages,
-            updatedAt: DateTime.now(),
-          ),
+          conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
         );
         _calculateTokens();
       }

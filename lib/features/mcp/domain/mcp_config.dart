@@ -83,9 +83,4 @@ class McpContextProvider {
 }
 
 /// MCP 连接状态
-enum McpConnectionStatus {
-  disconnected,
-  connecting,
-  connected,
-  error,
-}
+enum McpConnectionStatus { disconnected, connecting, connected, error }

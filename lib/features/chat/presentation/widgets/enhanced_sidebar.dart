@@ -40,15 +40,11 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
     var filtered = widget.conversations;
 
     if (_selectedGroupId != null) {
-      filtered = filtered
-          .where((c) => c.groupId == _selectedGroupId)
-          .toList();
+      filtered = filtered.where((c) => c.groupId == _selectedGroupId).toList();
     }
 
     if (_selectedTag != null) {
-      filtered = filtered
-          .where((c) => c.tags.contains(_selectedTag))
-          .toList();
+      filtered = filtered.where((c) => c.tags.contains(_selectedTag)).toList();
     }
 
     return filtered;
@@ -69,9 +65,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         border: Border(
-          right: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
+          right: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Column(
@@ -98,9 +92,9 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
             children: [
               Text(
                 'Chat App',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               IconButton(
@@ -142,10 +136,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
                     value: _selectedGroupId,
                     hint: const Text('所有分组'),
                     items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('所有分组'),
-                      ),
+                      const DropdownMenuItem(value: null, child: Text('所有分组')),
                       ...widget.groups.map((group) {
                         return DropdownMenuItem(
                           value: group.id,
@@ -159,7 +150,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
                                   decoration: BoxDecoration(
                                     color: Color(
                                       int.parse(
-                                          '0xFF${group.color!.substring(1)}',
+                                        '0xFF${group.color!.substring(1)}',
                                       ),
                                     ),
                                     shape: BoxShape.circle,
@@ -245,10 +236,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
                   spacing: 4,
                   children: conversation.tags.take(2).map((tag) {
                     return Chip(
-                      label: Text(
-                        tag,
-                        style: const TextStyle(fontSize: 10),
-                      ),
+                      label: Text(tag, style: const TextStyle(fontSize: 10)),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
                     );
@@ -263,11 +251,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
               const PopupMenuItem(
                 value: 'rename',
                 child: Row(
-                  children: [
-                    Icon(Icons.edit),
-                    SizedBox(width: 8),
-                    Text('重命名'),
-                  ],
+                  children: [Icon(Icons.edit), SizedBox(width: 8), Text('重命名')],
                 ),
               ),
               const PopupMenuItem(
@@ -322,10 +306,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          Text(
-            '暂无对话',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          Text('暂无对话', style: Theme.of(context).textTheme.bodyLarge),
         ],
       ),
     );
@@ -335,11 +316,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       child: ListTile(
         leading: const Icon(Icons.settings),
@@ -369,9 +346,8 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
   Future<void> _showTagsDialog(Conversation conversation) async {
     final result = await showDialog<List<String>>(
       context: context,
-      builder: (context) => ConversationTagsDialog(
-        initialTags: conversation.tags,
-      ),
+      builder: (context) =>
+          ConversationTagsDialog(initialTags: conversation.tags),
     );
 
     if (result != null) {

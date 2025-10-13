@@ -41,7 +41,7 @@ void main() {
       const defaultValue = 'default';
 
       // Act
-       final result = storageService.getSetting(key) ?? defaultValue;
+      final result = storageService.getSetting(key) ?? defaultValue;
 
       // Assert
       expect(result, defaultValue);
@@ -55,8 +55,8 @@ void main() {
       await storageService.saveSetting(key, value);
 
       // Act
-       await storageService.saveSetting(key, null);
-       final result = storageService.getSetting(key);
+      await storageService.saveSetting(key, null);
+      final result = storageService.getSetting(key);
 
       // Assert
       expect(result, null);
@@ -67,11 +67,7 @@ void main() {
     test('应该能够保存多个设置', () async {
       // Arrange
       await storageService.init();
-      final settings = {
-        'key1': 'value1',
-        'key2': 'value2',
-        'key3': 'value3',
-      };
+      final settings = {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'};
 
       // Act
       for (final entry in settings.entries) {
@@ -79,12 +75,12 @@ void main() {
       }
 
       // Assert
-       final result1 = storageService.getSetting('key1');
-       final result2 = storageService.getSetting('key2');
-       final result3 = storageService.getSetting('key3');
-       expect(result1, 'value1');
-       expect(result2, 'value2');
-       expect(result3, 'value3');
+      final result1 = storageService.getSetting('key1');
+      final result2 = storageService.getSetting('key2');
+      final result3 = storageService.getSetting('key3');
+      expect(result1, 'value1');
+      expect(result2, 'value2');
+      expect(result3, 'value3');
     });
 
     test('应该能够清除所有设置', () async {
@@ -95,8 +91,8 @@ void main() {
 
       // Act
       await storageService.clearAll();
-       final result1 = storageService.getSetting('key1');
-       final result2 = storageService.getSetting('key2');
+      final result1 = storageService.getSetting('key1');
+      final result2 = storageService.getSetting('key2');
 
       // Assert
       expect(result1, null);

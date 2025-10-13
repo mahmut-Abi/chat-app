@@ -54,13 +54,13 @@ class PromptTemplate extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        content,
-        category,
-        tags,
-        createdAt,
-        updatedAt,
-        isFavorite,
-      ];
+    id,
+    name,
+    content,
+    category,
+    tags,
+    createdAt,
+    updatedAt,
+    isFavorite,
+  ];
 }

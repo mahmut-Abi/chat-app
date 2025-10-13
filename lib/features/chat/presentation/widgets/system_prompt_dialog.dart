@@ -45,10 +45,7 @@ class _SystemPromptDialogState extends State<SystemPromptDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              '常用预设',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
+            Text('常用预设', style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,

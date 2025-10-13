@@ -7,7 +7,7 @@ import 'tools/file_operation_tool.dart';
 /// 工具执行器基类
 abstract class ToolExecutor {
   AgentToolType get type;
-  
+
   Future<ToolExecutionResult> execute(
     AgentTool tool,
     Map<String, dynamic> input,
@@ -27,24 +27,15 @@ class CalculatorTool extends ToolExecutor {
     try {
       final expression = input['expression'] as String?;
       if (expression == null) {
-        return ToolExecutionResult(
-          success: false,
-          error: '缺少表达式参数',
-        );
+        return ToolExecutionResult(success: false, error: '缺少表达式参数');
       }
 
       // 简单的计算器实现（生产环境应使用安全的表达式解析器）
       // TODO: 实现安全的表达式计算
-      
-      return ToolExecutionResult(
-        success: true,
-        result: '计算结果: $expression',
-      );
+
+      return ToolExecutionResult(success: true, result: '计算结果: $expression');
     } catch (e) {
-      return ToolExecutionResult(
-        success: false,
-        error: '计算错误: $e',
-      );
+      return ToolExecutionResult(success: false, error: '计算错误: $e');
     }
   }
 }
@@ -61,17 +52,11 @@ class SearchTool extends ToolExecutor {
   ) async {
     final query = input['query'] as String?;
     if (query == null) {
-      return ToolExecutionResult(
-        success: false,
-        error: '缺少搜索查询参数',
-      );
+      return ToolExecutionResult(success: false, error: '缺少搜索查询参数');
     }
 
     // TODO: 实现实际的搜索功能
-    return ToolExecutionResult(
-      success: true,
-      result: '搜索结果: $query (占位实现)',
-    );
+    return ToolExecutionResult(success: true, result: '搜索结果: $query (占位实现)');
   }
 }
 

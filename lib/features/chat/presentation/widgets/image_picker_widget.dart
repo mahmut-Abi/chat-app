@@ -53,7 +53,9 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.5),
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -68,9 +70,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
               const SizedBox(width: 8),
               Text(
                 '添加图片',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             ],
           ),
@@ -103,13 +103,8 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           height: 80,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Theme.of(context).dividerColor,
-            ),
-            image: DecorationImage(
-              image: FileImage(image),
-              fit: BoxFit.cover,
-            ),
+            border: Border.all(color: Theme.of(context).dividerColor),
+            image: DecorationImage(image: FileImage(image), fit: BoxFit.cover),
           ),
         ),
         Positioned(
@@ -123,11 +118,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                 color: Colors.black.withValues(alpha: 0.6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.close,
-                size: 16,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.close, size: 16, color: Colors.white),
             ),
           ),
         ),
@@ -149,10 +140,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             style: BorderStyle.solid,
           ),
         ),
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
       ),
     );
   }

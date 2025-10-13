@@ -61,9 +61,11 @@ final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
 });
 
 // App Settings
-final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(() {
-  return AppSettingsNotifier();
-});
+final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(
+  () {
+    return AppSettingsNotifier();
+  },
+);
 
 class AppSettingsNotifier extends Notifier<AppSettings> {
   @override
@@ -71,7 +73,7 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     final settingsRepo = ref.watch(settingsRepositoryProvider);
     return settingsRepo.getSettings();
   }
-  
+
   void updateSettings(AppSettings settings) {
     state = settings;
   }
@@ -89,7 +91,9 @@ final promptsRepositoryProvider = Provider<PromptsRepository>((ref) {
 });
 
 // Prompt Templates Provider
-final promptTemplatesProvider = FutureProvider<List<PromptTemplate>>((ref) async {
+final promptTemplatesProvider = FutureProvider<List<PromptTemplate>>((
+  ref,
+) async {
   final promptsRepo = ref.watch(promptsRepositoryProvider);
   return await promptsRepo.getAllTemplates();
 });

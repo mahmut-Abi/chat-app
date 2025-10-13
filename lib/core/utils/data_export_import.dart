@@ -31,10 +31,7 @@ class DataExportImport {
         final conversations = data['conversations'] as List;
         for (final conv in conversations) {
           final convMap = conv as Map<String, dynamic>;
-          await _storage.saveConversation(
-            convMap['id'] as String,
-            convMap,
-          );
+          await _storage.saveConversation(convMap['id'] as String, convMap);
           conversationsCount++;
         }
       }
@@ -43,10 +40,7 @@ class DataExportImport {
         final apiConfigs = data['apiConfigs'] as List;
         for (final config in apiConfigs) {
           final configMap = config as Map<String, dynamic>;
-          await _storage.saveApiConfig(
-            configMap['id'] as String,
-            configMap,
-          );
+          await _storage.saveApiConfig(configMap['id'] as String, configMap);
           apiConfigsCount++;
         }
       }
@@ -57,10 +51,7 @@ class DataExportImport {
         'apiConfigsCount': apiConfigsCount,
       };
     } catch (e) {
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

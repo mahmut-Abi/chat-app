@@ -31,11 +31,11 @@ class AgentTool {
 
 /// 工具类型
 enum AgentToolType {
-  search,        // 网络搜索
+  search, // 网络搜索
   codeExecution, // 代码执行
   fileOperation, // 文件操作
-  calculator,    // 计算器
-  custom,        // 自定义
+  calculator, // 计算器
+  custom, // 自定义
 }
 
 /// 工具执行结果

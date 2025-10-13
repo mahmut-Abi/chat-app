@@ -40,8 +40,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           var filteredTemplates = templates;
 
           if (_showOnlyFavorites) {
-            filteredTemplates =
-                filteredTemplates.where((t) => t.isFavorite).toList();
+            filteredTemplates = filteredTemplates
+                .where((t) => t.isFavorite)
+                .toList();
           }
 
           if (_selectedCategory != '全部') {
@@ -50,11 +51,8 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
                 .toList();
           }
 
-          final categories = ['全部'] +
-              templates
-                  .map((t) => t.category)
-                  .toSet()
-                  .toList();
+          final categories =
+              ['全部'] + templates.map((t) => t.category).toSet().toList();
 
           return Column(
             children: [
@@ -68,9 +66,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('加载失败: $error'),
-        ),
+        error: (error, stack) => Center(child: Text('加载失败: $error')),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateDialog(),
@@ -117,15 +113,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
-            '暂无提示词模板',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          Text('暂无提示词模板', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(
-            '点击右下角按钮创建新模板',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text('点击右下角按钮创建新模板', style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
@@ -166,10 +156,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
                       ),
                       PopupMenuButton(
                         itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Text('编辑'),
-                          ),
+                          const PopupMenuItem(value: 'edit', child: Text('编辑')),
                           const PopupMenuItem(
                             value: 'delete',
                             child: Text('删除'),
@@ -336,9 +323,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       ref.invalidate(promptTemplatesProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('模板已创建')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('模板已创建')));
       }
     }
 
@@ -352,8 +339,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     final nameController = TextEditingController(text: template.name);
     final contentController = TextEditingController(text: template.content);
     final categoryController = TextEditingController(text: template.category);
-    final tagsController =
-        TextEditingController(text: template.tags.join(', '));
+    final tagsController = TextEditingController(
+      text: template.tags.join(', '),
+    );
 
     final result = await showDialog<bool>(
       context: context,
@@ -430,9 +418,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       ref.invalidate(promptTemplatesProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('模板已更新')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('模板已更新')));
       }
     }
 
@@ -473,17 +461,17 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       ref.invalidate(promptTemplatesProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('模板已删除')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('模板已删除')));
       }
     }
   }
 
   void _useTemplate(PromptTemplate template) {
     // 这里可以实现将模板应用到聊天输入框的逻辑
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('使用模板: ${template.name}')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('使用模板: ${template.name}')));
   }
 }

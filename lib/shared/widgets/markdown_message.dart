@@ -69,10 +69,7 @@ class CodeBlock extends StatelessWidget {
               children: [
                 Text(
                   language.isEmpty ? 'code' : language,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy, size: 16),
@@ -99,10 +96,7 @@ class CodeBlock extends StatelessWidget {
               language: language.isEmpty ? 'plaintext' : language,
               theme: githubTheme,
               padding: EdgeInsets.zero,
-              textStyle: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14,
-              ),
+              textStyle: const TextStyle(fontFamily: 'monospace', fontSize: 14),
             ),
           ),
         ],
@@ -127,9 +121,7 @@ class MarkdownMessage extends StatelessWidget {
     return MarkdownBody(
       data: content,
       selectable: true,
-      builders: {
-        'code': CodeElementBuilder(isDarkMode: isDarkMode),
-      },
+      builders: {'code': CodeElementBuilder(isDarkMode: isDarkMode)},
       styleSheet: MarkdownStyleSheet(
         p: TextStyle(
           fontSize: 14,
@@ -137,8 +129,9 @@ class MarkdownMessage extends StatelessWidget {
           color: isDarkMode ? Colors.white : Colors.black87,
         ),
         code: TextStyle(
-          backgroundColor:
-              isDarkMode ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+          backgroundColor: isDarkMode
+              ? const Color(0xFF1E293B)
+              : const Color(0xFFF1F5F9),
           fontFamily: 'monospace',
           fontSize: 13,
         ),
@@ -160,18 +153,9 @@ class MarkdownMessage extends StatelessWidget {
             ),
           ),
         ),
-        h1: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-        h2: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-        h3: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+        h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        h3: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         listBullet: TextStyle(
           color: isDarkMode ? Colors.white70 : Colors.black87,
         ),

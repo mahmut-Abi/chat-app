@@ -32,13 +32,11 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         'code': CodeBlockBuilder(enableHighlight: enableCodeHighlight),
         if (enableLatex) 'latex': LaTeXBuilder(),
       },
-      extensionSet: md.ExtensionSet(
-        md.ExtensionSet.gitHubFlavored.blockSyntaxes,
-        [
-          ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
-          if (enableLatex) LaTeXInlineSyntax(),
-        ],
-      ),
+      extensionSet:
+          md.ExtensionSet(md.ExtensionSet.gitHubFlavored.blockSyntaxes, [
+            ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
+            if (enableLatex) LaTeXInlineSyntax(),
+          ]),
       styleSheet: MarkdownStyleSheet(
         blockSpacing: 8,
         listIndent: 24,
@@ -47,8 +45,9 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         code: TextStyle(
-          backgroundColor:
-              Theme.of(context).colorScheme.surfaceContainerHighest,
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest,
           fontFamily: 'monospace',
           fontSize: 14,
         ),
@@ -119,8 +118,9 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(8)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
             ),
             child: Row(
               children: [

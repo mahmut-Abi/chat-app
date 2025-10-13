@@ -44,20 +44,11 @@ Future<void> initSystemTrayImpl() async {
 
     final menu = Menu(
       items: [
-        MenuItem(
-          key: 'show_window',
-          label: '显示窗口',
-        ),
+        MenuItem(key: 'show_window', label: '显示窗口'),
         MenuItem.separator(),
-        MenuItem(
-          key: 'new_conversation',
-          label: '新建对话',
-        ),
+        MenuItem(key: 'new_conversation', label: '新建对话'),
         MenuItem.separator(),
-        MenuItem(
-          key: 'quit',
-          label: '退出',
-        ),
+        MenuItem(key: 'quit', label: '退出'),
       ],
     );
 
@@ -91,11 +82,7 @@ class SystemTrayListener extends TrayListener {
   final VoidCallback? onNewConversation;
   final VoidCallback? onQuit;
 
-  SystemTrayListener({
-    this.onShowWindow,
-    this.onNewConversation,
-    this.onQuit,
-  });
+  SystemTrayListener({this.onShowWindow, this.onNewConversation, this.onQuit});
 
   @override
   void onTrayIconMouseDown() {
@@ -128,10 +115,7 @@ class WindowEventListener extends WindowListener {
   final VoidCallback? onCloseCallback;
   final VoidCallback? onMinimizeCallback;
 
-  WindowEventListener({
-    this.onCloseCallback,
-    this.onMinimizeCallback,
-  });
+  WindowEventListener({this.onCloseCallback, this.onMinimizeCallback});
 
   @override
   void onWindowClose() {

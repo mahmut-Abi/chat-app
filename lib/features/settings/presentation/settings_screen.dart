@@ -42,9 +42,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final settings = ref.watch(appSettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('设置'),
-      ),
+      appBar: AppBar(title: const Text('设置')),
       body: ListView(
         children: [
           _buildSection(
@@ -166,9 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 title: Text(
                   '清除所有数据',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
                 onTap: _showClearDataDialog,
               ),
@@ -209,9 +205,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         ...children,
@@ -220,30 +216,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildApiConfigTile(ApiConfig config) {
-  return ListTile(
-    leading: const Icon(Icons.api),
-    title: Text(config.name),
-    subtitle: Text(config.provider),
-    trailing: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.wifi_tethering),
-          tooltip: '测试连接',
-          onPressed: () => _testApiConnection(config),
-        ),
-        IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: () => _showEditApiConfigDialog(config),
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () => _deleteApiConfig(config),
-        ),
-      ],
-    ),
-  );
-}
+    return ListTile(
+      leading: const Icon(Icons.api),
+      title: Text(config.name),
+      subtitle: Text(config.provider),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.wifi_tethering),
+            tooltip: '测试连接',
+            onPressed: () => _testApiConnection(config),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _showEditApiConfigDialog(config),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deleteApiConfig(config),
+          ),
+        ],
+      ),
+    );
+  }
 
   String _getThemeModeText(String mode) {
     switch (mode) {
@@ -308,8 +304,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             itemCount: AppTheme.predefinedColors.length,
             itemBuilder: (context, index) {
-              final entry =
-                  AppTheme.predefinedColors.entries.elementAt(index);
+              final entry = AppTheme.predefinedColors.entries.elementAt(index);
               final isSelected = settings.themeColor == entry.key;
               return InkWell(
                 onTap: () => Navigator.pop(context, entry.key),
@@ -318,10 +313,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     color: entry.value,
                     borderRadius: BorderRadius.circular(8),
                     border: isSelected
-                        ? Border.all(
-                            color: Colors.white,
-                            width: 3,
-                          )
+                        ? Border.all(color: Colors.white, width: 3)
                         : null,
                   ),
                   child: isSelected
@@ -382,23 +374,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           await file.writeAsString(jsonData);
 
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('数据已导出到: $path')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('数据已导出到: $path')));
           }
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('当前平台暂不支持导出功能')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('当前平台暂不支持导出功能')));
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('导出失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('导出失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isExporting = false);
@@ -434,18 +426,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _loadApiConfigs();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('导入失败: ${importResult['error']}'),
-              ),
+              SnackBar(content: Text('导入失败: ${importResult['error']}')),
             );
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('导入失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('导入失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isImporting = false);
@@ -453,16 +443,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _showAddApiConfigDialog() async {
-  final nameController = TextEditingController();
-  final baseUrlController = TextEditingController();
-  final apiKeyController = TextEditingController();
-  final proxyUrlController = TextEditingController();
-  final proxyUsernameController = TextEditingController();
-  final proxyPasswordController = TextEditingController();
-  String selectedProvider = 'OpenAI';
-  bool enableProxy = false;
+    final nameController = TextEditingController();
+    final baseUrlController = TextEditingController();
+    final apiKeyController = TextEditingController();
+    final proxyUrlController = TextEditingController();
+    final proxyUsernameController = TextEditingController();
+    final proxyPasswordController = TextEditingController();
+    String selectedProvider = 'OpenAI';
+    bool enableProxy = false;
 
-  final result = await showDialog<Map<String, String>>(
+    final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -486,10 +476,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     border: OutlineInputBorder(),
                   ),
                   items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
-                      .map((provider) => DropdownMenuItem(
-                            value: provider,
-                            child: Text(provider),
-                          ),
+                      .map(
+                        (provider) => DropdownMenuItem(
+                          value: provider,
+                          child: Text(provider),
+                        ),
                       )
                       .toList(),
                   onChanged: (value) {
@@ -528,8 +519,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     });
                   },
                 ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyUrlController,
@@ -539,8 +529,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       hintText: 'http://proxy.example.com:8080',
                     ),
                   ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyUsernameController,
@@ -549,8 +538,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyPasswordController,
@@ -599,38 +587,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (result != null) {
-    final settingsRepo = ref.read(settingsRepositoryProvider);
-    await settingsRepo.createApiConfig(
-      name: result['name']!,
-      provider: result['provider']!,
-      baseUrl: result['baseUrl']!,
-      apiKey: result['apiKey']!,
-      proxyUrl: result['proxyUrl'],
-      proxyUsername: result['proxyUsername'],
-      proxyPassword: result['proxyPassword'],
-    );
-    _loadApiConfigs();
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      await settingsRepo.createApiConfig(
+        name: result['name']!,
+        provider: result['provider']!,
+        baseUrl: result['baseUrl']!,
+        apiKey: result['apiKey']!,
+        proxyUrl: result['proxyUrl'],
+        proxyUsername: result['proxyUsername'],
+        proxyPassword: result['proxyPassword'],
+      );
+      _loadApiConfigs();
+    }
+
+    nameController.dispose();
+    baseUrlController.dispose();
+    apiKeyController.dispose();
+    proxyUrlController.dispose();
+    proxyUsernameController.dispose();
+    proxyPasswordController.dispose();
   }
 
-  nameController.dispose();
-  baseUrlController.dispose();
-  apiKeyController.dispose();
-  proxyUrlController.dispose();
-  proxyUsernameController.dispose();
-  proxyPasswordController.dispose();
-}
-
   Future<void> _showEditApiConfigDialog(ApiConfig config) async {
-  final nameController = TextEditingController(text: config.name);
-  final baseUrlController = TextEditingController(text: config.baseUrl);
-  final apiKeyController = TextEditingController(text: config.apiKey);
-  final proxyUrlController = TextEditingController(text: config.proxyUrl ?? '');
-  final proxyUsernameController = TextEditingController(text: config.proxyUsername ?? '');
-  final proxyPasswordController = TextEditingController(text: config.proxyPassword ?? '');
-  String selectedProvider = config.provider;
-  bool enableProxy = config.proxyUrl != null && config.proxyUrl!.isNotEmpty;
+    final nameController = TextEditingController(text: config.name);
+    final baseUrlController = TextEditingController(text: config.baseUrl);
+    final apiKeyController = TextEditingController(text: config.apiKey);
+    final proxyUrlController = TextEditingController(
+      text: config.proxyUrl ?? '',
+    );
+    final proxyUsernameController = TextEditingController(
+      text: config.proxyUsername ?? '',
+    );
+    final proxyPasswordController = TextEditingController(
+      text: config.proxyPassword ?? '',
+    );
+    String selectedProvider = config.provider;
+    bool enableProxy = config.proxyUrl != null && config.proxyUrl!.isNotEmpty;
 
-  final result = await showDialog<Map<String, String>>(
+    final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -654,10 +648,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     border: OutlineInputBorder(),
                   ),
                   items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
-                      .map((provider) => DropdownMenuItem(
-                            value: provider,
-                            child: Text(provider),
-                          ),
+                      .map(
+                        (provider) => DropdownMenuItem(
+                          value: provider,
+                          child: Text(provider),
+                        ),
                       )
                       .toList(),
                   onChanged: (value) {
@@ -695,8 +690,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     });
                   },
                 ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyUrlController,
@@ -706,8 +700,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       hintText: 'http://proxy.example.com:8080',
                     ),
                   ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyUsernameController,
@@ -716,8 +709,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                if (enableProxy)
-                  const SizedBox(height: 16),
+                if (enableProxy) const SizedBox(height: 16),
                 if (enableProxy)
                   TextField(
                     controller: proxyPasswordController,
@@ -762,27 +754,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (result != null) {
-    final settingsRepo = ref.read(settingsRepositoryProvider);
-    await settingsRepo.updateApiConfig(
-      config.id,
-      name: result['name']!,
-      provider: result['provider']!,
-      baseUrl: result['baseUrl']!,
-      apiKey: result['apiKey']!,
-      proxyUrl: result['proxyUrl'],
-      proxyUsername: result['proxyUsername'],
-      proxyPassword: result['proxyPassword'],
-    );
-    _loadApiConfigs();
-  }
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      await settingsRepo.updateApiConfig(
+        config.id,
+        name: result['name']!,
+        provider: result['provider']!,
+        baseUrl: result['baseUrl']!,
+        apiKey: result['apiKey']!,
+        proxyUrl: result['proxyUrl'],
+        proxyUsername: result['proxyUsername'],
+        proxyPassword: result['proxyPassword'],
+      );
+      _loadApiConfigs();
+    }
 
-  nameController.dispose();
-  baseUrlController.dispose();
-  apiKeyController.dispose();
-  proxyUrlController.dispose();
-  proxyUsernameController.dispose();
-  proxyPasswordController.dispose();
-}
+    nameController.dispose();
+    baseUrlController.dispose();
+    apiKeyController.dispose();
+    proxyUrlController.dispose();
+    proxyUsernameController.dispose();
+    proxyPasswordController.dispose();
+  }
 
   Future<void> _deleteApiConfig(ApiConfig config) async {
     final confirm = await _showDeleteConfirmDialog();
@@ -821,9 +813,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('清除所有数据'),
-        content: const Text(
-          '这将删除所有对话和设置。此操作无法撤销。',
-        ),
+        content: const Text('这将删除所有对话和设置。此操作无法撤销。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -844,9 +834,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final storage = ref.read(storageServiceProvider);
       await storage.clearAll();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('所有数据已清除')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('所有数据已清除')));
       }
       _loadApiConfigs();
     }
@@ -858,15 +848,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (conversations.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('没有可导出的对话')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('没有可导出的对话')));
       }
       return;
     }
 
-    final selectedConversations = await _showSelectConversationsDialog(conversations);
-    
+    final selectedConversations = await _showSelectConversationsDialog(
+      conversations,
+    );
+
     if (selectedConversations != null && selectedConversations.isNotEmpty) {
       try {
         if (selectedConversations.length == 1) {
@@ -875,15 +867,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           await PdfExport.exportConversationsToPdf(selectedConversations);
         }
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('PDF 导出成功')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('PDF 导出成功')));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('PDF 导出失败: ${e.toString()}')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('PDF 导出失败: ${e.toString()}')));
         }
       }
     }
@@ -937,7 +929,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   }
                 });
               },
-              child: Text(selected.length == conversations.length ? '取消全选' : '全选'),
+              child: Text(
+                selected.length == conversations.length ? '取消全选' : '全选',
+              ),
             ),
             FilledButton(
               onPressed: selected.isEmpty
@@ -959,34 +953,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _updateFontSize(double fontSize) async {
     final settingsRepo = ref.read(settingsRepositoryProvider);
     await settingsRepo.updateFontSize(fontSize);
-    ref.read(appSettingsProvider.notifier).updateSettings(
-      ref.read(appSettingsProvider).copyWith(fontSize: fontSize),
-    );
+    ref
+        .read(appSettingsProvider.notifier)
+        .updateSettings(
+          ref.read(appSettingsProvider).copyWith(fontSize: fontSize),
+        );
   }
 
   Future<void> _updateMarkdownEnabled(bool enabled) async {
     final storage = ref.read(storageServiceProvider);
     await storage.saveSetting('enableMarkdown', enabled);
-    ref.read(appSettingsProvider.notifier).updateSettings(
-      ref.read(appSettingsProvider).copyWith(enableMarkdown: enabled),
-    );
+    ref
+        .read(appSettingsProvider.notifier)
+        .updateSettings(
+          ref.read(appSettingsProvider).copyWith(enableMarkdown: enabled),
+        );
   }
 
   Future<void> _updateCodeHighlightEnabled(bool enabled) async {
     final storage = ref.read(storageServiceProvider);
     await storage.saveSetting('enableCodeHighlight', enabled);
-    ref.read(appSettingsProvider.notifier).updateSettings(
-      ref.read(appSettingsProvider).copyWith(enableCodeHighlight: enabled),
-    );
+    ref
+        .read(appSettingsProvider.notifier)
+        .updateSettings(
+          ref.read(appSettingsProvider).copyWith(enableCodeHighlight: enabled),
+        );
   }
 
   Future<void> _updateLatexEnabled(bool enabled) async {
-  final storage = ref.read(storageServiceProvider);
-  await storage.saveSetting('enableLatex', enabled);
-  ref.read(appSettingsProvider.notifier).updateSettings(
-    ref.read(appSettingsProvider).copyWith(enableLatex: enabled),
-  );
-}
+    final storage = ref.read(storageServiceProvider);
+    await storage.saveSetting('enableLatex', enabled);
+    ref
+        .read(appSettingsProvider.notifier)
+        .updateSettings(
+          ref.read(appSettingsProvider).copyWith(enableLatex: enabled),
+        );
+  }
 
   // 测试 API 连接
   Future<void> _testApiConnection(ApiConfig config) async {
@@ -1042,11 +1044,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           builder: (context) => AlertDialog(
             title: const Text('连接失败'),
             content: Text('发生错误: ${e.toString()}'),
-            icon: const Icon(
-              Icons.error,
-              color: Colors.red,
-              size: 48,
-            ),
+            icon: const Icon(Icons.error, color: Colors.red, size: 48),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),

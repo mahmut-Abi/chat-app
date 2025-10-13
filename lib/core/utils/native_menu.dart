@@ -62,11 +62,11 @@ class MenuItem {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'label': label,
-        if (shortcut != null) 'shortcut': shortcut,
-        if (submenu != null)
-          'submenu': submenu!.map((item) => item.toJson()).toList(),
-        'enabled': enabled,
-      };
+    'id': id,
+    'label': label,
+    if (shortcut != null) 'shortcut': shortcut,
+    if (submenu != null)
+      'submenu': submenu!.map((item) => item.toJson()).toList(),
+    'enabled': enabled,
+  };
 }

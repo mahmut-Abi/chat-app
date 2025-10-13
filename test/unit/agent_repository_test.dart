@@ -22,8 +22,7 @@ void main() {
 
   group('AgentRepository', () {
     test('应该成功创建 Agent 配置', () async {
-      when(mockStorage.saveSetting(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
 
       final agent = await repository.createAgent(
         name: 'Test Agent',
@@ -40,8 +39,7 @@ void main() {
     });
 
     test('应该成功创建工具', () async {
-      when(mockStorage.saveSetting(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
 
       final tool = await repository.createTool(
         name: 'Test Tool',
@@ -63,26 +61,22 @@ void main() {
         type: AgentToolType.calculator,
       );
 
-      final result = ToolExecutionResult(
-        success: true,
-        result: '42',
-      );
+      final result = ToolExecutionResult(success: true, result: '42');
 
-      when(mockExecutorManager.execute(any, any))
-          .thenAnswer((_) async => result);
+      when(
+        mockExecutorManager.execute(any, any),
+      ).thenAnswer((_) async => result);
 
-      final executionResult = await repository.executeTool(
-        tool,
-        {'expression': '21+21'},
-      );
+      final executionResult = await repository.executeTool(tool, {
+        'expression': '21+21',
+      });
 
       expect(executionResult.success, true);
       expect(executionResult.result, '42');
     });
 
     test('应该成功删除 Agent', () async {
-      when(mockStorage.deleteSetting(any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.deleteSetting(any)).thenAnswer((_) async => {});
 
       await repository.deleteAgent('test-agent-id');
 
@@ -90,8 +84,7 @@ void main() {
     });
 
     test('应该成功删除工具', () async {
-      when(mockStorage.deleteSetting(any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.deleteSetting(any)).thenAnswer((_) async => {});
 
       await repository.deleteTool('test-tool-id');
 

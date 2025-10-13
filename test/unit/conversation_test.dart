@@ -80,9 +80,7 @@ void main() {
 
   group('ModelConfig', () {
     test('应该正确创建模型配置', () {
-      final config = ModelConfig(
-        model: 'gpt-4',
-      );
+      final config = ModelConfig(model: 'gpt-4');
 
       expect(config.model, 'gpt-4');
       expect(config.temperature, 0.7);
@@ -91,10 +89,7 @@ void main() {
 
     test('应该正确更新配置', () {
       final config = ModelConfig(model: 'gpt-3.5-turbo');
-      final updated = config.copyWith(
-        temperature: 0.9,
-        maxTokens: 4096,
-      );
+      final updated = config.copyWith(temperature: 0.9, maxTokens: 4096);
 
       expect(updated.temperature, 0.9);
       expect(updated.maxTokens, 4096);

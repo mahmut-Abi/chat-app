@@ -109,10 +109,7 @@ class _GroupManagementDialogState extends State<GroupManagementDialog> {
             const SizedBox(height: 8),
             // 现有分组列表
             if (widget.groups.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('暂无分组'),
-              )
+              const Padding(padding: EdgeInsets.all(16.0), child: Text('暂无分组'))
             else
               SizedBox(
                 height: 300,

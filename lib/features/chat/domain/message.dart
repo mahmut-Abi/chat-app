@@ -12,11 +12,7 @@ class ImageAttachment extends Equatable {
   final String? base64Data;
   final String? mimeType;
 
-  const ImageAttachment({
-    required this.path,
-    this.base64Data,
-    this.mimeType,
-  });
+  const ImageAttachment({required this.path, this.base64Data, this.mimeType});
 
   factory ImageAttachment.fromJson(Map<String, dynamic> json) =>
       _$ImageAttachmentFromJson(json);
@@ -86,17 +82,17 @@ class Message extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        role,
-        content,
-        timestamp,
-        isStreaming,
-        hasError,
-        errorMessage,
-        metadata,
-        tokenCount,
-        images,
-      ];
+    id,
+    role,
+    content,
+    timestamp,
+    isStreaming,
+    hasError,
+    errorMessage,
+    metadata,
+    tokenCount,
+    images,
+  ];
 }
 
 @JsonSerializable()
@@ -175,11 +171,7 @@ class Choice {
   final MessageData message;
   final String? finishReason;
 
-  const Choice({
-    required this.index,
-    required this.message,
-    this.finishReason,
-  });
+  const Choice({required this.index, required this.message, this.finishReason});
 
   factory Choice.fromJson(Map<String, dynamic> json) => _$ChoiceFromJson(json);
 
@@ -191,10 +183,7 @@ class MessageData {
   final String role;
   final String content;
 
-  const MessageData({
-    required this.role,
-    required this.content,
-  });
+  const MessageData({required this.role, required this.content});
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>
       _$MessageDataFromJson(json);

@@ -62,8 +62,10 @@ class AgentRepository {
   Future<List<AgentConfig>> getAllAgents() async {
     try {
       final keys = await _storage.getAllKeys();
-      final agentKeys = keys.where((k) => k.startsWith('agent_') && !k.contains('tool')).toList();
-      
+      final agentKeys = keys
+          .where((k) => k.startsWith('agent_') && !k.contains('tool'))
+          .toList();
+
       final agents = <AgentConfig>[];
       for (final key in agentKeys) {
         final data = _storage.getSetting(key);
@@ -75,7 +77,7 @@ class AgentRepository {
           }
         }
       }
-      
+
       return agents;
     } catch (e) {
       return [];
@@ -87,7 +89,7 @@ class AgentRepository {
     try {
       final keys = await _storage.getAllKeys();
       final toolKeys = keys.where((k) => k.startsWith('agent_tool_')).toList();
-      
+
       final tools = <AgentTool>[];
       for (final key in toolKeys) {
         final data = _storage.getSetting(key);
@@ -99,7 +101,7 @@ class AgentRepository {
           }
         }
       }
-      
+
       return tools;
     } catch (e) {
       return [];

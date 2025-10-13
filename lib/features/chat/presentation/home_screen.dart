@@ -18,7 +18,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with TrayListener, WindowListener {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with TrayListener, WindowListener {
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
   Conversation? _selectedConversation;
@@ -92,9 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TrayListener, Wind
 
   Future<void> _createNewConversation() async {
     final chatRepo = ref.read(chatRepositoryProvider);
-    final conversation = await chatRepo.createConversation(
-      title: '新建对话',
-    );
+    final conversation = await chatRepo.createConversation(title: '新建对话');
 
     setState(() {
       _conversations.insert(0, conversation);
@@ -115,8 +114,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TrayListener, Wind
 
       if (_selectedConversation?.id == id) {
         setState(() {
-          _selectedConversation =
-              _conversations.isNotEmpty ? _conversations.first : null;
+          _selectedConversation = _conversations.isNotEmpty
+              ? _conversations.first
+              : null;
         });
       }
     }
@@ -194,30 +194,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TrayListener, Wind
   }
 
   @override
-Widget build(BuildContext context) {
-  final isMobile = ResponsiveUtils.isMobile(context);
+  Widget build(BuildContext context) {
+    final isMobile = ResponsiveUtils.isMobile(context);
 
-  if (isMobile) {
-    return _buildMobileLayout();
-  }
+    if (isMobile) {
+      return _buildMobileLayout();
+    }
 
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Chat App'),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          tooltip: '搜索 (Ctrl+F)',
-          onPressed: _showSearch,
-        ),
-        IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: '设置 (Ctrl+,)',
-          onPressed: () => context.push('/settings'),
-        ),
-      ],
-    ),
-    body: Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chat App'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: '搜索 (Ctrl+F)',
+            onPressed: _showSearch,
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: '设置 (Ctrl+,)',
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
+      ),
+      body: Row(
         children: [
           EnhancedSidebar(
             conversations: _conversations,
@@ -261,10 +261,7 @@ Widget build(BuildContext context) {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
-          Text(
-            '创建一个新对话开始聊天',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          Text('创建一个新对话开始聊天', style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: _createNewConversation,
@@ -277,24 +274,24 @@ Widget build(BuildContext context) {
   }
 
   Future<bool?> _showDeleteDialog() {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('删除对话'),
-      content: const Text('确定要删除这个对话吗?此操作无法撤销。'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('取消'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('删除'),
-        ),
-      ],
-    ),
-  );
-}
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('删除对话'),
+        content: const Text('确定要删除这个对话吗?此操作无法撤销。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildMobileLayout() {
     return Scaffold(
@@ -307,10 +304,7 @@ Widget build(BuildContext context) {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _showSearch,
-          ),
+          IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/settings'),
@@ -420,9 +414,7 @@ class ConversationSearchDelegate extends SearchDelegate<Conversation?> {
     }).toList();
 
     if (results.isEmpty) {
-      return const Center(
-        child: Text('没有找到相关对话'),
-      );
+      return const Center(child: Text('没有找到相关对话'));
     }
 
     return ListView.builder(

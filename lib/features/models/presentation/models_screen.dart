@@ -37,9 +37,9 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load models: \$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load models: \$e')));
       }
     }
   }
@@ -59,29 +59,26 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _models.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 64),
-                      const SizedBox(height: 16),
-                      const Text('No models available'),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadModels,
-                        child: Text('Retry'),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _models.length,
-                  padding: const EdgeInsets.all(16),
-                  itemBuilder: (context, index) {
-                    final model = _models[index];
-                    return _buildModelCard(model);
-                  },
-                ),
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64),
+                  const SizedBox(height: 16),
+                  const Text('No models available'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(onPressed: _loadModels, child: Text('Retry')),
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: _models.length,
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                final model = _models[index];
+                return _buildModelCard(model);
+              },
+            ),
     );
   }
 
@@ -104,8 +101,8 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
                   child: Text(
                     model.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -140,10 +137,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
   Widget _buildChip(IconData icon, String label) {
     return Chip(
       avatar: Icon(icon, size: 16),
-      label: Text(
-        label,
-        style: const TextStyle(fontSize: 12),
-      ),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }

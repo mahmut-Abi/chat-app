@@ -21,12 +21,7 @@ class AgentScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _AgentTab(),
-            _ToolsTab(),
-          ],
-        ),
+        body: TabBarView(children: [_AgentTab(), _ToolsTab()]),
       ),
     );
   }
@@ -54,9 +49,7 @@ class _AgentTab extends ConsumerWidget {
                 ? _buildEmptyState(context, '暂无 Agent')
                 : _buildAgentList(context, ref, agents),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(
-              child: Text('加载失败: $error'),
-            ),
+            error: (error, stack) => Center(child: Text('加载失败: $error')),
           ),
         ),
       ],
@@ -74,16 +67,17 @@ class _AgentTab extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(message, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
   }
 
-  Widget _buildAgentList(BuildContext context, WidgetRef ref, List<AgentConfig> agents) {
+  Widget _buildAgentList(
+    BuildContext context,
+    WidgetRef ref,
+    List<AgentConfig> agents,
+  ) {
     return ListView.builder(
       itemCount: agents.length,
       itemBuilder: (context, index) {
@@ -182,9 +176,9 @@ class _AgentTab extends ConsumerWidget {
     String systemPrompt,
   ) async {
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写 Agent 名称')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写 Agent 名称')));
       return;
     }
 
@@ -201,15 +195,15 @@ class _AgentTab extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('创建成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('创建成功')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('创建失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('创建失败: $e')));
       }
     }
   }
@@ -220,8 +214,12 @@ class _AgentTab extends ConsumerWidget {
     AgentConfig agent,
   ) async {
     final nameController = TextEditingController(text: agent.name);
-    final descriptionController = TextEditingController(text: agent.description ?? '');
-    final systemPromptController = TextEditingController(text: agent.systemPrompt ?? '');
+    final descriptionController = TextEditingController(
+      text: agent.description ?? '',
+    );
+    final systemPromptController = TextEditingController(
+      text: agent.systemPrompt ?? '',
+    );
 
     await showDialog(
       context: context,
@@ -233,24 +231,18 @@ class _AgentTab extends ConsumerWidget {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: '名称',
-                ),
+                decoration: const InputDecoration(labelText: '名称'),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: '描述（可选）',
-                ),
+                decoration: const InputDecoration(labelText: '描述（可选）'),
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: systemPromptController,
-                decoration: const InputDecoration(
-                  labelText: '系统提示词（可选）',
-                ),
+                decoration: const InputDecoration(labelText: '系统提示词（可选）'),
                 maxLines: 3,
               ),
             ],
@@ -286,9 +278,9 @@ class _AgentTab extends ConsumerWidget {
     String systemPrompt,
   ) async {
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写 Agent 名称')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写 Agent 名称')));
       return;
     }
 
@@ -305,15 +297,15 @@ class _AgentTab extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('保存成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('保存成功')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     }
   }
@@ -339,15 +331,15 @@ class _AgentTab extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('删除成功')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('删除成功')));
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('删除失败: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('删除失败: $e')));
                 }
               }
             },
@@ -381,9 +373,7 @@ class _ToolsTab extends ConsumerWidget {
                 ? _buildEmptyState(context, '暂无工具')
                 : _buildToolsList(context, ref, tools),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(
-              child: Text('加载失败: $error'),
-            ),
+            error: (error, stack) => Center(child: Text('加载失败: $error')),
           ),
         ),
       ],
@@ -401,16 +391,17 @@ class _ToolsTab extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(message, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
   }
 
-  Widget _buildToolsList(BuildContext context, WidgetRef ref, List<AgentTool> tools) {
+  Widget _buildToolsList(
+    BuildContext context,
+    WidgetRef ref,
+    List<AgentTool> tools,
+  ) {
     return ListView.builder(
       itemCount: tools.length,
       itemBuilder: (context, index) {
@@ -479,9 +470,7 @@ class _ToolsTab extends ConsumerWidget {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<AgentToolType>(
                   value: selectedType,
-                  decoration: const InputDecoration(
-                    labelText: '工具类型',
-                  ),
+                  decoration: const InputDecoration(labelText: '工具类型'),
                   items: AgentToolType.values.map((type) {
                     return DropdownMenuItem(
                       value: type,
@@ -543,9 +532,9 @@ class _ToolsTab extends ConsumerWidget {
     AgentToolType type,
   ) async {
     if (name.isEmpty || description.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写工具名称和描述')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写工具名称和描述')));
       return;
     }
 
@@ -561,15 +550,15 @@ class _ToolsTab extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('添加成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('添加成功')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('添加失败: $e')));
       }
     }
   }
@@ -595,15 +584,15 @@ class _ToolsTab extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('删除成功')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('删除成功')));
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('删除失败: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('删除失败: $e')));
                 }
               }
             },

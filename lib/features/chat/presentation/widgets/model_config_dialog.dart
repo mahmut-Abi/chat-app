@@ -137,15 +137,12 @@ class _ModelConfigDialogState extends State<ModelConfigDialog> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
+            Text(label, style: Theme.of(context).textTheme.titleSmall),
             Text(
               value.toStringAsFixed(2),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -160,8 +157,8 @@ class _ModelConfigDialogState extends State<ModelConfigDialog> {
           Text(
             helperText,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
       ],
     );

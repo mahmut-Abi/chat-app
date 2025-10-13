@@ -4,15 +4,20 @@ import 'package:flutter/services.dart';
 class AppShortcuts {
   static Map<ShortcutActivator, Intent> get shortcuts => {
     // 新建对话
-    const SingleActivator(LogicalKeyboardKey.keyN, control: true): const NewConversationIntent(),
+    const SingleActivator(LogicalKeyboardKey.keyN, control: true):
+        const NewConversationIntent(),
     // 搜索
-    const SingleActivator(LogicalKeyboardKey.keyF, control: true): const SearchIntent(),
+    const SingleActivator(LogicalKeyboardKey.keyF, control: true):
+        const SearchIntent(),
     // 设置
-    const SingleActivator(LogicalKeyboardKey.comma, control: true): const SettingsIntent(),
+    const SingleActivator(LogicalKeyboardKey.comma, control: true):
+        const SettingsIntent(),
     // 发送消息
-    const SingleActivator(LogicalKeyboardKey.enter, control: true): const SendMessageIntent(),
+    const SingleActivator(LogicalKeyboardKey.enter, control: true):
+        const SendMessageIntent(),
     // 关闭当前对话
-    const SingleActivator(LogicalKeyboardKey.keyW, control: true): const CloseConversationIntent(),
+    const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+        const CloseConversationIntent(),
   };
 
   static Map<Type, Action<Intent>> get actions => {

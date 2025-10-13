@@ -66,18 +66,18 @@ class ApiConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        provider,
-        baseUrl,
-        apiKey,
-        organization,
-        proxyUrl,
-        proxyUsername,
-        proxyPassword,
-        isActive,
-        metadata,
-      ];
+    id,
+    name,
+    provider,
+    baseUrl,
+    apiKey,
+    organization,
+    proxyUrl,
+    proxyUsername,
+    proxyPassword,
+    isActive,
+    metadata,
+  ];
 }
 
 @JsonSerializable()
@@ -131,13 +131,13 @@ class AppSettings extends Equatable {
 
   @override
   List<Object?> get props => [
-        themeMode,
-        language,
-        fontSize,
-        enableMarkdown,
-        enableCodeHighlight,
-        enableLatex,
-        themeColor,
-        customThemeColor,
-      ];
+    themeMode,
+    language,
+    fontSize,
+    enableMarkdown,
+    enableCodeHighlight,
+    enableLatex,
+    themeColor,
+    customThemeColor,
+  ];
 }

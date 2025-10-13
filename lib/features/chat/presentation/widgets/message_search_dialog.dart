@@ -73,17 +73,9 @@ class _MessageSearchDialogState extends State<MessageSearchDialog> {
             ),
             const SizedBox(height: 16),
             if (_searchResults.isEmpty && _searchController.text.isNotEmpty)
-              const Expanded(
-                child: Center(
-                  child: Text('未找到匹配的消息'),
-                ),
-              )
+              const Expanded(child: Center(child: Text('未找到匹配的消息')))
             else if (_searchResults.isEmpty)
-              const Expanded(
-                child: Center(
-                  child: Text('请输入关键词开始搜索'),
-                ),
-              )
+              const Expanded(child: Center(child: Text('请输入关键词开始搜索')))
             else
               Expanded(
                 child: ListView.builder(

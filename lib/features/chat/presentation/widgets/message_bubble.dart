@@ -27,8 +27,9 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) _buildAvatar(context, isUser),
@@ -41,9 +42,7 @@ class MessageBubble extends StatelessWidget {
                     ? Theme.of(context).colorScheme.primaryContainer
                     : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).dividerColor,
-                ),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +60,7 @@ class MessageBubble extends StatelessWidget {
                       ),
                     )
                   else if (message.role == MessageRole.assistant)
-                    EnhancedMarkdownMessage(
-                      content: message.content,
-                    )
+                    EnhancedMarkdownMessage(content: message.content)
                   else
                     SelectableText(
                       message.content,
@@ -76,13 +73,13 @@ class MessageBubble extends StatelessWidget {
                       if (message.tokenCount != null) ...[
                         Text(
                           '${message.tokenCount} tokens',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant
-                                        .withValues(alpha: 0.6),
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
+                                    .withValues(alpha: 0.6),
+                              ),
                         ),
                         const SizedBox(width: 8),
                         Container(
@@ -106,8 +103,8 @@ class MessageBubble extends StatelessWidget {
                           );
                         },
                         onShare: () {
-                        ShareUtils.shareText(message.content);
-                      },
+                          ShareUtils.shareText(message.content);
+                        },
                         onEdit: isUser && onEdit != null
                             ? () => _showEditDialog(context)
                             : null,
@@ -150,10 +147,7 @@ class MessageBubble extends StatelessWidget {
         return ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            constraints: const BoxConstraints(
-              maxWidth: 200,
-              maxHeight: 200,
-            ),
+            constraints: const BoxConstraints(maxWidth: 200, maxHeight: 200),
             child: Image.file(
               File(image.path),
               fit: BoxFit.cover,

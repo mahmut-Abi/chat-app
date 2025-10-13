@@ -78,8 +78,9 @@ class ChatRepository {
         stream: true,
       );
 
-      await for (final chunk
-          in _apiClient.createChatCompletionStream(request)) {
+      await for (final chunk in _apiClient.createChatCompletionStream(
+        request,
+      )) {
         yield chunk;
       }
     } catch (e) {
@@ -95,17 +96,11 @@ class ChatRepository {
 
     if (history != null) {
       for (final msg in history) {
-        messages.add({
-          'role': msg.role.name,
-          'content': msg.content,
-        });
+        messages.add({'role': msg.role.name, 'content': msg.content});
       }
     }
 
-    messages.add({
-      'role': 'user',
-      'content': newContent,
-    });
+    messages.add({'role': 'user', 'content': newContent});
 
     return messages;
   }
@@ -128,10 +123,7 @@ class ChatRepository {
       groupId: groupId,
     );
 
-    await _storage.saveConversation(
-      conversation.id,
-      conversation.toJson(),
-    );
+    await _storage.saveConversation(conversation.id, conversation.toJson());
 
     return conversation;
   }
@@ -147,9 +139,7 @@ class ChatRepository {
       }
     }
 
-    final updatedConversation = conversation.copyWith(
-      totalTokens: totalTokens,
-    );
+    final updatedConversation = conversation.copyWith(totalTokens: totalTokens);
 
     await _storage.saveConversation(
       updatedConversation.id,

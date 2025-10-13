@@ -66,7 +66,7 @@ class MarkdownExport {
     buffer.writeln('# 对话导出');
     buffer.writeln();
     buffer.writeln(
-        '导出时间: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',
+      '导出时间: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',
     );
     buffer.writeln();
     buffer.writeln('总对话数: ${conversations.length}');

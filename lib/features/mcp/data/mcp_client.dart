@@ -9,10 +9,7 @@ class McpClient {
   McpConnectionStatus _status = McpConnectionStatus.disconnected;
   Timer? _heartbeatTimer;
 
-  McpClient({
-    required this.config,
-    Dio? dio,
-  }) : _dio = dio ?? Dio();
+  McpClient({required this.config, Dio? dio}) : _dio = dio ?? Dio();
 
   McpConnectionStatus get status => _status;
 
@@ -20,7 +17,7 @@ class McpClient {
   Future<bool> connect() async {
     try {
       _status = McpConnectionStatus.connecting;
-      
+
       // 配置 Dio
       _dio.options.baseUrl = config.endpoint;
       if (config.headers != null) {
@@ -29,7 +26,7 @@ class McpClient {
 
       // 尝试连接
       final response = await _dio.get('/health');
-      
+
       if (response.statusCode == 200) {
         _status = McpConnectionStatus.connected;
         _startHeartbeat();
@@ -64,12 +61,12 @@ class McpClient {
   }
 
   /// 推送上下文
-  Future<bool> pushContext(String contextId, Map<String, dynamic> context) async {
+  Future<bool> pushContext(
+    String contextId,
+    Map<String, dynamic> context,
+  ) async {
     try {
-      final response = await _dio.post(
-        '/context/$contextId',
-        data: context,
-      );
+      final response = await _dio.post('/context/$contextId', data: context);
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -78,17 +75,16 @@ class McpClient {
 
   /// 开始心跳检测
   void _startHeartbeat() {
-    _heartbeatTimer = Timer.periodic(
-      const Duration(seconds: 30),
-      (timer) async {
-        try {
-          await _dio.get('/health');
-        } catch (e) {
-          _status = McpConnectionStatus.error;
-          _stopHeartbeat();
-        }
-      },
-    );
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (
+      timer,
+    ) async {
+      try {
+        await _dio.get('/health');
+      } catch (e) {
+        _status = McpConnectionStatus.error;
+        _stopHeartbeat();
+      }
+    });
   }
 
   /// 停止心跳检测

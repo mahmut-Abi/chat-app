@@ -34,15 +34,13 @@ class DioClient {
         client.findProxy = (uri) {
           if (proxyUsername != null && proxyUsername.isNotEmpty) {
             final credentials = '$proxyUsername:$proxyPassword';
-            final auth = Uri.parse(proxyUrl).replace(
-              userInfo: credentials,
-            );
+            final auth = Uri.parse(proxyUrl).replace(userInfo: credentials);
             return 'PROXY ${auth.host}:${auth.port}';
           }
           final proxy = Uri.parse(proxyUrl);
           return 'PROXY ${proxy.host}:${proxy.port}';
         };
-        client.badCertificateCallback = 
+        client.badCertificateCallback =
             (X509Certificate cert, String host, int port) => true;
         return client;
       };
@@ -94,15 +92,14 @@ class DioClient {
           return RateLimitException();
         }
         return ApiException(
-          message: error.response?.data?['error']?['message'] ??
+          message:
+              error.response?.data?['error']?['message'] ??
               'Server error occurred',
           statusCode: statusCode,
         );
 
       default:
-        return ApiException(
-          message: error.message ?? 'Unknown error occurred',
-        );
+        return ApiException(message: error.message ?? 'Unknown error occurred');
     }
   }
 }

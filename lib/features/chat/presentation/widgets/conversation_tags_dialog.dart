@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class ConversationTagsDialog extends StatefulWidget {
   final List<String> initialTags;
 
-  const ConversationTagsDialog({
-    super.key,
-    required this.initialTags,
-  });
+  const ConversationTagsDialog({super.key, required this.initialTags});
 
   @override
   State<ConversationTagsDialog> createState() => _ConversationTagsDialogState();
@@ -76,9 +73,7 @@ class _ConversationTagsDialogState extends State<ConversationTagsDialog> {
             if (_tags.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: Text('没有标签'),
-                ),
+                child: Center(child: Text('没有标签')),
               )
             else
               Wrap(

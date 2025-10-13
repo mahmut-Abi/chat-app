@@ -34,10 +34,9 @@ void main() {
         },
       );
 
-      when(mockDio.get(
-        '/models',
-        options: anyNamed('options'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockDio.get('/models', options: anyNamed('options')),
+      ).thenAnswer((_) async => mockResponse);
 
       // Act
       final result = await apiClient.testConnection();
@@ -49,10 +48,7 @@ void main() {
 
     test('应该返回失败结果当API Key无效', () async {
       // Arrange
-      when(mockDio.get(
-        '/models',
-        options: anyNamed('options'),
-      )).thenThrow(
+      when(mockDio.get('/models', options: anyNamed('options'))).thenThrow(
         DioException(
           requestOptions: RequestOptions(path: '/models'),
           response: Response(
@@ -73,10 +69,7 @@ void main() {
 
     test('应该返回失败结果当网络超时', () async {
       // Arrange
-      when(mockDio.get(
-        '/models',
-        options: anyNamed('options'),
-      )).thenThrow(
+      when(mockDio.get('/models', options: anyNamed('options'))).thenThrow(
         DioException(
           requestOptions: RequestOptions(path: '/models'),
           type: DioExceptionType.connectionTimeout,

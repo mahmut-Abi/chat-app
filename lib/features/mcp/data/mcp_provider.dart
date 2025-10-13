@@ -16,8 +16,10 @@ final mcpRepositoryProvider = Provider<McpRepository>((ref) {
   return McpRepository(storage);
 });
 
-/// MCP 连接状态 Provider  
-final mcpConnectionStatusProvider = Provider.family<McpConnectionStatus, String>((ref, configId) {
-  final repository = ref.watch(mcpRepositoryProvider);
-  return repository.getConnectionStatus(configId) ?? McpConnectionStatus.disconnected;
-});
+/// MCP 连接状态 Provider
+final mcpConnectionStatusProvider =
+    Provider.family<McpConnectionStatus, String>((ref, configId) {
+      final repository = ref.watch(mcpRepositoryProvider);
+      return repository.getConnectionStatus(configId) ??
+          McpConnectionStatus.disconnected;
+    });

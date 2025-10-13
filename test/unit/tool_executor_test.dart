@@ -20,10 +20,7 @@ void main() {
         type: AgentToolType.calculator,
       );
 
-      final result = await calculator.execute(
-        tool,
-        {'expression': '1+1'},
-      );
+      final result = await calculator.execute(tool, {'expression': '1+1'});
 
       expect(result.success, true);
       expect(result.result, contains('2'));
@@ -37,10 +34,7 @@ void main() {
         type: AgentToolType.calculator,
       );
 
-      final result = await calculator.execute(
-        tool,
-        {'expression': '5*3'},
-      );
+      final result = await calculator.execute(tool, {'expression': '5*3'});
 
       expect(result.success, true);
       expect(result.result, contains('15'));
@@ -76,10 +70,7 @@ void main() {
         type: AgentToolType.search,
       );
 
-      final result = await searchTool.execute(
-        tool,
-        {'query': 'Flutter'},
-      );
+      final result = await searchTool.execute(tool, {'query': 'Flutter'});
 
       expect(result.success, true);
       expect(result.result, contains('Flutter'));
@@ -116,10 +107,7 @@ void main() {
         type: AgentToolType.calculator,
       );
 
-      final result = await manager.execute(
-        tool,
-        {'expression': '10+5'},
-      );
+      final result = await manager.execute(tool, {'expression': '10+5'});
 
       expect(result.success, true);
     });

@@ -32,12 +32,9 @@ void main() {
     });
 
     test('应该正确保存会话', () async {
-      when(mockStorage.saveConversation(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async => {});
 
-      final conversation = await repository.createConversation(
-        title: 'Test',
-      );
+      final conversation = await repository.createConversation(title: 'Test');
 
       await repository.saveConversation(conversation);
 
@@ -67,8 +64,7 @@ void main() {
     });
 
     test('应该正确删除会话', () async {
-      when(mockStorage.deleteConversation(any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.deleteConversation(any)).thenAnswer((_) async => {});
 
       await repository.deleteConversation('conv-1');
 
@@ -78,8 +74,7 @@ void main() {
 
   group('ChatRepository - Tags and Groups', () {
     test('应该正确创建分组', () async {
-      when(mockStorage.saveGroup(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveGroup(any, any)).thenAnswer((_) async => {});
 
       final group = await repository.createGroup(
         name: 'Work',
@@ -125,10 +120,10 @@ void main() {
         isPinned: false,
       );
 
-      when(mockStorage.getConversation('conv-1'))
-          .thenReturn(conversation.toJson());
-      when(mockStorage.saveConversation(any, any))
-          .thenAnswer((_) async => {});
+      when(
+        mockStorage.getConversation('conv-1'),
+      ).thenReturn(conversation.toJson());
+      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async => {});
 
       await repository.togglePinConversation('conv-1');
 

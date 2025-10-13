@@ -67,18 +67,18 @@ class Conversation extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        messages,
-        createdAt,
-        updatedAt,
-        systemPrompt,
-        settings,
-        tags,
-        groupId,
-        totalTokens,
-        isPinned,
-      ];
+    id,
+    title,
+    messages,
+    createdAt,
+    updatedAt,
+    systemPrompt,
+    settings,
+    tags,
+    groupId,
+    totalTokens,
+    isPinned,
+  ];
 }
 
 @JsonSerializable()
@@ -165,11 +165,11 @@ class ModelConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        model,
-        temperature,
-        maxTokens,
-        topP,
-        frequencyPenalty,
-        presencePenalty,
-      ];
+    model,
+    temperature,
+    maxTokens,
+    topP,
+    frequencyPenalty,
+    presencePenalty,
+  ];
 }

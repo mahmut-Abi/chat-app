@@ -8,10 +8,7 @@ class ApiTestResult {
   final bool success;
   final String message;
 
-  ApiTestResult({
-    required this.success,
-    required this.message,
-  });
+  ApiTestResult({required this.success, required this.message});
 }
 
 class OpenAIApiClient {
@@ -32,10 +29,7 @@ class OpenAIApiClient {
 
       if (response.statusCode == 200) {
         final models = (response.data['data'] as List).length;
-        return ApiTestResult(
-          success: true,
-          message: '连接成功!找到 $models 个可用模型',
-        );
+        return ApiTestResult(success: true, message: '连接成功!找到 $models 个可用模型');
       } else {
         return ApiTestResult(
           success: false,
@@ -43,15 +37,9 @@ class OpenAIApiClient {
         );
       }
     } on DioException catch (e) {
-      return ApiTestResult(
-        success: false,
-        message: _getDioErrorMessage(e),
-      );
+      return ApiTestResult(success: false, message: _getDioErrorMessage(e));
     } catch (e) {
-      return ApiTestResult(
-        success: false,
-        message: '连接失败:${e.toString()}',
-      );
+      return ApiTestResult(success: false, message: '连接失败:${e.toString()}');
     }
   }
 
@@ -113,10 +101,7 @@ class OpenAIApiClient {
         data: request.copyWith(stream: true).toJson(),
         options: Options(
           responseType: ResponseType.stream,
-          headers: {
-            'Accept': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-          },
+          headers: {'Accept': 'text/event-stream', 'Cache-Control': 'no-cache'},
         ),
       );
 

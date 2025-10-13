@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 class McpRepository {
   final StorageService _storage;
   final Map<String, McpClient> _clients = {};
-  
+
   McpRepository(this._storage);
 
   /// 创建 MCP 配置
@@ -36,7 +36,7 @@ class McpRepository {
     try {
       final keys = await _storage.getAllKeys();
       final mcpKeys = keys.where((k) => k.startsWith('mcp_config_')).toList();
-      
+
       final configs = <McpConfig>[];
       for (final key in mcpKeys) {
         final data = _storage.getSetting(key);
@@ -48,7 +48,7 @@ class McpRepository {
           }
         }
       }
-      
+
       return configs;
     } catch (e) {
       return [];
@@ -71,11 +71,11 @@ class McpRepository {
   Future<bool> connect(McpConfig config) async {
     final client = McpClient(config: config);
     final success = await client.connect();
-    
+
     if (success) {
       _clients[config.id] = client;
     }
-    
+
     return success;
   }
 

@@ -19,8 +19,7 @@ void main() {
 
   group('McpRepository', () {
     test('应该成功创建 MCP 配置', () async {
-      when(mockStorage.saveSetting(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
 
       final config = await repository.createConfig(
         name: 'Test MCP',
@@ -43,10 +42,12 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      when(mockStorage.getAllKeys())
-          .thenAnswer((_) async => ['mcp_config_test-id', 'other_key']);
-      when(mockStorage.getSetting('mcp_config_test-id'))
-          .thenReturn(testConfig.toJson());
+      when(
+        mockStorage.getAllKeys(),
+      ).thenAnswer((_) async => ['mcp_config_test-id', 'other_key']);
+      when(
+        mockStorage.getSetting('mcp_config_test-id'),
+      ).thenReturn(testConfig.toJson());
 
       final configs = await repository.getAllConfigs();
 
@@ -64,20 +65,15 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      when(mockStorage.saveSetting(any, any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
 
       await repository.updateConfig(config);
 
-      verify(mockStorage.saveSetting(
-        'mcp_config_${config.id}',
-        any,
-      )).called(1);
+      verify(mockStorage.saveSetting('mcp_config_${config.id}', any)).called(1);
     });
 
     test('应该成功删除 MCP 配置', () async {
-      when(mockStorage.deleteSetting(any))
-          .thenAnswer((_) async => {});
+      when(mockStorage.deleteSetting(any)).thenAnswer((_) async => {});
 
       await repository.deleteConfig('test-id');
 
