@@ -1006,8 +1006,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         // 重新加载 API 配置
         _loadApiConfigs();
 
-        // 返回首页
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // 返回首页并强制重载
+        context.go('/');
       }
     }
   }

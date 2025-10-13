@@ -326,12 +326,98 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
-      child: ListTile(
-        leading: const Icon(Icons.settings),
-        title: const Text('设置'),
-        onTap: () {
-          context.push('/settings');
-        },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 功能分组
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Text(
+                  '功能',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 功能网格
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 3,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              childAspectRatio: 1.2,
+              children: [
+                _buildFeatureCard(
+                  icon: Icons.memory,
+                  label: '模型',
+                  onTap: () => context.push('/models'),
+                ),
+                _buildFeatureCard(
+                  icon: Icons.lightbulb,
+                  label: '提示词',
+                  onTap: () => context.push('/prompts'),
+                ),
+                _buildFeatureCard(
+                  icon: Icons.smart_toy,
+                  label: '智能体',
+                  onTap: () => context.push('/agent'),
+                ),
+                _buildFeatureCard(
+                  icon: Icons.extension,
+                  label: 'MCP',
+                  onTap: () => context.push('/mcp'),
+                ),
+                _buildFeatureCard(
+                  icon: Icons.access_time,
+                  label: 'Token',
+                  onTap: () => context.push('/token-usage'),
+                ),
+                _buildFeatureCard(
+                  icon: Icons.settings,
+                  label: '设置',
+                  onTap: () => context.push('/settings'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
