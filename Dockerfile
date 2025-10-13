@@ -6,7 +6,7 @@ FROM ghcr.io/cirruslabs/flutter:stable AS builder
 WORKDIR /app
 
 # 复制 pubspec 文件并获取依赖
-COPY pubspec.yaml pubspec.lock ./
+COPY pubspec.yaml ./
 RUN flutter pub get
 
 # 复制整个项目
