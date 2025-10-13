@@ -153,18 +153,72 @@ jobs:
           fi
         shell: bash
 
-      - name: Rename build artifacts
+      - name: Prepare artifacts (Web)
+        if: success() && matrix.platform == 'web'
+        run: |
+          mkdir -p artifacts
+          cd build/web
+          zip -r ../../artifacts/chat-app-web-${{ matrix.arch }}.zip .
+        shell: bash
+
+      - name: Prepare artifacts (macOS)
+        if: success() && matrix.platform == 'macos'
+        run: |
+          mkdir -p artifacts
+          cd build/macos/Build/Products/Release
+          # 创建 ZIP 包
+          if [ -d "chat_app.app" ]; then
+            zip -r ../../../../artifacts/chat-app-macos-${{ matrix.arch }}.zip chat_app.app
+          fi
+        shell: bash
+
+      - name: Prepare artifacts (Windows)
+        if: success() && matrix.platform == 'windows'
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath artifacts/chat-app-windows-${{ matrix.arch }}.zip
+        shell: pwsh
+
+      - name: Prepare artifacts (Linux)
+        if: success() && matrix.platform == 'linux' && matrix.arch == 'x64'
+        run: |
+          mkdir -p artifacts
+          cd build/linux/x64/release/bundle
+          tar -czf ../../../../artifacts/chat-app-linux-${{ matrix.arch }}.tar.gz .
+        shell: bash
+
+      - name: Prepare artifacts (Android APK)
+        if: success() && matrix.platform == 'apk'
+        run: |
+          mkdir -p artifacts
+          if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+            cp build/app/outputs/flutter-apk/app-release.apk artifacts/chat-app-android-${{ matrix.arch }}.apk
+          fi
+          # 如果生成了 AAB
+          if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
+            cp build/app/outputs/bundle/release/app-release.aab artifacts/chat-app-android-${{ matrix.arch }}.aab
+          fi
+        shell: bash
+
+      - name: Prepare artifacts (iOS)
+        if: success() && matrix.platform == 'ios'
+        run: |
+          mkdir -p artifacts
+          cd build/ios/Release-iphoneos
+          # 创建 IPA (需要签名的话会失败,这里只是打包文件)
+          if [ -d "Runner.app" ]; then
+            zip -r ../../../artifacts/chat-app-ios-${{ matrix.arch }}.zip Runner.app
+          fi
+        shell: bash
+
+      - name: List artifacts
         if: success()
         run: |
-          # 为不同架构的构建产物重命名
-          if [ "${{ matrix.platform }}" = "macos" ]; then
-            if [ -d "build/macos/Build/Products/Release" ]; then
-              mv build/macos/Build/Products/Release build/macos/Build/Products/Release-${{ matrix.arch }}
-            fi
-          elif [ "${{ matrix.platform }}" = "linux" ] && [ "${{ matrix.arch }}" != "arm64" ]; then
-            if [ -d "build/linux/x64/release" ]; then
-              mv build/linux/x64/release build/linux/x64/release-${{ matrix.arch }}
-            fi
+          if [ -d "artifacts" ]; then
+            echo "Generated artifacts:"
+            ls -lh artifacts/
+          else
+            echo "No artifacts directory found"
           fi
         shell: bash
 
@@ -173,14 +227,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-${{ matrix.arch }}-build
-          path: |
-            build/web/**
-            build/macos/**
-            build/windows/**
-            build/linux/**
-            build/app/outputs/**
-            build/ios/**
+          path: artifacts/*
           retention-days: 7
+          compression-level: 0
 
   docker:
     name: Docker Build Test
