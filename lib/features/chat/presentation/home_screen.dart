@@ -121,7 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           'HomeScreen._createNewConversation: 导航到 /chat/${conversation.id}',
         );
       }
-      context.push('/chat/${conversation.id}');
+      context.go('/chat/${conversation.id}'); // 使用 go 替换路由
     }
   }
 
@@ -242,7 +242,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               setState(() {
                 _selectedConversation = conversation;
               });
-              context.push('/chat/${conversation.id}');
+              context.go('/chat/${conversation.id}');
             },
             onCreateConversation: _createNewConversation,
             onDeleteConversation: _deleteConversation,
@@ -333,7 +333,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 _selectedConversation = conversation;
               });
               Navigator.of(context).pop();
-              context.push('/chat/${conversation.id}');
+              context.go('/chat/${conversation.id}');
             },
             onCreateConversation: () {
               Navigator.of(context).pop();
@@ -393,7 +393,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           setState(() {
             _selectedConversation = conversation;
           });
-          context.push('/chat/${conversation.id}');
+          context.go('/chat/${conversation.id}');
         },
       ),
     );

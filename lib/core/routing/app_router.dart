@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
@@ -17,7 +18,10 @@ class AppRouter {
         path: '/chat/:id',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return ChatScreen(conversationId: id);
+          return ChatScreen(
+            key: ValueKey(id), // 防止 Widget 重用
+            conversationId: id,
+          );
         },
       ),
       GoRoute(

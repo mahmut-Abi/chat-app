@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
@@ -54,10 +55,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _loadConversation() {
     final chatRepo = ref.read(chatRepositoryProvider);
     final conversation = chatRepo.getConversation(widget.conversationId);
+    if (kDebugMode) {
+      print('ChatScreen._loadConversation:');
+      print('  conversationId: ${widget.conversationId}');
+      print('  conversation: ${conversation?.title}');
+      print('  messages count: ${conversation?.messages.length ?? 0}');
+      print('  current _messages count: ${_messages.length}');
+    }
     if (conversation != null) {
       setState(() {
+        _messages.clear(); // 清空旧消息避免累积
         _messages.addAll(conversation.messages);
       });
+      if (kDebugMode) {
+        print('  loaded _messages count: ${_messages.length}');
+      }
+    } else {
+      if (kDebugMode) {
+        print('  警告: 对话不存在!');
+      }
     }
   }
 
