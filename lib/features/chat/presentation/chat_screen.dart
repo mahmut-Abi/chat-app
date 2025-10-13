@@ -412,135 +412,147 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
       },
-      child: BackgroundContainer(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          extendBodyBehindAppBar: false,
-          appBar: isMobile
-              ? null
-              : AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  title: const Text('Chat'),
-                ),
-          drawer: isMobile
-              ? Drawer(
-                  backgroundColor: Theme.of(context).cardColor,
-                  child: EnhancedSidebar(
-                    conversations: _conversations,
-                    groups: _groups,
-                    selectedConversation: _conversations
-                        .where((c) => c.id == widget.conversationId)
-                        .firstOrNull,
-                    onConversationSelected: (conversation) {
-                      Navigator.of(context).pop();
-                      context.go('/chat/${conversation.id}');
-                    },
-                    onCreateConversation: () async {
-                      Navigator.of(context).pop();
-                      final chatRepo = ref.read(chatRepositoryProvider);
-                      final conversation = await chatRepo.createConversation(
-                        title: '新建对话',
-                      );
-                      if (mounted) {
+      child: GestureDetector(
+        onTap: () {
+          // 点击空白区域隐藏键盘
+          FocusScope.of(context).unfocus();
+        },
+        child: BackgroundContainer(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: false,
+            appBar: isMobile
+                ? null
+                : AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    title: const Text('Chat'),
+                  ),
+            drawer: isMobile
+                ? Drawer(
+                    backgroundColor: Theme.of(context).cardColor,
+                    child: EnhancedSidebar(
+                      conversations: _conversations,
+                      groups: _groups,
+                      selectedConversation: _conversations
+                          .where((c) => c.id == widget.conversationId)
+                          .firstOrNull,
+                      onConversationSelected: (conversation) {
+                        Navigator.of(context).pop();
                         context.go('/chat/${conversation.id}');
-                      }
-                    },
-                    onDeleteConversation: (id) async {
-                      final chatRepo = ref.read(chatRepositoryProvider);
-                      await chatRepo.deleteConversation(id);
-                      _loadAllConversations();
-                      if (id == widget.conversationId) {
-                        if (mounted) {
-                          context.go('/');
-                        }
-                      }
-                    },
-                    onRenameConversation: (conversation) async {
-                      final result = await showPlatformInputDialog(
-                        context: context,
-                        title: '重命名对话',
-                        initialValue: conversation.title,
-                        placeholder: '对话标题',
-                      );
-                      if (result != null && result.isNotEmpty) {
+                      },
+                      onCreateConversation: () async {
+                        Navigator.of(context).pop();
                         final chatRepo = ref.read(chatRepositoryProvider);
-                        final updated = conversation.copyWith(title: result);
+                        final conversation = await chatRepo.createConversation(
+                          title: '新建对话',
+                        );
+                        if (mounted) {
+                          context.go('/chat/${conversation.id}');
+                        }
+                      },
+                      onDeleteConversation: (id) async {
+                        final chatRepo = ref.read(chatRepositoryProvider);
+                        await chatRepo.deleteConversation(id);
+                        _loadAllConversations();
+                        if (id == widget.conversationId) {
+                          if (mounted) {
+                            context.go('/');
+                          }
+                        }
+                      },
+                      onRenameConversation: (conversation) async {
+                        final result = await showPlatformInputDialog(
+                          context: context,
+                          title: '重命名对话',
+                          initialValue: conversation.title,
+                          placeholder: '对话标题',
+                        );
+                        if (result != null && result.isNotEmpty) {
+                          final chatRepo = ref.read(chatRepositoryProvider);
+                          final updated = conversation.copyWith(title: result);
+                          await chatRepo.saveConversation(updated);
+                          _loadAllConversations();
+                        }
+                      },
+                      onUpdateTags: (conversation, tags) async {
+                        final chatRepo = ref.read(chatRepositoryProvider);
+                        final updated = conversation.copyWith(tags: tags);
                         await chatRepo.saveConversation(updated);
                         _loadAllConversations();
-                      }
-                    },
-                    onUpdateTags: (conversation, tags) async {
-                      final chatRepo = ref.read(chatRepositoryProvider);
-                      final updated = conversation.copyWith(tags: tags);
-                      await chatRepo.saveConversation(updated);
-                      _loadAllConversations();
-                    },
-                    onManageGroups: () {
-                      // 暂不处理
-                    },
-                    onSearch: () {
-                      // 暂不处理
-                    },
-                  ),
-                )
-              : null,
-          body: Stack(
-            children: [
-              Column(
-                children: [
-                  Expanded(
-                    child: _messages.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.chat_bubble_outline,
-                                  size: 64,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  '开始新对话',
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '输入消息开始与 AI 交流',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
+                      },
+                      onManageGroups: () {
+                        // 暂不处理
+                      },
+                      onSearch: () {
+                        // 暂不处理
+                      },
+                    ),
+                  )
+                : null,
+            body: Stack(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: _messages.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.chat_bubble_outline,
+                                    size: 64,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    '开始新对话',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '输入消息开始与 AI 交流',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              controller: _scrollController,
+                              padding: EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                top: isMobile ? 60 : 16,
+                                bottom: 16,
+                              ),
+                              itemCount: _messages.length,
+                              itemBuilder: (context, index) {
+                                final message = _messages[index];
+                                return MessageBubble(
+                                  message: message,
+                                  onDelete: () => _deleteMessage(index),
+                                  onRegenerate:
+                                      message.role == MessageRole.assistant
+                                      ? () => _regenerateMessage(index)
+                                      : null,
+                                  onEdit: (newContent) =>
+                                      _editMessage(index, newContent),
+                                );
+                              },
                             ),
-                          )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            padding: EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              top: isMobile ? 60 : 16,
-                              bottom: 16,
-                            ),
-                            itemCount: _messages.length,
-                            itemBuilder: (context, index) {
-                              final message = _messages[index];
-                              return MessageBubble(
-                                message: message,
-                                onDelete: () => _deleteMessage(index),
-                                onRegenerate:
-                                    message.role == MessageRole.assistant
-                                    ? () => _regenerateMessage(index)
-                                    : null,
-                                onEdit: (newContent) =>
-                                    _editMessage(index, newContent),
-                              );
-                            },
-                          ),
-                  ),
-                  _buildInputArea(),
-                ],
-              ),
-            ],
+                    ),
+                    _buildInputArea(),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
