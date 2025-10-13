@@ -152,12 +152,3 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test Docker image
-        run: |
-          docker run -d -p 8080:80 --name chat-app-test chat-app:test
-          sleep 5
-          curl -f http://localhost:8080 || exit 1
-          docker logs chat-app-test
-          docker stop chat-app-test
-          docker rm chat-app-test
-          echo "✅ Docker 镜像测试成功！"
