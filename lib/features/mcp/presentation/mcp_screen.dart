@@ -74,6 +74,24 @@ class McpScreen extends ConsumerWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Icon(
+                      config.connectionType == McpConnectionType.stdio
+                          ? Icons.terminal
+                          : Icons.http,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      config.connectionType == McpConnectionType.stdio
+                          ? 'Stdio'
+                          : 'HTTP',
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
                 Text(config.endpoint),
                 const SizedBox(height: 4),
                 Text(
@@ -88,7 +106,6 @@ class McpScreen extends ConsumerWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 启用/停用开关
                 Switch(
                   value: config.enabled,
                   onChanged: (value) async {
@@ -167,59 +184,181 @@ class McpScreen extends ConsumerWidget {
   }
 
   Future<void> _showAddDialog(BuildContext context, WidgetRef ref) async {
+    McpConnectionType selectedType = McpConnectionType.http;
     final nameController = TextEditingController();
     final endpointController = TextEditingController();
     final descriptionController = TextEditingController();
+    final argsController = TextEditingController();
+    final envKeyController = TextEditingController();
+    final envValueController = TextEditingController();
+    final Map<String, String> envVars = {};
 
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('添加 MCP 服务器'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: '名称',
-                hintText: '输入服务器名称',
-              ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('添加 MCP 服务器'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: '名称',
+                    hintText: '输入服务器名称',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<McpConnectionType>(
+                  initialValue: McpConnectionType.http,
+                  decoration: const InputDecoration(labelText: '连接类型'),
+                  items: const [
+                    DropdownMenuItem(
+                      value: McpConnectionType.http,
+                      child: Row(
+                        children: [
+                          Icon(Icons.http, size: 20),
+                          SizedBox(width: 8),
+                          Text('HTTP'),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: McpConnectionType.stdio,
+                      child: Row(
+                        children: [
+                          Icon(Icons.terminal, size: 20),
+                          SizedBox(width: 8),
+                          Text('Stdio'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedType = value;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: endpointController,
+                  decoration: InputDecoration(
+                    labelText: selectedType == McpConnectionType.http
+                        ? '端点 URL'
+                        : '命令路径',
+                    hintText: selectedType == McpConnectionType.http
+                        ? 'http://localhost:3000'
+                        : '/path/to/mcp-server',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (selectedType == McpConnectionType.stdio) ...[
+                  TextField(
+                    controller: argsController,
+                    decoration: const InputDecoration(
+                      labelText: '命令参数（可选）',
+                      hintText: '使用空格分隔，如：--port 3000 --verbose',
+                    ),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '环境变量（可选）',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  if (envVars.isNotEmpty)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: envVars.entries
+                          .map(
+                            (entry) => Chip(
+                              label: Text('${entry.key}=${entry.value}'),
+                              onDeleted: () {
+                                setState(() {
+                                  envVars.remove(entry.key);
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: envKeyController,
+                          decoration: const InputDecoration(
+                            labelText: 'Key',
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: envValueController,
+                          decoration: const InputDecoration(
+                            labelText: 'Value',
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          if (envKeyController.text.isNotEmpty) {
+                            setState(() {
+                              envVars[envKeyController.text] =
+                                  envValueController.text;
+                              envKeyController.clear();
+                              envValueController.clear();
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: '描述（可选）',
+                    hintText: '输入描述信息',
+                  ),
+                  maxLines: 2,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: endpointController,
-              decoration: const InputDecoration(
-                labelText: '端点',
-                hintText: 'http://localhost:3000',
-              ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('取消'),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(
-                labelText: '描述（可选）',
-                hintText: '输入描述信息',
+            ElevatedButton(
+              onPressed: () => _addConfig(
+                context,
+                ref,
+                nameController.text,
+                selectedType,
+                endpointController.text,
+                argsController.text,
+                envVars,
+                descriptionController.text,
               ),
-              maxLines: 2,
+              child: const Text('添加'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () => _addConfig(
-              context,
-              ref,
-              nameController.text,
-              endpointController.text,
-              descriptionController.text,
-            ),
-            child: const Text('添加'),
-          ),
-        ],
       ),
     );
   }
@@ -228,7 +367,10 @@ class McpScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     String name,
+    McpConnectionType connectionType,
     String endpoint,
+    String args,
+    Map<String, String> envVars,
     String description,
   ) async {
     if (name.isEmpty || endpoint.isEmpty) {
@@ -242,7 +384,12 @@ class McpScreen extends ConsumerWidget {
       final repository = ref.read(mcpRepositoryProvider);
       await repository.createConfig(
         name: name,
+        connectionType: connectionType,
         endpoint: endpoint,
+        args: args.isEmpty
+            ? null
+            : args.split(' ').where((s) => s.isNotEmpty).toList(),
+        env: envVars.isEmpty ? null : envVars,
         description: description.isEmpty ? null : description,
       );
 

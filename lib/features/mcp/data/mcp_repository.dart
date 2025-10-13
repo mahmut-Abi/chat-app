@@ -1,26 +1,33 @@
 import '../domain/mcp_config.dart';
 import '../../../core/storage/storage_service.dart';
-import 'mcp_client.dart';
+import 'mcp_client_base.dart';
+import 'mcp_client_factory.dart';
 import 'package:uuid/uuid.dart';
 
 /// MCP 仓库
 class McpRepository {
   final StorageService _storage;
-  final Map<String, McpClient> _clients = {};
+  final Map<String, McpClientBase> _clients = {};
 
   McpRepository(this._storage);
 
   /// 创建 MCP 配置
   Future<McpConfig> createConfig({
     required String name,
+    McpConnectionType connectionType = McpConnectionType.http,
     required String endpoint,
+    List<String>? args,
+    Map<String, String>? env,
     String? description,
     Map<String, dynamic>? headers,
   }) async {
     final config = McpConfig(
       id: const Uuid().v4(),
       name: name,
+      connectionType: connectionType,
       endpoint: endpoint,
+      args: args,
+      env: env,
       description: description,
       headers: headers,
       createdAt: DateTime.now(),
@@ -69,7 +76,7 @@ class McpRepository {
 
   /// 连接到 MCP 服务器
   Future<bool> connect(McpConfig config) async {
-    final client = McpClient(config: config);
+    final client = McpClientFactory.createClient(config);
     final success = await client.connect();
 
     if (success) {
@@ -94,7 +101,7 @@ class McpRepository {
   }
 
   /// 获取客户端
-  McpClient? getClient(String configId) {
+  McpClientBase? getClient(String configId) {
     return _clients[configId];
   }
 
