@@ -22,10 +22,7 @@ void main() {
   });
 
   group('对话创建测试', () {
-    test('创建对话应该立即保存到存储', () async {
-      // Arrange
-      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async {});
-
+    test('创建对话不应该立即保存空对话', () async {
       // Act
       final conversation = await chatRepository.createConversation(
         title: '测试对话',
@@ -34,13 +31,11 @@ void main() {
       // Assert
       expect(conversation.title, '测试对话');
       expect(conversation.messages, isEmpty);
-      verify(mockStorage.saveConversation(conversation.id, any)).called(1);
+      // 验证空对话不会被保存
+      verifyNever(mockStorage.saveConversation(any, any));
     });
 
     test('多次创建对话应该产生不同的ID', () async {
-      // Arrange
-      when(mockStorage.saveConversation(any, any)).thenAnswer((_) async {});
-
       // Act
       final conv1 = await chatRepository.createConversation(title: '对话1');
       final conv2 = await chatRepository.createConversation(title: '对话2');
@@ -51,13 +46,11 @@ void main() {
       expect(conv2.id, isNot(equals(conv3.id)));
       expect(conv1.id, isNot(equals(conv3.id)));
 
-      // 验证每个对话都被保存
-      verify(mockStorage.saveConversation(conv1.id, any)).called(1);
-      verify(mockStorage.saveConversation(conv2.id, any)).called(1);
-      verify(mockStorage.saveConversation(conv3.id, any)).called(1);
+      // 验证空对话不会被保存
+      verifyNever(mockStorage.saveConversation(any, any));
     });
 
-    test('保存对话应该更新消息列表', () async {
+    test('保存非空对话应该更新消息列表', () async {
       // Arrange
       when(mockStorage.saveConversation(any, any)).thenAnswer((_) async {});
       final conversation = await chatRepository.createConversation(
@@ -78,7 +71,7 @@ void main() {
 
       await chatRepository.saveConversation(updatedConv);
 
-      // Assert
+      // Assert - 只有非空对话才被保存
       verify(
         mockStorage.saveConversation(
           conversation.id,
