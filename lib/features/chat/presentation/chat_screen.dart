@@ -305,68 +305,87 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Chat'),
-        actions: [
-          if (_totalTokens > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Center(
-                child: Chip(
-                  avatar: const Icon(Icons.token, size: 16),
-                  label: Text('$_totalTokens tokens'),
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
+        // 仅在移动端阻止右划手势返回，但允许通过 AppBar 返回按钮返回
+        if (!isMobile) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          leading: isMobile
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null,
+          title: const Text('Chat'),
+          actions: [
+            if (_totalTokens > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Center(
+                  child: Chip(
+                    avatar: const Icon(Icons.token, size: 16),
+                    label: Text('$_totalTokens tokens'),
+                  ),
                 ),
               ),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _messages.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '开始新对话',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '输入消息开始与 AI 交流',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: _messages.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 64,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            '开始新对话',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '输入消息开始与 AI 交流',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) {
+                        final message = _messages[index];
+                        return MessageBubble(
+                          message: message,
+                          onDelete: () => _deleteMessage(index),
+                          onRegenerate: message.role == MessageRole.assistant
+                              ? () => _regenerateMessage(index)
+                              : null,
+                          onEdit: (newContent) =>
+                              _editMessage(index, newContent),
+                        );
+                      },
                     ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      return MessageBubble(
-                        message: message,
-                        onDelete: () => _deleteMessage(index),
-                        onRegenerate: message.role == MessageRole.assistant
-                            ? () => _regenerateMessage(index)
-                            : null,
-                        onEdit: (newContent) => _editMessage(index, newContent),
-                      );
-                    },
-                  ),
-          ),
-          _buildInputArea(),
-        ],
+            ),
+            _buildInputArea(),
+          ],
+        ),
       ),
     );
   }
