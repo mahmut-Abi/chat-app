@@ -8,6 +8,8 @@ import '../../../core/utils/data_export_import.dart';
 import '../../../core/utils/pdf_export.dart';
 import '../../chat/domain/conversation.dart';
 import '../../../shared/themes/app_theme.dart';
+import '../../../core/network/openai_api_client.dart';
+import '../../../core/network/dio_client.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -218,25 +220,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildApiConfigTile(ApiConfig config) {
-    return ListTile(
-      leading: const Icon(Icons.api),
-      title: Text(config.name),
-      subtitle: Text(config.provider),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showEditApiConfigDialog(config),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _deleteApiConfig(config),
-          ),
-        ],
-      ),
-    );
-  }
+  return ListTile(
+    leading: const Icon(Icons.api),
+    title: Text(config.name),
+    subtitle: Text(config.provider),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.wifi_tethering),
+          tooltip: '测试连接',
+          onPressed: () => _testApiConnection(config),
+        ),
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => _showEditApiConfigDialog(config),
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () => _deleteApiConfig(config),
+        ),
+      ],
+    ),
+  );
+}
 
   String _getThemeModeText(String mode) {
     switch (mode) {
@@ -987,10 +994,81 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateLatexEnabled(bool enabled) async {
-    final storage = ref.read(storageServiceProvider);
-    await storage.saveSetting('enableLatex', enabled);
-    ref.read(appSettingsProvider.notifier).updateSettings(
-      ref.read(appSettingsProvider).copyWith(enableLatex: enabled),
+  final storage = ref.read(storageServiceProvider);
+  await storage.saveSetting('enableLatex', enabled);
+  ref.read(appSettingsProvider.notifier).updateSettings(
+    ref.read(appSettingsProvider).copyWith(enableLatex: enabled),
+  );
+}
+
+  // 测试 API 连接
+  Future<void> _testApiConnection(ApiConfig config) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text('正在测试连接...'),
+          ],
+        ),
+      ),
     );
+
+    try {
+      final dioClient = DioClient(
+        baseUrl: config.baseUrl,
+        apiKey: config.apiKey,
+        proxyUrl: config.proxyUrl,
+      );
+      final apiClient = OpenAIApiClient(dioClient);
+      final result = await apiClient.testConnection();
+
+      if (mounted) {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(result.success ? '连接成功' : '连接失败'),
+            content: Text(result.message),
+            icon: Icon(
+              result.success ? Icons.check_circle : Icons.error,
+              color: result.success ? Colors.green : Colors.red,
+              size: 48,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('确定'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('连接失败'),
+            content: Text('发生错误: ${e.toString()}'),
+            icon: const Icon(
+              Icons.error,
+              color: Colors.red,
+              size: 48,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('确定'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import '../domain/conversation.dart';
 import 'chat_screen.dart';
 import 'widgets/enhanced_sidebar.dart';
 import 'widgets/group_management_dialog.dart';
+import '../../../shared/utils/responsive_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -140,9 +141,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
+Widget build(BuildContext context) {
+  final isMobile = ResponsiveUtils.isMobile(context);
+
+  if (isMobile) {
+    return _buildMobileLayout();
+  }
+
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Chat App'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          tooltip: '搜索 (Ctrl+F)',
+          onPressed: _showSearch,
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: '设置 (Ctrl+,)',
+          onPressed: () => context.push('/settings'),
+        ),
+      ],
+    ),
+    body: Row(
         children: [
           EnhancedSidebar(
             conversations: _conversations,
@@ -202,22 +224,172 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<bool?> _showDeleteDialog() {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('删除对话'),
-        content: const Text('确定要删除这个对话吗？此操作无法撤销。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('删除对话'),
+      content: const Text('确定要删除这个对话吗?此操作无法撤销。'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('取消'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('删除'),
+        ),
+      ],
+    ),
+  );
+}
+
+  Widget _buildMobileLayout() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chat App'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _showSearch,
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => context.push('/settings'),
           ),
         ],
       ),
+      drawer: Drawer(
+        child: EnhancedSidebar(
+          conversations: _conversations,
+          groups: _groups,
+          selectedConversation: _selectedConversation,
+          onConversationSelected: (conversation) {
+            setState(() {
+              _selectedConversation = conversation;
+            });
+            Navigator.of(context).pop();
+            context.push('/chat/${conversation.id}');
+          },
+          onCreateConversation: () {
+            Navigator.of(context).pop();
+            _createNewConversation();
+          },
+          onDeleteConversation: _deleteConversation,
+          onRenameConversation: _showRenameDialog,
+          onUpdateTags: _updateConversationTags,
+          onManageGroups: _showGroupManagement,
+        ),
+      ),
+      body: _selectedConversation == null
+          ? _buildWelcomeScreen()
+          : ChatScreen(conversationId: _selectedConversation!.id),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createNewConversation,
+        tooltip: '新建对话',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showSearch() {
+    showSearch(
+      context: context,
+      delegate: ConversationSearchDelegate(
+        conversations: _conversations,
+        onConversationSelected: (conversation) {
+          setState(() {
+            _selectedConversation = conversation;
+          });
+          context.push('/chat/${conversation.id}');
+        },
+      ),
+    );
+  }
+}
+
+class ConversationSearchDelegate extends SearchDelegate<Conversation?> {
+  final List<Conversation> conversations;
+  final Function(Conversation) onConversationSelected;
+
+  ConversationSearchDelegate({
+    required this.conversations,
+    required this.onConversationSelected,
+  });
+
+  @override
+  String get searchFieldLabel => '搜索对话...';
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  Widget _buildSearchResults() {
+    final results = conversations.where((conv) {
+      final searchLower = query.toLowerCase();
+      return conv.title.toLowerCase().contains(searchLower) ||
+          conv.messages.any(
+            (msg) => msg.content.toLowerCase().contains(searchLower),
+          );
+    }).toList();
+
+    if (results.isEmpty) {
+      return const Center(
+        child: Text('没有找到相关对话'),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final conversation = results[index];
+        return ListTile(
+          leading: const Icon(Icons.chat_bubble_outline),
+          title: Text(conversation.title),
+          subtitle: Text(
+            '${conversation.messages.length} 条消息',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () {
+            close(context, conversation);
+            onConversationSelected(conversation);
+          },
+        );
+      },
     );
   }
 }
