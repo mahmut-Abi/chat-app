@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/api_config.dart';
@@ -951,13 +952,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (confirm == true) {
       final storage = ref.read(storageServiceProvider);
-      await storage.clearAll();
+      if (kDebugMode) {
+        print('开始清除所有数据...');
+      }
+
+      // 显示加载指示器
       if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      await storage.clearAll();
+
+      // 重置 Provider 状态
+      ref.invalidate(appSettingsProvider);
+      ref.invalidate(chatRepositoryProvider);
+
+      // 关闭加载指示器
+      if (mounted) {
+        Navigator.of(context).pop();
+
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('所有数据已清除')));
+
+        // 重新加载 API 配置
+        _loadApiConfigs();
+
+        // 返回首页
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
-      _loadApiConfigs();
     }
   }
 
