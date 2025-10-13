@@ -60,4 +60,6 @@ coverage/
 
 # Local storage
 *.hive
-*.lock
+*.hive.lock
+ios/Podfile.lock
+macos/Podfile.lock
