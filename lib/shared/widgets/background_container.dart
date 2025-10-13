@@ -15,6 +15,12 @@ class BackgroundContainer extends ConsumerWidget {
     final settings = ref.watch(appSettingsProvider);
     final backgroundImage = settings.backgroundImage;
 
+    if (kDebugMode) {
+      print('BackgroundContainer: backgroundImage = $backgroundImage');
+      print('BackgroundContainer: opacity = ${settings.backgroundOpacity}');
+      print('BackgroundContainer: blur = ${settings.enableBackgroundBlur}');
+    }
+
     if (backgroundImage == null || backgroundImage.isEmpty) {
       return child;
     }
@@ -23,25 +29,21 @@ class BackgroundContainer extends ConsumerWidget {
       fit: StackFit.expand,
       children: [
         // 背景图片
-        Positioned.fill(
-          child: _buildBackgroundImage(backgroundImage),
-        ),
+        Positioned.fill(child: _buildBackgroundImage(backgroundImage)),
 
         // 模糊效果 (需要在遮罩前应用)
         if (settings.enableBackgroundBlur)
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                color: Colors.transparent,
-              ),
+              child: Container(color: Colors.transparent),
             ),
           ),
 
         // 透明度遮罩 (使用主题背景色半透明来降低背景可见度)
         Positioned.fill(
           child: Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withValues(
+            color: Colors.white.withValues(
               alpha: 1 - settings.backgroundOpacity,
             ),
           ),
@@ -55,7 +57,7 @@ class BackgroundContainer extends ConsumerWidget {
 
   Widget _buildBackgroundImage(String path) {
     Widget imageWidget;
-    
+
     if (path.startsWith('assets/')) {
       imageWidget = Image.asset(
         path,
@@ -66,9 +68,7 @@ class BackgroundContainer extends ConsumerWidget {
           }
           return Container(
             color: Colors.grey.shade300,
-            child: const Center(
-              child: Icon(Icons.error, color: Colors.red),
-            ),
+            child: const Center(child: Icon(Icons.error, color: Colors.red)),
           );
         },
       );
@@ -82,14 +82,12 @@ class BackgroundContainer extends ConsumerWidget {
           }
           return Container(
             color: Colors.grey.shade300,
-            child: const Center(
-              child: Icon(Icons.error, color: Colors.red),
-            ),
+            child: const Center(child: Icon(Icons.error, color: Colors.red)),
           );
         },
       );
     }
-    
+
     return imageWidget;
   }
 }

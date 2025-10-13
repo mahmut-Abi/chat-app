@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import '../../../core/providers/providers.dart';
 
 class BackgroundSettingsDialog extends ConsumerStatefulWidget {
@@ -16,30 +17,12 @@ class _BackgroundSettingsDialogState
     extends ConsumerState<BackgroundSettingsDialog> {
   // 默认背景图片
   static const List<Map<String, String>> defaultBackgrounds = [
-    {
-      'name': '渐变蓝紫',
-      'path': 'assets/backgrounds/gradient_1.jpg',
-    },
-    {
-      'name': '渐变粉蓝',
-      'path': 'assets/backgrounds/gradient_2.jpg',
-    },
-    {
-      'name': '渐变黄绿',
-      'path': 'assets/backgrounds/gradient_3.jpg',
-    },
-    {
-      'name': '渐变紫粉',
-      'path': 'assets/backgrounds/gradient_4.jpg',
-    },
-    {
-      'name': '渐变蓝绿',
-      'path': 'assets/backgrounds/gradient_5.jpg',
-    },
-    {
-      'name': '抽象艺术',
-      'path': 'assets/backgrounds/abstract_1.jpg',
-    },
+    {'name': '渐变蓝紫', 'path': 'assets/backgrounds/gradient_1.jpg'},
+    {'name': '渐变粉蓝', 'path': 'assets/backgrounds/gradient_2.jpg'},
+    {'name': '渐变黄绿', 'path': 'assets/backgrounds/gradient_3.jpg'},
+    {'name': '渐变紫粉', 'path': 'assets/backgrounds/gradient_4.jpg'},
+    {'name': '渐变蓝绿', 'path': 'assets/backgrounds/gradient_5.jpg'},
+    {'name': '抽象艺术', 'path': 'assets/backgrounds/abstract_1.jpg'},
   ];
 
   String? _selectedBackground;
@@ -74,16 +57,25 @@ class _BackgroundSettingsDialogState
 
     final newSettings = currentSettings.copyWith(
       backgroundImage: _selectedBackground,
+      clearBackgroundImage: _selectedBackground == null,
       backgroundOpacity: _opacity,
       enableBackgroundBlur: _enableBlur,
     );
 
+    if (kDebugMode) {
+      print('Saving settings:');
+      print('  backgroundImage: $_selectedBackground');
+      print('  backgroundOpacity: $_opacity');
+      print('  enableBackgroundBlur: $_enableBlur');
+      print('  newSettings: ${newSettings.toJson()}');
+    }
+
     // 保存到本地存储
     await settingsRepo.saveSettings(newSettings);
-    
+
     // 通知 Provider 更新状态
     ref.read(appSettingsProvider.notifier).updateSettings(newSettings);
-    
+
     if (mounted) {
       Navigator.of(context).pop();
     }
@@ -111,9 +103,7 @@ class _BackgroundSettingsDialogState
                 height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
@@ -130,10 +120,9 @@ class _BackgroundSettingsDialogState
                               Icon(
                                 Icons.image_outlined,
                                 size: 48,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.color,
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -150,10 +139,7 @@ class _BackgroundSettingsDialogState
               const SizedBox(height: 24),
 
               // 默认背景选择
-              Text(
-                '默认背景',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('默认背景', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12),
               SizedBox(
                 height: 100,
@@ -230,10 +216,7 @@ class _BackgroundSettingsDialogState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '自定义背景',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  Text('自定义背景', style: Theme.of(context).textTheme.titleMedium),
                   ElevatedButton.icon(
                     onPressed: _pickCustomImage,
                     icon: const Icon(Icons.upload_file),
@@ -279,18 +262,12 @@ class _BackgroundSettingsDialogState
       ),
       actions: [
         if (_selectedBackground != null)
-          TextButton(
-            onPressed: _clearBackground,
-            child: const Text('清除背景'),
-          ),
+          TextButton(onPressed: _clearBackground, child: const Text('清除背景')),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('取消'),
         ),
-        FilledButton(
-          onPressed: _saveSettings,
-          child: const Text('保存'),
-        ),
+        FilledButton(onPressed: _saveSettings, child: const Text('保存')),
       ],
     );
   }
@@ -305,9 +282,7 @@ class _BackgroundSettingsDialogState
         errorBuilder: (context, error, stackTrace) {
           return Container(
             color: Colors.grey.shade300,
-            child: const Center(
-              child: Icon(Icons.error),
-            ),
+            child: const Center(child: Icon(Icons.error)),
           );
         },
       );
@@ -318,9 +293,7 @@ class _BackgroundSettingsDialogState
         errorBuilder: (context, error, stackTrace) {
           return Container(
             color: Colors.grey.shade300,
-            child: const Center(
-              child: Icon(Icons.error),
-            ),
+            child: const Center(child: Icon(Icons.error)),
           );
         },
       );
@@ -330,9 +303,7 @@ class _BackgroundSettingsDialogState
       fit: StackFit.expand,
       children: [
         imageWidget,
-        Container(
-          color: Colors.white.withValues(alpha: 1 - _opacity),
-        ),
+        Container(color: Colors.white.withValues(alpha: 1 - _opacity)),
         if (_enableBlur)
           Container(
             decoration: BoxDecoration(

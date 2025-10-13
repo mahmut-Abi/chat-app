@@ -16,7 +16,7 @@ class ApiConfig extends Equatable {
   final String? proxyPassword;
   final bool isActive;
   final Map<String, dynamic>? metadata;
-  
+
   // 模型参数配置
   final String defaultModel;
   final double temperature;
@@ -155,6 +155,7 @@ class AppSettings extends Equatable {
     String? themeColor,
     int? customThemeColor,
     String? backgroundImage,
+    bool clearBackgroundImage = false,
     double? backgroundOpacity,
     bool? enableBackgroundBlur,
   }) {
@@ -166,8 +167,10 @@ class AppSettings extends Equatable {
       enableCodeHighlight: enableCodeHighlight ?? this.enableCodeHighlight,
       enableLatex: enableLatex ?? this.enableLatex,
       themeColor: themeColor ?? this.themeColor,
-      customThemeColor: customThemeColor,
-      backgroundImage: backgroundImage,
+      customThemeColor: customThemeColor ?? this.customThemeColor,
+      backgroundImage: clearBackgroundImage
+          ? null
+          : (backgroundImage ?? this.backgroundImage),
       backgroundOpacity: backgroundOpacity ?? this.backgroundOpacity,
       enableBackgroundBlur: enableBackgroundBlur ?? this.enableBackgroundBlur,
     );
