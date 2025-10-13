@@ -9,7 +9,6 @@ import '../../../core/utils/token_counter.dart';
 import 'widgets/image_picker_widget.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
-import '../../../shared/widgets/background_container.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -306,9 +305,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BackgroundContainer(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: const Text('Chat'),
@@ -370,7 +368,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           _buildInputArea(),
         ],
-      ),
       ),
     );
   }

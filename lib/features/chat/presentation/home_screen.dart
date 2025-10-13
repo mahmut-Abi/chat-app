@@ -10,6 +10,7 @@ import '../../../shared/utils/responsive_utils.dart';
 import '../../../core/utils/desktop_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import '../../../shared/widgets/background_container.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -324,9 +325,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           onManageGroups: _showGroupManagement,
         ),
       ),
-      body: _selectedConversation == null
-          ? _buildWelcomeScreen()
-          : ChatScreen(conversationId: _selectedConversation!.id),
+      body: BackgroundContainer(
+        child: _selectedConversation == null
+            ? _buildWelcomeScreen()
+            : ChatScreen(conversationId: _selectedConversation!.id),
+      ),
     );
   }
 
