@@ -6,7 +6,7 @@ FROM ghcr.io/cirruslabs/flutter:stable AS builder
 WORKDIR /app
 
 # 复制 pubspec 文件并获取依赖
-COPY pubspec.yaml ./
+COPY pubspec.yaml pubspec.lock ./
 RUN flutter pub get
 
 # 复制整个项目
@@ -16,7 +16,7 @@ COPY . .
 RUN flutter pub run build_runner build --delete-conflicting-outputs
 
 # 构建 Web 应用
-RUN flutter build web --release --web-renderer canvaskit
+RUN flutter build web --release
 
 # 阶段 2: 运行阶段
 FROM nginx:alpine
