@@ -166,8 +166,8 @@ class AppSettings extends Equatable {
       enableCodeHighlight: enableCodeHighlight ?? this.enableCodeHighlight,
       enableLatex: enableLatex ?? this.enableLatex,
       themeColor: themeColor ?? this.themeColor,
-      customThemeColor: customThemeColor ?? this.customThemeColor,
-      backgroundImage: backgroundImage ?? this.backgroundImage,
+      customThemeColor: customThemeColor,
+      backgroundImage: backgroundImage,
       backgroundOpacity: backgroundOpacity ?? this.backgroundOpacity,
       enableBackgroundBlur: enableBackgroundBlur ?? this.enableBackgroundBlur,
     );

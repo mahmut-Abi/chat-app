@@ -23,21 +23,27 @@ class BackgroundContainer extends ConsumerWidget {
       fit: StackFit.expand,
       children: [
         // 背景图片
-        _buildBackgroundImage(backgroundImage),
+        Positioned.fill(
+          child: _buildBackgroundImage(backgroundImage),
+        ),
 
         // 模糊效果 (需要在遮罩前应用)
         if (settings.enableBackgroundBlur)
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              color: Colors.transparent,
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.transparent,
+              ),
             ),
           ),
 
-        // 透明度遮罩 (使用白色半透明来降低背景可见度)
-        Container(
-          color: Colors.white.withValues(
-            alpha: 1 - settings.backgroundOpacity,
+        // 透明度遮罩 (使用主题背景色半透明来降低背景可见度)
+        Positioned.fill(
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor.withValues(
+              alpha: 1 - settings.backgroundOpacity,
+            ),
           ),
         ),
 
@@ -54,26 +60,32 @@ class BackgroundContainer extends ConsumerWidget {
       imageWidget = Image.asset(
         path,
         fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
           if (kDebugMode) {
             print('背景图片加载失败 (asset): $path, 错误: $error');
           }
-          return const SizedBox.shrink();
+          return Container(
+            color: Colors.grey.shade300,
+            child: const Center(
+              child: Icon(Icons.error, color: Colors.red),
+            ),
+          );
         },
       );
     } else {
       imageWidget = Image.file(
         File(path),
         fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
           if (kDebugMode) {
             print('背景图片加载失败 (file): $path, 错误: $error');
           }
-          return const SizedBox.shrink();
+          return Container(
+            color: Colors.grey.shade300,
+            child: const Center(
+              child: Icon(Icons.error, color: Colors.red),
+            ),
+          );
         },
       );
     }
