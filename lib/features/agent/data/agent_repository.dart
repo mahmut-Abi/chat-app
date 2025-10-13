@@ -59,15 +59,51 @@ class AgentRepository {
   }
 
   /// 获取所有 Agent
-  List<AgentConfig> getAllAgents() {
-    // TODO: 实现从 storage 读取所有 agent
-    return [];
+  Future<List<AgentConfig>> getAllAgents() async {
+    try {
+      final keys = await _storage.getAllKeys();
+      final agentKeys = keys.where((k) => k.startsWith('agent_') && !k.contains('tool')).toList();
+      
+      final agents = <AgentConfig>[];
+      for (final key in agentKeys) {
+        final data = _storage.getSetting(key);
+        if (data != null && data is Map<String, dynamic>) {
+          try {
+            agents.add(AgentConfig.fromJson(data));
+          } catch (e) {
+            // 跳过无效的配置
+          }
+        }
+      }
+      
+      return agents;
+    } catch (e) {
+      return [];
+    }
   }
 
   /// 获取所有工具
-  List<AgentTool> getAllTools() {
-    // TODO: 实现从 storage 读取所有工具
-    return [];
+  Future<List<AgentTool>> getAllTools() async {
+    try {
+      final keys = await _storage.getAllKeys();
+      final toolKeys = keys.where((k) => k.startsWith('agent_tool_')).toList();
+      
+      final tools = <AgentTool>[];
+      for (final key in toolKeys) {
+        final data = _storage.getSetting(key);
+        if (data != null && data is Map<String, dynamic>) {
+          try {
+            tools.add(AgentTool.fromJson(data));
+          } catch (e) {
+            // 跳过无效的工具
+          }
+        }
+      }
+      
+      return tools;
+    } catch (e) {
+      return [];
+    }
   }
 
   /// 更新 Agent
@@ -78,7 +114,7 @@ class AgentRepository {
 
   /// 删除 Agent
   Future<void> deleteAgent(String id) async {
-    // TODO: 实现从 storage 删除
+    await _storage.deleteSetting('agent_$id');
   }
 
   /// 更新工具
@@ -88,6 +124,6 @@ class AgentRepository {
 
   /// 删除工具
   Future<void> deleteTool(String id) async {
-    // TODO: 实现从 storage 删除
+    await _storage.deleteSetting('agent_tool_$id');
   }
 }
