@@ -52,7 +52,6 @@ class _BackgroundSettingsDialogState
   }
 
   Future<void> _saveSettings() async {
-    final settingsRepo = ref.read(settingsRepositoryProvider);
     final currentSettings = ref.read(appSettingsProvider);
 
     final newSettings = currentSettings.copyWith(
@@ -70,11 +69,8 @@ class _BackgroundSettingsDialogState
       print('  newSettings: ${newSettings.toJson()}');
     }
 
-    // 保存到本地存储
-    await settingsRepo.saveSettings(newSettings);
-
-    // 通知 Provider 更新状态
-    ref.read(appSettingsProvider.notifier).updateSettings(newSettings);
+    // updateSettings 会自动保存到本地存储并更新状态
+    await ref.read(appSettingsProvider.notifier).updateSettings(newSettings);
 
     if (mounted) {
       Navigator.of(context).pop();

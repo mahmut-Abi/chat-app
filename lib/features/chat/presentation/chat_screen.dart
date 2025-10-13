@@ -422,59 +422,89 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
                 )
               : null,
-          floatingActionButton: isMobile
-              ? Builder(
-                  builder: (context) => FloatingActionButton(
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                    child: const Icon(Icons.menu),
-                  ),
-                )
-              : null,
-          body: Column(
+          body: Stack(
             children: [
-              Expanded(
-                child: _messages.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.chat_bubble_outline,
-                              size: 64,
-                              color: Theme.of(context).colorScheme.primary,
+              Column(
+                children: [
+                  Expanded(
+                    child: _messages.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.chat_bubble_outline,
+                                  size: 64,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  '开始新对话',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '输入消息开始与 AI 交流',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '开始新对话',
-                              style: Theme.of(context).textTheme.titleLarge,
+                          )
+                        : ListView.builder(
+                            controller: _scrollController,
+                            padding: EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: isMobile ? 60 : 16,
+                              bottom: 16,
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '输入消息开始与 AI 交流',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          final message = _messages[index];
-                          return MessageBubble(
-                            message: message,
-                            onDelete: () => _deleteMessage(index),
-                            onRegenerate: message.role == MessageRole.assistant
-                                ? () => _regenerateMessage(index)
-                                : null,
-                            onEdit: (newContent) =>
-                                _editMessage(index, newContent),
-                          );
-                        },
-                      ),
+                            itemCount: _messages.length,
+                            itemBuilder: (context, index) {
+                              final message = _messages[index];
+                              return MessageBubble(
+                                message: message,
+                                onDelete: () => _deleteMessage(index),
+                                onRegenerate:
+                                    message.role == MessageRole.assistant
+                                    ? () => _regenerateMessage(index)
+                                    : null,
+                                onEdit: (newContent) =>
+                                    _editMessage(index, newContent),
+                              );
+                            },
+                          ),
+                  ),
+                  _buildInputArea(),
+                ],
               ),
-              _buildInputArea(),
+              // 移动端左上角菜单按钮
+              if (isMobile)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Builder(
+                    builder: (context) => Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surface.withValues(alpha: 0.8),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        tooltip: '打开菜单',
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

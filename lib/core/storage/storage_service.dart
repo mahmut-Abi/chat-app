@@ -124,6 +124,12 @@ class StorageService {
         );
       }
       if (value == null) return null;
+
+      // 如果是 Map 类型，需要转换为 Map<String, dynamic>
+      if (value is Map && T.toString().contains('Map')) {
+        return Map<String, dynamic>.from(value) as T;
+      }
+
       return value as T;
     } catch (e) {
       if (kDebugMode) {
