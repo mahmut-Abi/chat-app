@@ -322,16 +322,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         drawerScrimColor: Colors.black.withValues(alpha: 0.5),
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,
-        appBar: AppBar(
-          title: Text(_selectedConversation?.title ?? 'Chat App'),
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
-          ),
-          actions: [],
-        ),
         drawer: Drawer(
           backgroundColor: Theme.of(context).cardColor,
           child: EnhancedSidebar(
@@ -356,9 +346,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onSearch: _showSearch,
           ),
         ),
-        body: _selectedConversation == null
-            ? BackgroundContainer(child: _buildWelcomeScreen())
-            : ChatScreen(conversationId: _selectedConversation!.id),
+        body: Stack(
+          children: [
+            _selectedConversation == null
+                ? BackgroundContainer(child: _buildWelcomeScreen())
+                : ChatScreen(conversationId: _selectedConversation!.id),
+            // 左上角透明菜单按钮
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Builder(
+                builder: (context) => Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withValues(alpha: 0.8),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    tooltip: '打开菜单',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

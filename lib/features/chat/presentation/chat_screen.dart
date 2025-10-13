@@ -477,34 +477,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   _buildInputArea(),
                 ],
               ),
-              // 移动端左上角菜单按钮
-              if (isMobile)
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: Builder(
-                    builder: (context) => Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surface.withValues(alpha: 0.8),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        tooltip: '打开菜单',
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
