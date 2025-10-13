@@ -124,3 +124,15 @@ echo "✅ Git hooks installed!"
 ```bash
 ./scripts/setup-hooks.sh
 ```
+
+## CI/CD 集成
+
+GitHub Actions 也已配置了相同的检查逻辑：
+
+- ✅ 只有 error 会导致 CI 失败
+- ✅ warning 和 info 不会阻止构建
+- ✅ 显示详细的问题统计
+
+查看 `.github/workflows/flutter_test.yml` 了解详细配置。
+
+这确保了本地和 CI 环境的代码质量检查标准保持一致。
