@@ -291,6 +291,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildMobileLayout() {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawerScrimColor: Colors.black.withValues(alpha: 0.5),
       appBar: AppBar(
         title: const Text('Chat App'),
         leading: Builder(
@@ -304,6 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ],
       ),
       drawer: Drawer(
+        backgroundColor: Theme.of(context).cardColor,
         child: EnhancedSidebar(
           conversations: _conversations,
           groups: _groups,

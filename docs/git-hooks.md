@@ -1,19 +1,40 @@
 # Git Hooks 使用指南
 
-本项目配置了 Git pre-commit hook，用于在每次提交前自动运行代码质量检查。
+本项目配置了 Git pre-commit hook，用于在每次提交前自动运行代码格式和质量检查。
 
 ## Pre-commit Hook
 
 ### 功能说明
 
-每次执行 `git commit` 时，会自动运行 `flutter analyze` 检查代码质量：
+每次执行 `git commit` 时，会自动运行以下检查：
+
+#### 1. Dart 代码格式检查
+
+- ✅ **允许提交**: 如果所有暂存的 Dart 文件都已格式化
+- ❌ **阻止提交**: 如果有未格式化的 Dart 文件
+- 只检查暂存（staged）的 `.dart` 文件
+
+如果格式检查失败，会提示运行：
+```bash
+flutter format .
+# 或格式化具体文件
+dart format path/to/file.dart
+```
+
+#### 2. Flutter Analyze 代码质量检查
 
 - ✅ **允许提交**: 如果只有 warning 和 info 级别的问题
 - ❌ **阻止提交**: 如果存在 error 级别的问题
 
 ### 输出示例
 
+**正常情况（所有检查通过）：**
+
 ```bash
+🎨 Checking Dart formatting...
+
+✅ All Dart files are formatted!
+
 🔍 Running Flutter analyze...
 
 Analyzing chat-app...
@@ -26,6 +47,19 @@ warning • The value of the field '_trayListener' isn't used
 ✅ Flutter analyze passed!
    Found 3 warning(s) and 35 info message(s)
    (These won't block the commit)
+```
+
+**异常情况（格式检查失败）：**
+
+```bash
+🎨 Checking Dart formatting...
+
+❌ Some Dart files are not formatted!
+
+Please run: flutter format .
+Or format specific files:
+  dart format lib/main.dart
+  dart format lib/features/chat/presentation/chat_page.dart
 ```
 
 ### Hook 安装位置
@@ -48,22 +82,35 @@ git commit --no-verify -m "commit message"
 
 Hook 会执行以下步骤：
 
-1. 运行 `flutter analyze --no-pub`
-2. 捕获输出并检查是否有 error 级别的问题
-3. 统计 error、warning、info 的数量
-4. 如果有 error，则阻止提交并返回错误码 1
-5. 如果没有 error，允许提交并显示摘要信息
+1. 获取所有暂存的 `.dart` 文件列表
+2. 运行 `dart format --output=none --set-exit-if-changed` 检查格式
+3. 如果有未格式化的文件，阻止提交
+4. 运行 `flutter analyze --no-pub` 检查代码质量
+5. 捕获输出并检查是否有 error 级别的问题
+6. 统计 error、warning、info 的数量
+7. 如果有 error，则阻止提交并返回错误码 1
+8. 如果所有检查通过，允许提交并显示摘要信息
 
 ### 修改 Hook
 
 如果需要修改 hook 行为，编辑 `.git/hooks/pre-commit` 文件。
 
-例如，如果也想阻止 warning：
+**示例 1**: 如果也想阻止 warning：
 
 ```bash
 if echo "$ANALYZE_OUTPUT" | grep -q '^  error •\|^warning •'; then
     echo "❌ Flutter analyze found errors or warnings!"
     exit 1
+fi
+```
+
+**示例 2**: 如果想自动修复格式问题而不是阻止提交：
+
+```bash
+if [ -n "$STAGED_DART_FILES" ]; then
+    echo "🎨 Auto-formatting Dart files..."
+    dart format $STAGED_DART_FILES
+    git add $STAGED_DART_FILES
 fi
 ```
 
