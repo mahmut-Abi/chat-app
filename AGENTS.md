@@ -253,3 +253,30 @@ Keep business logic in repositories and domain layer, not in widgets.
 - Android 需要配置签名证书用于发布版本
 - iOS 需要 Apple Developer 账号用于真机调试和发布
 - 所有平台均已配置必要的权限和设置
+
+## Git Hooks
+
+本项目配置了 Git pre-commit hook，会在每次提交前自动运行 `flutter analyze` 检查代码质量。
+
+### 安装 Hooks
+
+新克隆项目后，需要运行以下命令安装 hooks：
+
+```bash
+./scripts/setup-hooks.sh
+```
+
+### Hook 行为
+
+- ✅ **允许提交**: 如果只有 warning 和 info 级别的问题
+- ❌ **阻止提交**: 如果存在 error 级别的问题
+
+### 跳过 Hook
+
+如需跳过 hook 检查：
+
+```bash
+git commit --no-verify -m "commit message"
+```
+
+详细信息请查阅 `docs/git-hooks.md`
