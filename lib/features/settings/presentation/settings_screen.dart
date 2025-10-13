@@ -12,6 +12,7 @@ import '../../../shared/themes/app_theme.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
 import 'background_settings_dialog.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -127,6 +128,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 subtitle: const Text('自定义聊天背景'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _showBackgroundDialog,
+              ),
+            ],
+          ),
+          const Divider(),
+          _buildSection(
+            title: '高级功能',
+            children: [
+              ListTile(
+                leading: const Icon(Icons.cloud),
+                title: const Text('MCP 配置'),
+                subtitle: const Text('配置 Model Context Protocol 服务器'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/mcp'),
               ),
             ],
           ),

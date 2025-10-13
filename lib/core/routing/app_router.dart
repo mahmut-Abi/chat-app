@@ -3,6 +3,7 @@ import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/models/presentation/models_screen.dart';
+import '../../features/mcp/presentation/mcp_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -24,6 +25,7 @@ class AppRouter {
         path: '/models',
         builder: (context, state) => const ModelsScreen(),
       ),
+      GoRoute(path: '/mcp', builder: (context, state) => const McpScreen()),
     ],
   );
 }
