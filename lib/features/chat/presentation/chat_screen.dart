@@ -91,8 +91,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty)
+    if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty) {
       return;
+    }
 
     // 处理图片附件
     List<ImageAttachment>? imageAttachments;

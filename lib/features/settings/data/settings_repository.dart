@@ -1,7 +1,6 @@
 import '../domain/api_config.dart';
 import '../../../core/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 class SettingsRepository {

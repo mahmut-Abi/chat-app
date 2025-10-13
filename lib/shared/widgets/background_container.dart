@@ -21,8 +21,12 @@ class BackgroundContainer extends ConsumerWidget {
       print('BackgroundContainer: blur = ${settings.enableBackgroundBlur}');
     }
 
+    // 没有背景图片时,使用主题背景色
     if (backgroundImage == null || backgroundImage.isEmpty) {
-      return child;
+      return Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: child,
+      );
     }
 
     return Stack(
