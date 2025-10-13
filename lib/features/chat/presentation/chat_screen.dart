@@ -182,13 +182,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
-      final conversation = chatRepo.getConversation(widget.conversationId);
-      if (conversation != null) {
-        await chatRepo.saveConversation(
-          conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      // 获取或创建对话
+      var conversation = chatRepo.getConversation(widget.conversationId);
+      if (conversation == null) {
+        // 如果对话不存在(新创建的对话),使用当前 conversationId 创建一个
+        conversation = Conversation(
+          id: widget.conversationId,
+          title: 'New Conversation',
+          messages: [],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         );
-        _calculateTokens();
       }
+
+      // 保存包含消息的对话
+      await chatRepo.saveConversation(
+        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      );
+      _calculateTokens();
     } catch (e) {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
@@ -263,13 +274,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
-      final conversation = chatRepo.getConversation(widget.conversationId);
-      if (conversation != null) {
-        await chatRepo.saveConversation(
-          conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      // 获取或创建对话
+      var conversation = chatRepo.getConversation(widget.conversationId);
+      if (conversation == null) {
+        // 如果对话不存在(新创建的对话),使用当前 conversationId 创建一个
+        conversation = Conversation(
+          id: widget.conversationId,
+          title: 'New Conversation',
+          messages: [],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         );
-        _calculateTokens();
       }
+
+      // 保存包含消息的对话
+      await chatRepo.saveConversation(
+        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+      );
+      _calculateTokens();
     } catch (e) {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
@@ -291,13 +313,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     final chatRepo = ref.read(chatRepositoryProvider);
-    final conversation = chatRepo.getConversation(widget.conversationId);
-    if (conversation != null) {
-      await chatRepo.saveConversation(
-        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+
+    // 获取或创建对话
+    var conversation = chatRepo.getConversation(widget.conversationId);
+    if (conversation == null) {
+      conversation = Conversation(
+        id: widget.conversationId,
+        title: 'New Conversation',
+        messages: [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
-      _calculateTokens();
     }
+
+    // 保存包含消息的对话
+    await chatRepo.saveConversation(
+      conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+    );
+    _calculateTokens();
   }
 
   Future<void> _editMessage(int messageIndex, String newContent) async {
@@ -310,13 +343,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     final chatRepo = ref.read(chatRepositoryProvider);
-    final conversation = chatRepo.getConversation(widget.conversationId);
-    if (conversation != null) {
-      await chatRepo.saveConversation(
-        conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+
+    // 获取或创建对话
+    var conversation = chatRepo.getConversation(widget.conversationId);
+    if (conversation == null) {
+      conversation = Conversation(
+        id: widget.conversationId,
+        title: 'New Conversation',
+        messages: [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
-      _calculateTokens();
     }
+
+    // 保存包含消息的对话
+    await chatRepo.saveConversation(
+      conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
+    );
+    _calculateTokens();
   }
 
   @override

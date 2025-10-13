@@ -30,26 +30,26 @@ void main() {
       expect(conversation.title, 'Test Conversation');
       expect(conversation.messages, isEmpty);
       expect(conversation.id, isNotEmpty);
-      
+
       // 验证空对话不会被保存
       verifyNever(mockStorage.saveConversation(any, any));
     });
 
     test('应该跳过保存空对话', () async {
       final conversation = await repository.createConversation(title: 'Test');
-      
+
       // 尝试保存空对话
       await repository.saveConversation(conversation);
-      
+
       // 验证没有调用保存
       verifyNever(mockStorage.saveConversation(any, any));
     });
 
     test('应该正确保存非空对话', () async {
       when(mockStorage.saveConversation(any, any)).thenAnswer((_) async => {});
-      
+
       final conversation = await repository.createConversation(title: 'Test');
-      
+
       // 添加一条消息
       final updatedConversation = conversation.copyWith(
         messages: [
@@ -58,14 +58,16 @@ void main() {
             role: MessageRole.user,
             content: 'Hello',
             timestamp: DateTime.now(),
-          )
+          ),
         ],
       );
 
       await repository.saveConversation(updatedConversation);
 
       // 验证保存被调用
-      verify(mockStorage.saveConversation(updatedConversation.id, any)).called(1);
+      verify(
+        mockStorage.saveConversation(updatedConversation.id, any),
+      ).called(1);
     });
 
     test('应该正确获取所有会话', () {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/conversation.dart';
 import 'conversation_tags_dialog.dart';
+import '../../../../shared/widgets/glass_container.dart';
 
 // 增强版侧边栏组件
 class EnhancedSidebar extends StatefulWidget {
@@ -399,8 +400,11 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
     required String label,
     required VoidCallback onTap,
   }) {
-    return Card(
-      margin: EdgeInsets.zero,
+    return GlassContainer(
+      blur: 10.0,
+      opacity: 0.1,
+      borderRadius: BorderRadius.circular(8),
+      enableShadow: false,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),

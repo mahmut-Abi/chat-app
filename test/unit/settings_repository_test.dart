@@ -108,9 +108,9 @@ void main() {
         'presencePenalty': 0.0,
       };
 
-      when(mockStorage.getApiConfig('config-1')).thenAnswer(
-        (_) async => mockConfig,
-      );
+      when(
+        mockStorage.getApiConfig('config-1'),
+      ).thenAnswer((_) async => mockConfig);
 
       final config = await repository.getApiConfig('config-1');
 
@@ -151,9 +151,7 @@ void main() {
         },
       ];
 
-      when(mockStorage.getAllApiConfigs()).thenAnswer(
-        (_) async => mockConfigs,
-      );
+      when(mockStorage.getAllApiConfigs()).thenAnswer((_) async => mockConfigs);
       when(mockStorage.getApiConfig(any)).thenAnswer(
         (invocation) async => mockConfigs.firstWhere(
           (c) => c['id'] == invocation.positionalArguments[0],

@@ -45,6 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- 启用 iOS 毛玻璃效果 -->
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
 	<!-- 网络和文件访问权限描述 -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>需要访问相册以选择和分享图片</string>
