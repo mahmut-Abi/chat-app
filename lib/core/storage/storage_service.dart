@@ -21,9 +21,6 @@ class StorageService {
   Future<void> init() async {
     try {
       await Hive.initFlutter();
-      if (kDebugMode) {
-        print('Hive 初始化路径: ${await Hive.defaultDirectory}');
-      }
       _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
       _settingsBoxInstance = await Hive.openBox(_settingsBox);
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
