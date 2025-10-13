@@ -1129,10 +1129,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   // 测试 API 连接
   Future<void> _testApiConnection(ApiConfig config) async {
-    showPlatformLoadingDialog(
-      context: context,
-      message: '正在测试连接...',
-    );
+    showPlatformLoadingDialog(context: context, message: '正在测试连接...');
 
     try {
       final dioClient = DioClient(
