@@ -16,6 +16,14 @@ class ApiConfig extends Equatable {
   final String? proxyPassword;
   final bool isActive;
   final Map<String, dynamic>? metadata;
+  
+  // 模型参数配置
+  final String defaultModel;
+  final double temperature;
+  final int maxTokens;
+  final double topP;
+  final double frequencyPenalty;
+  final double presencePenalty;
 
   const ApiConfig({
     required this.id,
@@ -29,6 +37,12 @@ class ApiConfig extends Equatable {
     this.proxyPassword,
     this.isActive = true,
     this.metadata,
+    this.defaultModel = 'gpt-3.5-turbo',
+    this.temperature = 0.7,
+    this.maxTokens = 2000,
+    this.topP = 1.0,
+    this.frequencyPenalty = 0.0,
+    this.presencePenalty = 0.0,
   });
 
   factory ApiConfig.fromJson(Map<String, dynamic> json) =>
@@ -48,6 +62,12 @@ class ApiConfig extends Equatable {
     String? proxyPassword,
     bool? isActive,
     Map<String, dynamic>? metadata,
+    String? defaultModel,
+    double? temperature,
+    int? maxTokens,
+    double? topP,
+    double? frequencyPenalty,
+    double? presencePenalty,
   }) {
     return ApiConfig(
       id: id ?? this.id,
@@ -61,6 +81,12 @@ class ApiConfig extends Equatable {
       proxyPassword: proxyPassword ?? this.proxyPassword,
       isActive: isActive ?? this.isActive,
       metadata: metadata ?? this.metadata,
+      defaultModel: defaultModel ?? this.defaultModel,
+      temperature: temperature ?? this.temperature,
+      maxTokens: maxTokens ?? this.maxTokens,
+      topP: topP ?? this.topP,
+      frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
+      presencePenalty: presencePenalty ?? this.presencePenalty,
     );
   }
 
@@ -77,6 +103,12 @@ class ApiConfig extends Equatable {
     proxyPassword,
     isActive,
     metadata,
+    defaultModel,
+    temperature,
+    maxTokens,
+    topP,
+    frequencyPenalty,
+    presencePenalty,
   ];
 }
 

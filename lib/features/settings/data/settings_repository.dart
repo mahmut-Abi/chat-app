@@ -19,6 +19,12 @@ class SettingsRepository {
     String? proxyUrl,
     String? proxyUsername,
     String? proxyPassword,
+    String? defaultModel,
+    double? temperature,
+    int? maxTokens,
+    double? topP,
+    double? frequencyPenalty,
+    double? presencePenalty,
   }) async {
     final config = ApiConfig(
       id: _uuid.v4(),
@@ -31,6 +37,12 @@ class SettingsRepository {
       proxyUsername: proxyUsername,
       proxyPassword: proxyPassword,
       isActive: true,
+      defaultModel: defaultModel ?? 'gpt-3.5-turbo',
+      temperature: temperature ?? 0.7,
+      maxTokens: maxTokens ?? 2000,
+      topP: topP ?? 1.0,
+      frequencyPenalty: frequencyPenalty ?? 0.0,
+      presencePenalty: presencePenalty ?? 0.0,
     );
 
     await _storage.saveApiConfig(config.id, config.toJson());

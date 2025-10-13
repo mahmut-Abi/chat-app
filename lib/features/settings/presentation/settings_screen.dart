@@ -11,7 +11,6 @@ import '../../../shared/themes/app_theme.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
 import 'background_settings_dialog.dart';
-import '../../chat/presentation/widgets/model_config_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -127,13 +126,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 subtitle: const Text('自定义聊天背景'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _showBackgroundDialog,
-              ),
-              ListTile(
-                leading: const Icon(Icons.tune),
-                title: const Text('模型参数'),
-                subtitle: const Text('配置默认模型参数'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _showModelConfigDialog,
               ),
             ],
           ),
@@ -310,47 +302,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _showModelConfigDialog() async {
-    // 从存储中读取当前的模型配置
-    final storage = ref.read(storageServiceProvider);
-    final savedModel = await storage.getSetting('defaultModel') ?? 'gpt-3.5-turbo';
-    final savedTemp = await storage.getSetting('defaultTemperature') ?? 0.7;
-    final savedMaxTokens = await storage.getSetting('defaultMaxTokens') ?? 2000;
-    final savedTopP = await storage.getSetting('defaultTopP') ?? 1.0;
-    final savedFreqPenalty = await storage.getSetting('defaultFrequencyPenalty') ?? 0.0;
-    final savedPresPenalty = await storage.getSetting('defaultPresencePenalty') ?? 0.0;
-
-    final currentConfig = ModelConfig(
-      model: savedModel is String ? savedModel : 'gpt-3.5-turbo',
-      temperature: savedTemp is double ? savedTemp : (savedTemp is int ? savedTemp.toDouble() : 0.7),
-      maxTokens: savedMaxTokens is int ? savedMaxTokens : (savedMaxTokens is double ? savedMaxTokens.toInt() : 2000),
-      topP: savedTopP is double ? savedTopP : (savedTopP is int ? savedTopP.toDouble() : 1.0),
-      frequencyPenalty: savedFreqPenalty is double ? savedFreqPenalty : (savedFreqPenalty is int ? savedFreqPenalty.toDouble() : 0.0),
-      presencePenalty: savedPresPenalty is double ? savedPresPenalty : (savedPresPenalty is int ? savedPresPenalty.toDouble() : 0.0),
-    );
-
-    final config = await showDialog<ModelConfig>(
-      context: context,
-      builder: (context) => ModelConfigDialog(initialConfig: currentConfig),
-    );
-
-    if (config != null) {
-      // 保存配置到存储
-      await storage.saveSetting('defaultModel', config.model);
-      await storage.saveSetting('defaultTemperature', config.temperature);
-      await storage.saveSetting('defaultMaxTokens', config.maxTokens);
-      await storage.saveSetting('defaultTopP', config.topP);
-      await storage.saveSetting('defaultFrequencyPenalty', config.frequencyPenalty);
-      await storage.saveSetting('defaultPresencePenalty', config.presencePenalty);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('模型参数已保存')),
-        );
-      }
-    }
-  }
-
   Future<void> _showThemeColorDialog() async {
     final settings = ref.read(appSettingsProvider);
     final result = await showDialog<String>(
@@ -513,6 +464,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final proxyUrlController = TextEditingController();
     final proxyUsernameController = TextEditingController();
     final proxyPasswordController = TextEditingController();
+    final modelController = TextEditingController(text: 'gpt-3.5-turbo');
+    double temperature = 0.7;
+    int maxTokens = 2000;
+    double topP = 1.0;
+    double frequencyPenalty = 0.0;
+    double presencePenalty = 0.0;
     String selectedProvider = 'OpenAI';
     bool enableProxy = false;
 
@@ -574,6 +531,85 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 16),
+                // 模型参数设置
+                ExpansionTile(
+                  title: const Text('模型参数设置'),
+                  initiallyExpanded: false,
+                  children: [
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: modelController,
+                      decoration: const InputDecoration(
+                        labelText: '默认模型',
+                        border: OutlineInputBorder(),
+                        hintText: 'gpt-3.5-turbo',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    StatefulBuilder(
+                      builder: (context, setSliderState) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Temperature: ${temperature.toStringAsFixed(2)}'),
+                          Slider(
+                            value: temperature,
+                            min: 0.0,
+                            max: 2.0,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setSliderState(() => temperature = value);
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Max Tokens: $maxTokens'),
+                          Slider(
+                            value: maxTokens.toDouble(),
+                            min: 100,
+                            max: 4000,
+                            divisions: 39,
+                            onChanged: (value) {
+                              setSliderState(() => maxTokens = value.toInt());
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Top P: ${topP.toStringAsFixed(2)}'),
+                          Slider(
+                            value: topP,
+                            min: 0.0,
+                            max: 1.0,
+                            divisions: 10,
+                            onChanged: (value) {
+                              setSliderState(() => topP = value);
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Frequency Penalty: ${frequencyPenalty.toStringAsFixed(2)}'),
+                          Slider(
+                            value: frequencyPenalty,
+                            min: 0.0,
+                            max: 2.0,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setSliderState(() => frequencyPenalty = value);
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Presence Penalty: ${presencePenalty.toStringAsFixed(2)}'),
+                          Slider(
+                            value: presencePenalty,
+                            min: 0.0,
+                            max: 2.0,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setSliderState(() => presencePenalty = value);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 SwitchListTile(
                   title: const Text('启用 HTTP 代理'),
                   value: enableProxy,
@@ -630,6 +666,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     'provider': selectedProvider,
                     'baseUrl': baseUrlController.text,
                     'apiKey': apiKeyController.text,
+                    'defaultModel': modelController.text,
+                    'temperature': temperature.toString(),
+                    'maxTokens': maxTokens.toString(),
+                    'topP': topP.toString(),
+                    'frequencyPenalty': frequencyPenalty.toString(),
+                    'presencePenalty': presencePenalty.toString(),
                   };
                   if (enableProxy && proxyUrlController.text.isNotEmpty) {
                     result['proxyUrl'] = proxyUrlController.text;
@@ -660,6 +702,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         proxyUrl: result['proxyUrl'],
         proxyUsername: result['proxyUsername'],
         proxyPassword: result['proxyPassword'],
+        defaultModel: result['defaultModel'],
+        temperature: double.tryParse(result['temperature'] ?? '0.7'),
+        maxTokens: int.tryParse(result['maxTokens'] ?? '2000'),
+        topP: double.tryParse(result['topP'] ?? '1.0'),
+        frequencyPenalty: double.tryParse(result['frequencyPenalty'] ?? '0.0'),
+        presencePenalty: double.tryParse(result['presencePenalty'] ?? '0.0'),
       );
       _loadApiConfigs();
     }
@@ -670,6 +718,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     proxyUrlController.dispose();
     proxyUsernameController.dispose();
     proxyPasswordController.dispose();
+    modelController.dispose();
   }
 
   Future<void> _showEditApiConfigDialog(ApiConfig config) async {
