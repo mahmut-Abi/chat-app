@@ -53,6 +53,7 @@ jobs:
           echo "✅ Flutter analyze passed!"
           echo "   Found $ERROR_COUNT error(s), $WARNING_COUNT warning(s), and $INFO_COUNT info message(s)"
           echo "   (Only errors will fail the CI)"
+        shell: bash
 
       - name: Check formatting
         run: dart format --set-exit-if-changed .
@@ -151,4 +152,3 @@ jobs:
           tags: chat-app:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
