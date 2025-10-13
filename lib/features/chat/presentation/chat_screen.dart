@@ -333,20 +333,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: false,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: const Text('Chat'),
-            automaticallyImplyLeading: false,
-            leading: isMobile
-                ? Builder(
-                    builder: (context) => IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                    ),
-                  )
-                : null,
-          ),
+          appBar: isMobile
+              ? null
+              : AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  title: const Text('Chat'),
+                ),
           drawer: isMobile
               ? Drawer(
                   backgroundColor: Theme.of(context).cardColor,
@@ -426,6 +419,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     onSearch: () {
                       // 暂不处理
                     },
+                  ),
+                )
+              : null,
+          floatingActionButton: isMobile
+              ? Builder(
+                  builder: (context) => FloatingActionButton(
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    child: const Icon(Icons.menu),
                   ),
                 )
               : null,
