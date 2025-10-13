@@ -302,16 +302,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,
         appBar: AppBar(
-          title: const Text('Chat App'),
+          title: Text(_selectedConversation?.title ?? 'Chat App'),
           leading: Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu),
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
-          actions: [
-            IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
-          ],
+          actions: [],
         ),
         drawer: Drawer(
           backgroundColor: Theme.of(context).cardColor,
@@ -334,6 +332,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onRenameConversation: _showRenameDialog,
             onUpdateTags: _updateConversationTags,
             onManageGroups: _showGroupManagement,
+            onSearch: _showSearch,
           ),
         ),
         body: BackgroundContainer(

@@ -316,21 +316,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          title: const Text('Chat'),
-          actions: [
-            if (_totalTokens > 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Center(
-                  child: Chip(
-                    avatar: const Icon(Icons.token, size: 16),
-                    label: Text('$_totalTokens tokens'),
-                  ),
-                ),
-              ),
-          ],
-        ),
+        appBar: AppBar(title: const Text('Chat')),
         body: Column(
           children: [
             Expanded(

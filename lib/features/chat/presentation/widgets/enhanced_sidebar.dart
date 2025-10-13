@@ -14,6 +14,7 @@ class EnhancedSidebar extends StatefulWidget {
   final Function(Conversation) onRenameConversation;
   final Function(Conversation, List<String>) onUpdateTags;
   final Function() onManageGroups;
+  final VoidCallback? onSearch;
 
   const EnhancedSidebar({
     super.key,
@@ -26,6 +27,7 @@ class EnhancedSidebar extends StatefulWidget {
     required this.onRenameConversation,
     required this.onUpdateTags,
     required this.onManageGroups,
+    this.onSearch,
   });
 
   @override
@@ -97,6 +99,12 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
+              if (widget.onSearch != null)
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  tooltip: '搜索对话',
+                  onPressed: widget.onSearch,
+                ),
               IconButton(
                 icon: const Icon(Icons.folder_outlined),
                 tooltip: '管理分组',

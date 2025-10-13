@@ -4,6 +4,7 @@ import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/models/presentation/models_screen.dart';
 import '../../features/mcp/presentation/mcp_screen.dart';
+import '../../features/token_usage/presentation/token_usage_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -26,6 +27,10 @@ class AppRouter {
         builder: (context, state) => const ModelsScreen(),
       ),
       GoRoute(path: '/mcp', builder: (context, state) => const McpScreen()),
+      GoRoute(
+        path: '/token-usage',
+        builder: (context, state) => const TokenUsageScreen(),
+      ),
     ],
   );
 }

@@ -142,6 +142,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push('/mcp'),
               ),
+              ListTile(
+                leading: const Icon(Icons.token),
+                title: const Text('Token 消耗记录'),
+                subtitle: const Text('查看所有对话的 Token 消耗'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/token-usage'),
+              ),
             ],
           ),
           const Divider(),
