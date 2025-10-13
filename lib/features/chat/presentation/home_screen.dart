@@ -107,10 +107,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       print('  title: ${conversation.title}');
     }
 
-    setState(() {
-      _conversations.insert(0, conversation);
-      _selectedConversation = conversation;
-    });
+    // 重新加载所有对话以确保列表同步
+    _loadData();
 
     if (kDebugMode) {
       print('HomeScreen._createNewConversation: 状态已更新');

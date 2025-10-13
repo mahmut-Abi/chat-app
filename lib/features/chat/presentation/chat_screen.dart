@@ -182,23 +182,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
-      // 获取或创建对话
+      // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
-        // 如果对话不存在(新创建的对话),使用当前 conversationId 创建一个
+        // 如果对话不存在,创建一个新对话
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('错误: 对话不存在')));
+        }
         conversation = Conversation(
           id: widget.conversationId,
-          title: 'New Conversation',
+          title: '未知对话',
           messages: [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
       }
 
-      // 保存包含消息的对话
+      // 更新对话消息列表并保存
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
+
       _calculateTokens();
     } catch (e) {
       setState(() {
@@ -274,20 +280,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
-      // 获取或创建对话
+      // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
-        // 如果对话不存在(新创建的对话),使用当前 conversationId 创建一个
+        // 如果对话不存在,创建一个新对话
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('错误: 对话不存在(重新生成)')));
+        }
         conversation = Conversation(
           id: widget.conversationId,
-          title: 'New Conversation',
+          title: '未知对话',
           messages: [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
       }
 
-      // 保存包含消息的对话
+      // 更新对话消息列表并保存
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
@@ -314,19 +325,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     final chatRepo = ref.read(chatRepositoryProvider);
 
-    // 获取或创建对话
+    // 获取对话并保存
     var conversation = chatRepo.getConversation(widget.conversationId);
     if (conversation == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('错误: 对话不存在(删除消息)')));
+      }
       conversation = Conversation(
         id: widget.conversationId,
-        title: 'New Conversation',
+        title: '未知对话',
         messages: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
     }
 
-    // 保存包含消息的对话
+    // 更新对话消息列表并保存
     await chatRepo.saveConversation(
       conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
     );
@@ -344,19 +360,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     final chatRepo = ref.read(chatRepositoryProvider);
 
-    // 获取或创建对话
+    // 获取对话并保存
     var conversation = chatRepo.getConversation(widget.conversationId);
     if (conversation == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('错误: 对话不存在(编辑消息)')));
+      }
       conversation = Conversation(
         id: widget.conversationId,
-        title: 'New Conversation',
+        title: '未知对话',
         messages: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
     }
 
-    // 保存包含消息的对话
+    // 更新对话消息列表并保存
     await chatRepo.saveConversation(
       conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
     );
