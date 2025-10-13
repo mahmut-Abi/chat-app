@@ -19,7 +19,7 @@ class AppRouter {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return ChatScreen(
-            key: ValueKey(id), // 防止 Widget 重用
+            key: ValueKey<String>(id), // 防止 Widget 重用
             conversationId: id,
           );
         },
