@@ -142,34 +142,4 @@ class SettingsRepository {
       return const AppSettings();
     }
   }
-
-  Future<void> updateThemeMode(String themeMode) async {
-    final settings = getSettings();
-    final updated = settings.copyWith(themeMode: themeMode);
-    await saveSettings(updated);
-  }
-
-  Future<void> updateLanguage(String language) async {
-    final settings = getSettings();
-    final updated = settings.copyWith(language: language);
-    await saveSettings(updated);
-  }
-
-  Future<void> updateFontSize(double fontSize) async {
-    final settings = getSettings();
-    final updated = settings.copyWith(fontSize: fontSize);
-    await saveSettings(updated);
-  }
-
-  Future<void> updateThemeColor(String colorKey) async {
-    final settings = getSettings();
-    final updated = settings.copyWith(themeColor: colorKey);
-    await saveSettings(updated);
-  }
-
-  Future<void> updateCustomThemeColor(Color color) async {
-    final settings = getSettings();
-    final updated = settings.copyWith(customThemeColor: color.toARGB32());
-    await saveSettings(updated);
-  }
 }

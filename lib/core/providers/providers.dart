@@ -90,12 +90,19 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     }
   }
 
-  void updateSettings(AppSettings settings) {
+  Future<void> updateSettings(AppSettings settings) async {
     if (kDebugMode) {
       print('AppSettingsNotifier.updateSettings() called');
       print('New settings: ${settings.toJson()}');
     }
+    // 先持久化到存储
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    await settingsRepo.saveSettings(settings);
+    // 再更新内存状态
     state = settings;
+    if (kDebugMode) {
+      print('Settings saved and state updated');
+    }
   }
 }
 

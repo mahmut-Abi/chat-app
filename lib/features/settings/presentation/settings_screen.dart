@@ -311,9 +311,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (result != null) {
-      final storage = ref.read(storageServiceProvider);
-      await storage.saveSetting('themeMode', result);
-      ref.invalidate(appSettingsProvider);
+      final currentSettings = ref.read(appSettingsProvider);
+      await ref
+          .read(appSettingsProvider.notifier)
+          .updateSettings(currentSettings.copyWith(themeMode: result));
     }
   }
 
@@ -382,9 +383,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateThemeColor(String colorKey) async {
-    final settingsRepo = ref.read(settingsRepositoryProvider);
-    await settingsRepo.updateThemeColor(colorKey);
-    ref.invalidate(appSettingsProvider);
+    final currentSettings = ref.read(appSettingsProvider);
+    await ref
+        .read(appSettingsProvider.notifier)
+        .updateSettings(currentSettings.copyWith(themeColor: colorKey));
   }
 
   Future<void> _exportData() async {
@@ -1119,9 +1121,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateFontSize(double fontSize) async {
-    final settingsRepo = ref.read(settingsRepositoryProvider);
-    await settingsRepo.updateFontSize(fontSize);
-    ref
+    await ref
         .read(appSettingsProvider.notifier)
         .updateSettings(
           ref.read(appSettingsProvider).copyWith(fontSize: fontSize),
@@ -1129,9 +1129,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateMarkdownEnabled(bool enabled) async {
-    final storage = ref.read(storageServiceProvider);
-    await storage.saveSetting('enableMarkdown', enabled);
-    ref
+    await ref
         .read(appSettingsProvider.notifier)
         .updateSettings(
           ref.read(appSettingsProvider).copyWith(enableMarkdown: enabled),
@@ -1139,9 +1137,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateCodeHighlightEnabled(bool enabled) async {
-    final storage = ref.read(storageServiceProvider);
-    await storage.saveSetting('enableCodeHighlight', enabled);
-    ref
+    await ref
         .read(appSettingsProvider.notifier)
         .updateSettings(
           ref.read(appSettingsProvider).copyWith(enableCodeHighlight: enabled),
@@ -1149,9 +1145,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _updateLatexEnabled(bool enabled) async {
-    final storage = ref.read(storageServiceProvider);
-    await storage.saveSetting('enableLatex', enabled);
-    ref
+    await ref
         .read(appSettingsProvider.notifier)
         .updateSettings(
           ref.read(appSettingsProvider).copyWith(enableLatex: enabled),

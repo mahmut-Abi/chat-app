@@ -233,7 +233,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
           Expanded(
             child: _selectedConversation == null
-                ? _buildWelcomeScreen()
+                ? BackgroundContainer(child: _buildWelcomeScreen())
                 : ChatScreen(conversationId: _selectedConversation!.id),
           ),
         ],
@@ -335,11 +335,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onSearch: _showSearch,
           ),
         ),
-        body: BackgroundContainer(
-          child: _selectedConversation == null
-              ? _buildWelcomeScreen()
-              : ChatScreen(conversationId: _selectedConversation!.id),
-        ),
+        body: _selectedConversation == null
+            ? BackgroundContainer(child: _buildWelcomeScreen())
+            : ChatScreen(conversationId: _selectedConversation!.id),
       ),
     );
   }

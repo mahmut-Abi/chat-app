@@ -9,6 +9,9 @@ import '../../../core/utils/token_counter.dart';
 import 'widgets/image_picker_widget.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
+import '../../../shared/widgets/background_container.dart';
+import 'widgets/enhanced_sidebar.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -28,12 +31,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
   int _totalTokens = 0;
   List<File> _selectedImages = [];
+  List<Conversation> _conversations = [];
+  List<ConversationGroup> _groups = [];
 
   @override
   void initState() {
     super.initState();
     _loadConversation();
+    _loadAllConversations();
     Future.microtask(() => _calculateTokens());
+  }
+
+  void _loadAllConversations() {
+    final chatRepo = ref.read(chatRepositoryProvider);
+    setState(() {
+      _conversations = chatRepo.getAllConversations();
+      _groups = chatRepo.getAllGroups();
+    });
   }
 
   void _loadConversation() {
@@ -314,55 +328,153 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
       },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text('Chat')),
-        body: Column(
-          children: [
-            Expanded(
-              child: _messages.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline,
-                            size: 64,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            '开始新对话',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '输入消息开始与 AI 交流',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        final message = _messages[index];
-                        return MessageBubble(
-                          message: message,
-                          onDelete: () => _deleteMessage(index),
-                          onRegenerate: message.role == MessageRole.assistant
-                              ? () => _regenerateMessage(index)
-                              : null,
-                          onEdit: (newContent) =>
-                              _editMessage(index, newContent),
-                        );
-                      },
+      child: BackgroundContainer(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          extendBodyBehindAppBar: false,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: const Text('Chat'),
+            automaticallyImplyLeading: false,
+            leading: isMobile
+                ? Builder(
+                    builder: (context) => IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
                     ),
-            ),
-            _buildInputArea(),
-          ],
+                  )
+                : null,
+          ),
+          drawer: isMobile
+              ? Drawer(
+                  backgroundColor: Theme.of(context).cardColor,
+                  child: EnhancedSidebar(
+                    conversations: _conversations,
+                    groups: _groups,
+                    selectedConversation: _conversations
+                        .where((c) => c.id == widget.conversationId)
+                        .firstOrNull,
+                    onConversationSelected: (conversation) {
+                      Navigator.of(context).pop();
+                      context.go('/chat/${conversation.id}');
+                    },
+                    onCreateConversation: () async {
+                      Navigator.of(context).pop();
+                      final chatRepo = ref.read(chatRepositoryProvider);
+                      final conversation = await chatRepo.createConversation(
+                        title: '新建对话',
+                      );
+                      if (mounted) {
+                        context.go('/chat/${conversation.id}');
+                      }
+                    },
+                    onDeleteConversation: (id) async {
+                      final chatRepo = ref.read(chatRepositoryProvider);
+                      await chatRepo.deleteConversation(id);
+                      _loadAllConversations();
+                      if (id == widget.conversationId) {
+                        if (mounted) {
+                          context.go('/');
+                        }
+                      }
+                    },
+                    onRenameConversation: (conversation) async {
+                      final controller = TextEditingController(
+                        text: conversation.title,
+                      );
+                      final result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('重命名对话'),
+                          content: TextField(
+                            controller: controller,
+                            decoration: const InputDecoration(
+                              labelText: '对话标题',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('取消'),
+                            ),
+                            FilledButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(controller.text),
+                              child: const Text('确定'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (result != null && result.isNotEmpty) {
+                        final chatRepo = ref.read(chatRepositoryProvider);
+                        final updated = conversation.copyWith(title: result);
+                        await chatRepo.saveConversation(updated);
+                        _loadAllConversations();
+                      }
+                    },
+                    onUpdateTags: (conversation, tags) async {
+                      final chatRepo = ref.read(chatRepositoryProvider);
+                      final updated = conversation.copyWith(tags: tags);
+                      await chatRepo.saveConversation(updated);
+                      _loadAllConversations();
+                    },
+                    onManageGroups: () {
+                      // 暂不处理
+                    },
+                    onSearch: () {
+                      // 暂不处理
+                    },
+                  ),
+                )
+              : null,
+          body: Column(
+            children: [
+              Expanded(
+                child: _messages.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '开始新对话',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '输入消息开始与 AI 交流',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          return MessageBubble(
+                            message: message,
+                            onDelete: () => _deleteMessage(index),
+                            onRegenerate: message.role == MessageRole.assistant
+                                ? () => _regenerateMessage(index)
+                                : null,
+                            onEdit: (newContent) =>
+                                _editMessage(index, newContent),
+                          );
+                        },
+                      ),
+              ),
+              _buildInputArea(),
+            ],
+          ),
         ),
       ),
     );
@@ -372,10 +484,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor.withValues(alpha: 0.9),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
