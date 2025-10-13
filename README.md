@@ -395,3 +395,4 @@ MIT License - 详见 `LICENSE` 文件
 - ✅ 基础聊天功能
 - ✅ Markdown 和 LaTeX 渲染
 - ✅ 多 API 配置支持
+# Test hook
