@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/platform_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
@@ -929,48 +930,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<bool?> _showDeleteConfirmDialog() {
-    return showDialog<bool>(
+    return showPlatformConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('删除 API 配置'),
-        content: const Text('确定要删除此配置吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
+      title: '删除 API 配置',
+      content: '确定要删除此配置吗？',
+      confirmText: '删除',
+      isDestructive: true,
     );
   }
 
   Future<void> _showClearDataDialog() async {
-    final confirm = await showDialog<bool>(
+    final confirm = await showPlatformConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('清除所有数据'),
-        content: const Text('这将删除所有对话和设置。此操作无法撤销。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('清除'),
-          ),
-        ],
-      ),
+      title: '清除所有数据',
+      content: '这将删除所有对话和设置。此操作无法撤销。',
+      confirmText: '清除',
+      isDestructive: true,
     );
 
     if (confirm == true) {
@@ -1154,18 +1129,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   // 测试 API 连接
   Future<void> _testApiConnection(ApiConfig config) async {
-    showDialog(
+    showPlatformLoadingDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        content: Row(
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 16),
-            Text('正在测试连接...'),
-          ],
-        ),
-      ),
+      message: '正在测试连接...',
     );
 
     try {

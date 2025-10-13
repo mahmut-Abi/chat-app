@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/platform_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
@@ -456,31 +457,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       }
                     },
                     onRenameConversation: (conversation) async {
-                      final controller = TextEditingController(
-                        text: conversation.title,
-                      );
-                      final result = await showDialog<String>(
+                      final result = await showPlatformInputDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('重命名对话'),
-                          content: TextField(
-                            controller: controller,
-                            decoration: const InputDecoration(
-                              labelText: '对话标题',
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('取消'),
-                            ),
-                            FilledButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(controller.text),
-                              child: const Text('确定'),
-                            ),
-                          ],
-                        ),
+                        title: '重命名对话',
+                        initialValue: conversation.title,
+                        placeholder: '对话标题',
                       );
                       if (result != null && result.isNotEmpty) {
                         final chatRepo = ref.read(chatRepositoryProvider);
