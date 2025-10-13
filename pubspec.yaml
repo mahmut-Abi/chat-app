@@ -53,6 +53,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.2
   flutter_math_fork: ^0.7.4
+  riverpod: ^3.0.3
 
 dev_dependencies:
   flutter_test:

@@ -32,9 +32,27 @@ class McpRepository {
   }
 
   /// 获取所有 MCP 配置
-  List<McpConfig> getAllConfigs() {
-    // TODO: 实现从 storage 读取所有配置
-    return [];
+  Future<List<McpConfig>> getAllConfigs() async {
+    try {
+      final keys = await _storage.getAllKeys();
+      final mcpKeys = keys.where((k) => k.startsWith('mcp_config_')).toList();
+      
+      final configs = <McpConfig>[];
+      for (final key in mcpKeys) {
+        final data = _storage.getSetting(key);
+        if (data != null && data is Map<String, dynamic>) {
+          try {
+            configs.add(McpConfig.fromJson(data));
+          } catch (e) {
+            // 跳过无效的配置
+          }
+        }
+      }
+      
+      return configs;
+    } catch (e) {
+      return [];
+    }
   }
 
   /// 更新 MCP 配置
@@ -46,7 +64,7 @@ class McpRepository {
   /// 删除 MCP 配置
   Future<void> deleteConfig(String id) async {
     await _disconnectClient(id);
-    // TODO: 实现从 storage 删除
+    await _storage.deleteSetting('mcp_config_$id');
   }
 
   /// 连接到 MCP 服务器
