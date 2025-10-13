@@ -85,7 +85,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Column(
         children: [
           Row(
@@ -104,7 +104,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -120,7 +120,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
 
   Widget _buildFilterBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
