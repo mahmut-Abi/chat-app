@@ -42,14 +42,14 @@ void main() {
     });
 
     test('应该正确获取所有会话', () {
-      final mockData = [
+      final mockData = <Map<String, dynamic>>[
         {
           'id': 'conv-1',
           'title': 'Conv 1',
           'messages': [],
           'createdAt': DateTime.now().toIso8601String(),
           'updatedAt': DateTime.now().toIso8601String(),
-          'settings': {},
+          'settings': <String, dynamic>{},
           'tags': [],
           'isPinned': false,
         },
@@ -87,14 +87,14 @@ void main() {
     });
 
     test('应该正确获取所有标签', () {
-      final mockData = [
+      final mockData = <Map<String, dynamic>>[
         {
           'id': 'conv-1',
           'title': 'Conv 1',
           'messages': [],
           'createdAt': DateTime.now().toIso8601String(),
           'updatedAt': DateTime.now().toIso8601String(),
-          'settings': {},
+          'settings': <String, dynamic>{},
           'tags': ['work', 'important'],
           'isPinned': false,
         },
