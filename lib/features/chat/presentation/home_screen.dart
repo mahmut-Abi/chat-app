@@ -210,11 +210,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             tooltip: '搜索 (Ctrl+F)',
             onPressed: _showSearch,
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: '设置 (Ctrl+,)',
-            onPressed: () => context.push('/settings'),
-          ),
         ],
       ),
       body: Row(
@@ -305,10 +300,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ),
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.push('/settings'),
-          ),
         ],
       ),
       drawer: Drawer(
@@ -336,11 +327,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       body: _selectedConversation == null
           ? _buildWelcomeScreen()
           : ChatScreen(conversationId: _selectedConversation!.id),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createNewConversation,
-        tooltip: '新建对话',
-        child: const Icon(Icons.add),
-      ),
     );
   }
 

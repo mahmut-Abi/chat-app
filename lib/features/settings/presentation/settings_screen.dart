@@ -11,6 +11,7 @@ import '../../../shared/themes/app_theme.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
 import 'background_settings_dialog.dart';
+import '../../chat/presentation/widgets/model_config_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -126,6 +127,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 subtitle: const Text('自定义聊天背景'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _showBackgroundDialog,
+              ),
+              ListTile(
+                leading: const Icon(Icons.tune),
+                title: const Text('模型参数'),
+                subtitle: const Text('配置默认模型参数'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _showModelConfigDialog,
               ),
             ],
           ),
@@ -300,6 +308,47 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => const BackgroundSettingsDialog(),
     );
+  }
+
+  void _showModelConfigDialog() async {
+    // 从存储中读取当前的模型配置
+    final storage = ref.read(storageServiceProvider);
+    final savedModel = await storage.getSetting('defaultModel') ?? 'gpt-3.5-turbo';
+    final savedTemp = await storage.getSetting('defaultTemperature') ?? 0.7;
+    final savedMaxTokens = await storage.getSetting('defaultMaxTokens') ?? 2000;
+    final savedTopP = await storage.getSetting('defaultTopP') ?? 1.0;
+    final savedFreqPenalty = await storage.getSetting('defaultFrequencyPenalty') ?? 0.0;
+    final savedPresPenalty = await storage.getSetting('defaultPresencePenalty') ?? 0.0;
+
+    final currentConfig = ModelConfig(
+      model: savedModel is String ? savedModel : 'gpt-3.5-turbo',
+      temperature: savedTemp is double ? savedTemp : (savedTemp is int ? savedTemp.toDouble() : 0.7),
+      maxTokens: savedMaxTokens is int ? savedMaxTokens : (savedMaxTokens is double ? savedMaxTokens.toInt() : 2000),
+      topP: savedTopP is double ? savedTopP : (savedTopP is int ? savedTopP.toDouble() : 1.0),
+      frequencyPenalty: savedFreqPenalty is double ? savedFreqPenalty : (savedFreqPenalty is int ? savedFreqPenalty.toDouble() : 0.0),
+      presencePenalty: savedPresPenalty is double ? savedPresPenalty : (savedPresPenalty is int ? savedPresPenalty.toDouble() : 0.0),
+    );
+
+    final config = await showDialog<ModelConfig>(
+      context: context,
+      builder: (context) => ModelConfigDialog(initialConfig: currentConfig),
+    );
+
+    if (config != null) {
+      // 保存配置到存储
+      await storage.saveSetting('defaultModel', config.model);
+      await storage.saveSetting('defaultTemperature', config.temperature);
+      await storage.saveSetting('defaultMaxTokens', config.maxTokens);
+      await storage.saveSetting('defaultTopP', config.topP);
+      await storage.saveSetting('defaultFrequencyPenalty', config.frequencyPenalty);
+      await storage.saveSetting('defaultPresencePenalty', config.presencePenalty);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('模型参数已保存')),
+        );
+      }
+    }
   }
 
   Future<void> _showThemeColorDialog() async {

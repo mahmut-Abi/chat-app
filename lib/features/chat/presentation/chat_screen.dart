@@ -4,7 +4,6 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
-import 'widgets/model_config_dialog.dart';
 import 'widgets/message_bubble.dart';
 import '../../../core/utils/token_counter.dart';
 import 'widgets/image_picker_widget.dart';
@@ -75,24 +74,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           );
         }
       });
-    }
-  }
-
-  Future<void> _showModelConfigDialog() async {
-    final config = await showDialog<ModelConfig>(
-      context: context,
-      builder: (context) => ModelConfigDialog(initialConfig: _currentConfig),
-    );
-
-    if (config != null) {
-      setState(() {
-        _currentConfig = config;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('模型已切换为: ${config.model}')));
-      }
     }
   }
 
@@ -340,12 +321,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     avatar: const Icon(Icons.token, size: 16),
                     label: Text('$_totalTokens tokens'),
                   ),
-                ),
               ),
-            IconButton(
-              icon: const Icon(Icons.tune),
-              tooltip: '模型配置',
-              onPressed: _showModelConfigDialog,
             ),
           ],
         ),
