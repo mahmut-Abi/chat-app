@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../domain/message.dart';
 import '../../../../shared/widgets/enhanced_markdown_message.dart';
 import '../../../../shared/widgets/message_actions.dart';
 import 'dart:io';
+import '../../../../core/utils/share_utils.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -106,8 +106,8 @@ class MessageBubble extends StatelessWidget {
                           );
                         },
                         onShare: () {
-                          Share.share(message.content);
-                        },
+                        ShareUtils.shareText(message.content);
+                      },
                         onEdit: isUser && onEdit != null
                             ? () => _showEditDialog(context)
                             : null,

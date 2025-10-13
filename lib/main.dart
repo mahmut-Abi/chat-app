@@ -5,9 +5,16 @@ import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
 import 'core/providers/providers.dart';
 import 'features/settings/domain/api_config.dart';
+import 'core/utils/desktop_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize desktop features
+  if (DesktopUtils.isDesktop) {
+    await DesktopUtils.initWindowManager();
+    await DesktopUtils.initSystemTray();
+  }
 
   // Initialize storage
   final storage = StorageService();

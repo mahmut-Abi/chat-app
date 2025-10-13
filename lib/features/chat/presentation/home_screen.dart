@@ -7,6 +7,9 @@ import 'chat_screen.dart';
 import 'widgets/enhanced_sidebar.dart';
 import 'widgets/group_management_dialog.dart';
 import '../../../shared/utils/responsive_utils.dart';
+import '../../../core/utils/desktop_utils.dart';
+import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +18,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with TrayListener, WindowListener {
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
   Conversation? _selectedConversation;
@@ -24,6 +27,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _initDesktopFeatures();
+  }
+
+  void _initDesktopFeatures() {
+    if (DesktopUtils.isDesktop) {
+      trayManager.addListener(this);
+      windowManager.addListener(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (DesktopUtils.isDesktop) {
+      trayManager.removeListener(this);
+      windowManager.removeListener(this);
+    }
+    super.dispose();
+  }
+
+  // TrayListener 实现
+  @override
+  void onTrayIconMouseDown() {
+    DesktopUtils.showWindow();
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    switch (menuItem.key) {
+      case 'show_window':
+        DesktopUtils.showWindow();
+        break;
+      case 'new_conversation':
+        _createNewConversation();
+        break;
+      case 'quit':
+        DesktopUtils.quitApp();
+        break;
+    }
+  }
+
+  // WindowListener 实现
+  @override
+  void onWindowClose() async {
+    // 关闭窗口时最小化到托盘
+    await DesktopUtils.minimizeToTray();
   }
 
   void _loadData() {
