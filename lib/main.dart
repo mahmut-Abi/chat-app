@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import 'core/routing/app_router.dart';
 import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
@@ -8,24 +9,29 @@ import 'features/settings/domain/api_config.dart';
 import 'core/utils/desktop_utils.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize desktop features
-  if (DesktopUtils.isDesktop) {
-    await DesktopUtils.initWindowManager();
-    await DesktopUtils.initSystemTray();
-  }
+    // Initialize desktop features
+    if (DesktopUtils.isDesktop) {
+      await DesktopUtils.initWindowManager();
+      await DesktopUtils.initSystemTray();
+    }
 
-  // Initialize storage
-  final storage = StorageService();
-  await storage.init();
+    // Initialize storage
+    final storage = StorageService();
+    await storage.init();
 
-  runApp(
-    ProviderScope(
-      overrides: [storageServiceProvider.overrideWithValue(storage)],
-      child: const MyApp(),
-    ),
-  );
+    runApp(
+      ProviderScope(
+        overrides: [storageServiceProvider.overrideWithValue(storage)],
+        child: const MyApp(),
+      ),
+    );
+  }, (error, stack) {
+    debugPrint('应用错误: $error');
+    debugPrint('堆栈信息: $stack');
+  });
 }
 
 class MyApp extends ConsumerWidget {

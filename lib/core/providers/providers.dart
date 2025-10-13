@@ -70,8 +70,13 @@ final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(
 class AppSettingsNotifier extends Notifier<AppSettings> {
   @override
   AppSettings build() {
-    final settingsRepo = ref.watch(settingsRepositoryProvider);
-    return settingsRepo.getSettings();
+    try {
+      final settingsRepo = ref.watch(settingsRepositoryProvider);
+      return settingsRepo.getSettings();
+    } catch (e) {
+      // 如果加载设置失败,返回默认设置
+      return const AppSettings();
+    }
   }
 
   void updateSettings(AppSettings settings) {

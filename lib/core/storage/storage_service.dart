@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 class StorageService {
   static const String _conversationsBox = 'conversations';
@@ -18,11 +19,19 @@ class StorageService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> init() async {
-    await Hive.initFlutter();
-    _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
-    _settingsBoxInstance = await Hive.openBox(_settingsBox);
-    _groupsBoxInstance = await Hive.openBox(_groupsBox);
-    _promptsBoxInstance = await Hive.openBox(_promptsBox);
+    try {
+      await Hive.initFlutter();
+      _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
+      _settingsBoxInstance = await Hive.openBox(_settingsBox);
+      _groupsBoxInstance = await Hive.openBox(_groupsBox);
+      _promptsBoxInstance = await Hive.openBox(_promptsBox);
+    } catch (e, stack) {
+      if (kDebugMode) {
+        print('存储初始化失败: $e');
+        print('堆栈: $stack');
+      }
+      rethrow;
+    }
   }
 
   // Conversations
@@ -94,7 +103,14 @@ class StorageService {
   }
 
   T? getSetting<T>(String key) {
-    return _settingsBoxInstance.get(key) as T?;
+    try {
+      return _settingsBoxInstance.get(key) as T?;
+    } catch (e) {
+      if (kDebugMode) {
+        print('读取设置失败: $key, 错误: $e');
+      }
+      return null;
+    }
   }
 
   // Get all setting keys

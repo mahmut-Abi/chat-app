@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'dart:ui';
 import '../../core/providers/providers.dart';
+import 'package:flutter/foundation.dart';
 
 class BackgroundContainer extends ConsumerWidget {
   final Widget child;
@@ -47,22 +48,33 @@ class BackgroundContainer extends ConsumerWidget {
   }
 
   Widget _buildBackgroundImage(String path) {
+    // iOS 平台需要特殊处理
+    Widget imageWidget;
+    
     if (path.startsWith('assets/')) {
-      return Image.asset(
+      imageWidget = Image.asset(
         path,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
+          if (kDebugMode) {
+            print('背景图片加载失败 (asset): $path, 错误: $error');
+          }
           return const SizedBox.shrink();
         },
       );
     } else {
-      return Image.file(
+      imageWidget = Image.file(
         File(path),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
+          if (kDebugMode) {
+            print('背景图片加载失败 (file): $path, 错误: $error');
+          }
           return const SizedBox.shrink();
         },
       );
     }
+    
+    return imageWidget;
   }
 }
