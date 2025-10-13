@@ -1,5 +1,4 @@
 // Stub implementation for non-desktop platforms
-import 'package:flutter/material.dart';
 
 Future<void> initWindowManagerImpl() async {
   // No-op for non-desktop platforms

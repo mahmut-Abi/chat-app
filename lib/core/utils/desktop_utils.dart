@@ -1,6 +1,5 @@
 import 'dart:io';
  import 'package:flutter/foundation.dart';
- import 'package:flutter/material.dart';
  
  // 条件导入：仅在桌面平台导入实际实现，否则导入 stub
  import 'desktop_utils_stub.dart'
