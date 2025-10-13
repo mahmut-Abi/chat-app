@@ -1,0 +1,53 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Documentation
+docs/
+README.md
+AGENTS.md
+todo.md
+todo_completed.md
+KNOWN_ISSUES.md
+
+# Scripts
+scripts/
+build_and_run.sh
+
+# Tests
+test/
+coverage/
+
+# Platform specific (keep only web)
+android/
+ios/
+macos/
+linux/
+windows/
+
+# Docker files in subdirectory
+docker/
