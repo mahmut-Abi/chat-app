@@ -10,6 +10,7 @@ import '../../../core/utils/token_counter.dart';
 import 'widgets/image_picker_widget.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
+import '../../../shared/widgets/background_container.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -324,31 +325,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat'),
-        actions: [
-          if (_totalTokens > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Center(
-                child: Chip(
-                  avatar: const Icon(Icons.token, size: 16),
-                  label: Text('$_totalTokens tokens'),
+    return BackgroundContainer(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Chat'),
+          actions: [
+            if (_totalTokens > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Center(
+                  child: Chip(
+                    avatar: const Icon(Icons.token, size: 16),
+                    label: Text('$_totalTokens tokens'),
+                  ),
                 ),
               ),
+            IconButton(
+              icon: const Icon(Icons.tune),
+              tooltip: '模型配置',
+              onPressed: _showModelConfigDialog,
             ),
-          IconButton(
-            icon: const Icon(Icons.tune),
-            tooltip: '模型配置',
-            onPressed: _showModelConfigDialog,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _messages.isEmpty
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: _messages.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -390,6 +394,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           _buildInputArea(),
         ],
+      ),
       ),
     );
   }

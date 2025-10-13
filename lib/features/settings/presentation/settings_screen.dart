@@ -10,6 +10,7 @@ import '../../chat/domain/conversation.dart';
 import '../../../shared/themes/app_theme.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
+import 'background_settings_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -118,6 +119,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 onChanged: (value) {
                   _updateLatexEnabled(value);
                 },
+              ),
+              ListTile(
+                leading: const Icon(Icons.wallpaper),
+                title: const Text('背景设置'),
+                subtitle: const Text('自定义聊天背景'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _showBackgroundDialog,
               ),
             ],
           ),
@@ -285,6 +293,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await storage.saveSetting('themeMode', result);
       ref.invalidate(appSettingsProvider);
     }
+  }
+
+  void _showBackgroundDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const BackgroundSettingsDialog(),
+    );
   }
 
   Future<void> _showThemeColorDialog() async {
