@@ -21,10 +21,20 @@ class StorageService {
   Future<void> init() async {
     try {
       await Hive.initFlutter();
+      if (kDebugMode) {
+        print('Hive 初始化路径: ${await Hive.defaultDirectory}');
+      }
       _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
       _settingsBoxInstance = await Hive.openBox(_settingsBox);
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
       _promptsBoxInstance = await Hive.openBox(_promptsBox);
+      if (kDebugMode) {
+        print('存储初始化成功');
+        print('  对话数: ${_conversationsBoxInstance.length}');
+        print('  设置数: ${_settingsBoxInstance.length}');
+        print('  分组数: ${_groupsBoxInstance.length}');
+        print('  提示词模板数: ${_promptsBoxInstance.length}');
+      }
     } catch (e, stack) {
       if (kDebugMode) {
         print('存储初始化失败: $e');
@@ -36,6 +46,9 @@ class StorageService {
 
   // Conversations
   Future<void> saveConversation(String id, Map<String, dynamic> data) async {
+    if (kDebugMode) {
+      print('saveConversation: id=$id');
+    }
     await _conversationsBoxInstance.put(id, jsonEncode(data));
   }
 
@@ -99,12 +112,22 @@ class StorageService {
 
   // Settings
   Future<void> saveSetting(String key, dynamic value) async {
+    if (kDebugMode) {
+      print('saveSetting: key=$key, value=$value');
+    }
     await _settingsBoxInstance.put(key, value);
   }
 
   T? getSetting<T>(String key) {
     try {
-      return _settingsBoxInstance.get(key) as T?;
+      final value = _settingsBoxInstance.get(key);
+      if (kDebugMode) {
+        print(
+          'getSetting: key=$key, rawValue=$value, type=${value.runtimeType}',
+        );
+      }
+      if (value == null) return null;
+      return value as T;
     } catch (e) {
       if (kDebugMode) {
         print('读取设置失败: $key, 错误: $e');

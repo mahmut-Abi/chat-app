@@ -307,26 +307,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text('Chat'),
-          actions: [
-            if (_totalTokens > 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Center(
-                  child: Chip(
-                    avatar: const Icon(Icons.token, size: 16),
-                    label: Text('$_totalTokens tokens'),
-                  ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text('Chat'),
+        actions: [
+          if (_totalTokens > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: Chip(
+                  avatar: const Icon(Icons.token, size: 16),
+                  label: Text('$_totalTokens tokens'),
+                ),
               ),
             ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: _messages.isEmpty
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _messages.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

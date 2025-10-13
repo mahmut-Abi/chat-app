@@ -9,29 +9,32 @@ import 'features/settings/domain/api_config.dart';
 import 'core/utils/desktop_utils.dart';
 
 void main() async {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    // Initialize desktop features
-    if (DesktopUtils.isDesktop) {
-      await DesktopUtils.initWindowManager();
-      await DesktopUtils.initSystemTray();
-    }
+      // Initialize desktop features
+      if (DesktopUtils.isDesktop) {
+        await DesktopUtils.initWindowManager();
+        await DesktopUtils.initSystemTray();
+      }
 
-    // Initialize storage
-    final storage = StorageService();
-    await storage.init();
+      // Initialize storage
+      final storage = StorageService();
+      await storage.init();
 
-    runApp(
-      ProviderScope(
-        overrides: [storageServiceProvider.overrideWithValue(storage)],
-        child: const MyApp(),
-      ),
-    );
-  }, (error, stack) {
-    debugPrint('应用错误: $error');
-    debugPrint('堆栈信息: $stack');
-  });
+      runApp(
+        ProviderScope(
+          overrides: [storageServiceProvider.overrideWithValue(storage)],
+          child: const MyApp(),
+        ),
+      );
+    },
+    (error, stack) {
+      debugPrint('应用错误: $error');
+      debugPrint('堆栈信息: $stack');
+    },
+  );
 }
 
 class MyApp extends ConsumerWidget {

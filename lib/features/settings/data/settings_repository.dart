@@ -2,6 +2,7 @@ import '../domain/api_config.dart';
 import '../../../core/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class SettingsRepository {
   final StorageService _storage;
@@ -111,13 +112,35 @@ class SettingsRepository {
 
   // App Settings
   Future<void> saveSettings(AppSettings settings) async {
+    if (kDebugMode) {
+      print('saveSettings: ${settings.toJson()}');
+    }
     await _storage.saveSetting('app_settings', settings.toJson());
   }
 
   AppSettings getSettings() {
-    final data = _storage.getSetting<Map<String, dynamic>>('app_settings');
-    if (data == null) return const AppSettings();
-    return AppSettings.fromJson(data);
+    if (kDebugMode) {
+      print('getSettings: 读取 app_settings');
+    }
+    try {
+      final data = _storage.getSetting<Map<String, dynamic>>('app_settings');
+      if (kDebugMode) {
+        print('getSettings: data=$data');
+      }
+      if (data == null) {
+        if (kDebugMode) {
+          print('getSettings: 没有保存的设置，返回默认值');
+        }
+        return const AppSettings();
+      }
+      return AppSettings.fromJson(data);
+    } catch (e, stack) {
+      if (kDebugMode) {
+        print('getSettings 错误: $e');
+        print('Stack: $stack');
+      }
+      return const AppSettings();
+    }
   }
 
   Future<void> updateThemeMode(String themeMode) async {

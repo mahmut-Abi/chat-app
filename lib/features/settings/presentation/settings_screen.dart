@@ -550,7 +550,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       builder: (context, setSliderState) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Temperature: ${temperature.toStringAsFixed(2)}'),
+                          Text(
+                            'Temperature: ${temperature.toStringAsFixed(2)}',
+                          ),
                           Slider(
                             value: temperature,
                             min: 0.0,
@@ -583,7 +585,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const SizedBox(height: 8),
-                          Text('Frequency Penalty: ${frequencyPenalty.toStringAsFixed(2)}'),
+                          Text(
+                            'Frequency Penalty: ${frequencyPenalty.toStringAsFixed(2)}',
+                          ),
                           Slider(
                             value: frequencyPenalty,
                             min: 0.0,
@@ -594,7 +598,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const SizedBox(height: 8),
-                          Text('Presence Penalty: ${presencePenalty.toStringAsFixed(2)}'),
+                          Text(
+                            'Presence Penalty: ${presencePenalty.toStringAsFixed(2)}',
+                          ),
                           Slider(
                             value: presencePenalty,
                             min: 0.0,
