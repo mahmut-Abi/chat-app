@@ -6,6 +6,7 @@ import '../../../core/network/openai_api_client.dart';
 import '../../../core/storage/storage_service.dart';
 import '../../../core/utils/token_counter.dart';
 import '../../../core/utils/markdown_export.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatRepository {
   final OpenAIApiClient _apiClient;
@@ -123,7 +124,21 @@ class ChatRepository {
       groupId: groupId,
     );
 
+    if (kDebugMode) {
+      print('createConversation: 创建新对话');
+      print('  id: ${conversation.id}');
+      print('  title: ${conversation.title}');
+      print('  createdAt: ${conversation.createdAt}');
+    }
+
     await _storage.saveConversation(conversation.id, conversation.toJson());
+
+    if (kDebugMode) {
+      print('createConversation: 保存完成');
+      // 验证保存
+      final saved = _storage.getConversation(conversation.id);
+      print('  验证读取: ${saved != null}');
+    }
 
     return conversation;
   }

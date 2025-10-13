@@ -11,6 +11,7 @@ import '../../../core/utils/desktop_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import '../../../shared/widgets/background_container.dart';
+import 'package:flutter/foundation.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -94,14 +95,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Future<void> _createNewConversation() async {
     final chatRepo = ref.read(chatRepositoryProvider);
+    if (kDebugMode) {
+      print('HomeScreen._createNewConversation: 开始创建');
+    }
+
     final conversation = await chatRepo.createConversation(title: '新建对话');
+
+    if (kDebugMode) {
+      print('HomeScreen._createNewConversation: 创建完成');
+      print('  id: ${conversation.id}');
+      print('  title: ${conversation.title}');
+    }
 
     setState(() {
       _conversations.insert(0, conversation);
       _selectedConversation = conversation;
     });
 
+    if (kDebugMode) {
+      print('HomeScreen._createNewConversation: 状态已更新');
+      print('  总对话数: ${_conversations.length}');
+    }
+
     if (mounted) {
+      if (kDebugMode) {
+        print(
+          'HomeScreen._createNewConversation: 导航到 /chat/${conversation.id}',
+        );
+      }
       context.push('/chat/${conversation.id}');
     }
   }
