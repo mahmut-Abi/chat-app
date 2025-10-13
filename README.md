@@ -24,6 +24,9 @@
 - 💾 **数据管理** - 导入/导出所有数据，支持数据迁移
 - 🔍 **智能搜索** - 快速搜索对话内容和标题
 - 📌 **对话置顶** - 重要对话可以置顶显示
+ - 🔌 **MCP 集成** - 支持 Model Context Protocol (HTTP 和 Stdio 模式)
+ - 🛠️ **工具调用** - 通过 MCP 服务器扩展 AI 能力
+ - 🌐 **上下文增强** - 使用 MCP 提供外部上下文信息
 
 ## 🚀 快速开始
 
@@ -133,7 +136,45 @@ flutter build windows --release
 3. 点击发送按钮或按 Enter 键
 4. AI 将以流式方式回复
 
-### 3. 高级功能
+### 3. 配置 MCP 服务器（可选）
+
+MCP (Model Context Protocol) 允许 AI 访问外部工具和上下文信息。
+
+**添加 HTTP 模式 MCP 服务器：**
+
+1. 点击侧边栏的 "MCP 配置" 菜单
+2. 点击右上角 "+" 按钮
+3. 填写配置：
+   - 名称：如 "本地 MCP 服务器"
+   - 连接类型：HTTP
+   - 端点 URL：http://localhost:3000
+   - 描述：服务器说明（可选）
+4. 点击 "添加" 保存
+5. 使用开关启用服务器，点击播放按钮连接
+
+**添加 Stdio 模式 MCP 服务器：**
+
+1. 点击侧边栏的 "MCP 配置" 菜单
+2. 点击右上角 "+" 按钮
+3. 填写配置：
+   - 名称：如 "文件操作工具"
+   - 连接类型：Stdio
+   - 命令路径：/path/to/mcp-server
+   - 命令参数：--verbose --port 3000（可选）
+   - 环境变量：添加需要的环境变量（可选）
+   - 描述：服务器说明（可选）
+4. 点击 "添加" 保存
+5. 使用开关启用服务器，点击播放按钮连接
+
+**连接状态说明：**
+- 🟢 绿色：已连接
+- 🟠 橙色：连接中
+- 🔴 红色：连接失败
+- ⚪ 灰色：未连接
+
+详细的 MCP 使用文档请参考 [docs/mcp-integration.md](docs/mcp-integration.md)
+
+### 4. 高级功能
 
 #### 会话分组
 
@@ -221,6 +262,14 @@ lib/
 │   │   ├── data/
 │   │   ├── domain/
 │   │   └── presentation/
+│   ├── mcp/               # MCP 集成
+│   │   ├── data/          # MCP 客户端实现
+│   │   │   ├── http_mcp_client.dart
+│   │   │   ├── stdio_mcp_client.dart
+│   │   │   ├── mcp_client_factory.dart
+│   │   │   └── mcp_repository.dart
+│   │   ├── domain/        # MCP 配置模型
+│   │   └── presentation/  # MCP UI 界面
 │   └── models/            # 模型管理
 │       ├── data/
 │       ├── domain/
@@ -312,6 +361,16 @@ flutter pub run build_runner watch
 - ✅ 系统提示词设置
 - ✅ 多 API 配置管理
 
+### MCP 集成
+- ✅ HTTP 模式连接
+- ✅ Stdio 模式连接
+- ✅ JSON-RPC 2.0 协议支持
+- ✅ 工具调用
+- ✅ 上下文管理
+- ✅ 连接状态监控
+- ✅ 自动心跳检测
+- ✅ 进程生命周期管理
+
 ### 数据管理
 - ✅ 本地数据持久化
 - ✅ 导出为 JSON
@@ -363,6 +422,24 @@ MIT License - 详见 `LICENSE` 文件
 **最后更新**: 2024-01
 
 ## 📝 更新日志
+
+### v0.3.0 (2024-01-21)
+
+**新增功能**
+- ✅ MCP (Model Context Protocol) 集成支持
+  - HTTP 模式：支持 RESTful API 通信
+  - Stdio 模式：支持 JSON-RPC 2.0 协议
+  - 工具调用和上下文管理
+  - 连接状态实时监控
+  - 自动心跳检测和进程生命周期管理
+- ✅ 完整的 MCP 配置界面
+  - 支持命令参数和环境变量配置
+  - 连接类型选择器
+  - 状态指示和控制按钮
+
+**文档**
+- 📝 新增 MCP 集成文档 (docs/mcp-integration.md)
+- 📝 更新 README 使用说明
 
 ### v0.2.0 (2024-01-20)
 
