@@ -124,24 +124,18 @@ class ChatRepository {
       groupId: groupId,
     );
 
-    // 注意: 新创建的对话不立即保存到存储
-    // 只有在添加第一条消息后才保存,避免空对话出现在历史列表中
+    // 立即保存空对话，确保 ChatScreen 能加载到对话
+    await _storage.saveConversation(conversation.id, conversation.toJson());
+
     if (kDebugMode) {
-      print('createConversation: 创建新对话 ${conversation.id}, 但不立即保存');
+      print('createConversation: 创建并保存新对话 ${conversation.id}');
     }
 
     return conversation;
   }
 
   Future<void> saveConversation(Conversation conversation) async {
-    // 如果对话为空(没有消息),不保存到存储
-    if (conversation.messages.isEmpty) {
-      if (kDebugMode) {
-        print('saveConversation: 跳过保存空对话 ${conversation.id}');
-      }
-      return;
-    }
-
+    // 允许保存空对话，以支持新建对话的场景
     // 计算总 token 数
     int totalTokens = 0;
     for (final message in conversation.messages) {

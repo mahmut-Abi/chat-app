@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/platform_dialog.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import 'chat_screen.dart';
@@ -154,31 +155,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _showRenameDialog(Conversation conversation) async {
-    final controller = TextEditingController(text: conversation.title);
-
-    final result = await showDialog<String>(
+    final result = await showPlatformInputDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('重命名对话'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: '标题',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('保存'),
-          ),
-        ],
-      ),
+      title: '重命名对话',
+      initialValue: conversation.title,
+      placeholder: '标题',
+      confirmText: '保存',
     );
 
     if (result != null && result.isNotEmpty) {
@@ -186,8 +168,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       await chatRepo.updateConversationTitle(conversation.id, result);
       _loadData();
     }
-
-    controller.dispose();
   }
 
   Future<void> _updateConversationTags(
@@ -301,23 +281,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Future<bool?> _showDeleteDialog() {
-    return showDialog<bool>(
+  Future<bool> _showDeleteDialog() async {
+    return await showPlatformConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('删除对话'),
-        content: const Text('确定要删除这个对话吗?此操作无法撤销。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
+      title: '删除对话',
+      content: '确定要删除这个对话吗?此操作无法撤销。',
+      confirmText: '删除',
+      isDestructive: true,
     );
   }
 
