@@ -253,9 +253,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onManageGroups: _showGroupManagement,
           ),
           Expanded(
-            child: _selectedConversation == null
-                ? BackgroundContainer(child: _buildWelcomeScreen())
-                : ChatScreen(conversationId: _selectedConversation!.id),
+            child: BackgroundContainer(
+              child: _selectedConversation == null
+                  ? _buildWelcomeScreen()
+                  : ChatScreen(conversationId: _selectedConversation!.id),
+            ),
           ),
         ],
       ),

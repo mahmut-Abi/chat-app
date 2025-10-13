@@ -179,23 +179,20 @@ class StorageService {
   Future<void> clearAll() async {
     try {
       if (kDebugMode) {
-        print('clearAll: 开始清除所有数据');
+        print('clearAll: 开始清除对话数据');
         print('  对话数: ${_conversationsBoxInstance.length}');
-        print('  设置数: ${_settingsBoxInstance.length}');
         print('  分组数: ${_groupsBoxInstance.length}');
         print('  提示词模板数: ${_promptsBoxInstance.length}');
       }
 
+      // 只清除对话、分组和提示词模板数据，保留设置和 API 配置
       await _conversationsBoxInstance.clear();
-      await _settingsBoxInstance.clear();
       await _groupsBoxInstance.clear();
       await _promptsBoxInstance.clear();
-      await _secureStorage.deleteAll();
 
       if (kDebugMode) {
-        print('clearAll: 数据清除完成');
+        print('clearAll: 对话数据清除完成');
         print('  对话数: ${_conversationsBoxInstance.length}');
-        print('  设置数: ${_settingsBoxInstance.length}');
       }
     } catch (e, stack) {
       if (kDebugMode) {
