@@ -68,7 +68,7 @@ class _BackgroundSettingsDialogState
     }
   }
 
-  void _saveSettings() {
+  Future<void> _saveSettings() async {
     final settingsRepo = ref.read(settingsRepositoryProvider);
     final currentSettings = ref.read(appSettingsProvider);
 
@@ -78,8 +78,15 @@ class _BackgroundSettingsDialogState
       enableBackgroundBlur: _enableBlur,
     );
 
-    settingsRepo.saveSettings(newSettings);
-    Navigator.of(context).pop();
+    // 保存到本地存储
+    await settingsRepo.saveSettings(newSettings);
+    
+    // 通知 Provider 更新状态
+    ref.read(appSettingsProvider.notifier).updateSettings(newSettings);
+    
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   void _clearBackground() {

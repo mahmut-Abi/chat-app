@@ -15,7 +15,7 @@ class BackgroundContainer extends ConsumerWidget {
     final settings = ref.watch(appSettingsProvider);
     final backgroundImage = settings.backgroundImage;
 
-    if (backgroundImage == null) {
+    if (backgroundImage == null || backgroundImage.isEmpty) {
       return child;
     }
 
@@ -25,14 +25,7 @@ class BackgroundContainer extends ConsumerWidget {
         // 背景图片
         _buildBackgroundImage(backgroundImage),
 
-        // 透明度遮罩
-        Container(
-          color: Theme.of(context)
-              .scaffoldBackgroundColor
-              .withValues(alpha: 1 - settings.backgroundOpacity),
-        ),
-
-        // 模糊效果
+        // 模糊效果 (需要在遮罩前应用)
         if (settings.enableBackgroundBlur)
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -41,6 +34,13 @@ class BackgroundContainer extends ConsumerWidget {
             ),
           ),
 
+        // 透明度遮罩 (使用白色半透明来降低背景可见度)
+        Container(
+          color: Colors.white.withValues(
+            alpha: 1 - settings.backgroundOpacity,
+          ),
+        ),
+
         // 实际内容
         child,
       ],
@@ -48,13 +48,14 @@ class BackgroundContainer extends ConsumerWidget {
   }
 
   Widget _buildBackgroundImage(String path) {
-    // iOS 平台需要特殊处理
     Widget imageWidget;
     
     if (path.startsWith('assets/')) {
       imageWidget = Image.asset(
         path,
         fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
           if (kDebugMode) {
             print('背景图片加载失败 (asset): $path, 错误: $error');
@@ -66,6 +67,8 @@ class BackgroundContainer extends ConsumerWidget {
       imageWidget = Image.file(
         File(path),
         fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
           if (kDebugMode) {
             print('背景图片加载失败 (file): $path, 错误: $error');
