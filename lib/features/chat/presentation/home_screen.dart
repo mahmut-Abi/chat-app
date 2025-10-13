@@ -334,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 : ChatScreen(conversationId: _selectedConversation!.id),
             // 左上角透明菜单按钮
             Positioned(
-              top: 26,
+              top: 60,
               left: 16,
               child: Builder(
                 builder: (context) => Container(
