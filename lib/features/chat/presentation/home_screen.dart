@@ -84,13 +84,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _loadData() {
     final chatRepo = ref.read(chatRepositoryProvider);
-    setState(() {
-      _conversations = chatRepo.getAllConversations();
-      _groups = chatRepo.getAllGroups();
-      if (_conversations.isNotEmpty && _selectedConversation == null) {
-        _selectedConversation = _conversations.first;
-      }
-    });
+    final conversations = chatRepo.getAllConversations();
+    final groups = chatRepo.getAllGroups();
+
+    if (mounted) {
+      setState(() {
+        _conversations = conversations;
+        _groups = groups;
+        if (_conversations.isNotEmpty && _selectedConversation == null) {
+          _selectedConversation = _conversations.first;
+        }
+      });
+    }
   }
 
   Future<void> _createNewConversation() async {
@@ -107,8 +112,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       print('  title: ${conversation.title}');
     }
 
-    // 重新加载所有对话以确保列表同步
-    _loadData();
+    // 立即更新状态，确保 iOS 能看到新对话
+    if (mounted) {
+      setState(() {
+        _conversations = chatRepo.getAllConversations();
+        _groups = chatRepo.getAllGroups();
+        _selectedConversation = conversation;
+      });
+    }
 
     if (kDebugMode) {
       print('HomeScreen._createNewConversation: 状态已更新');
@@ -353,7 +364,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 : ChatScreen(conversationId: _selectedConversation!.id),
             // 左上角透明菜单按钮
             Positioned(
-              top: 16,
+              top: 26,
               left: 16,
               child: Builder(
                 builder: (context) => Container(

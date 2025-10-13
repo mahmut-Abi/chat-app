@@ -88,7 +88,7 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 34, 16, 12),
       child: Column(
         children: [
           Row(
