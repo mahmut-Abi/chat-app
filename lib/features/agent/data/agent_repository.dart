@@ -124,6 +124,32 @@ class AgentRepository {
     await _storage.saveSetting('agent_tool_${tool.id}', tool.toJson());
   }
 
+  /// 更新工具状态
+  Future<void> updateToolStatus(String id, bool enabled) async {
+    final keys = await _storage.getAllKeys();
+    final toolKey = keys.firstWhere(
+      (k) => k == 'agent_tool_$id',
+      orElse: () => '',
+    );
+
+    if (toolKey.isEmpty) return;
+
+    final data = _storage.getSetting(toolKey);
+    if (data != null && data is Map<String, dynamic>) {
+      final tool = AgentTool.fromJson(data);
+      final updated = AgentTool(
+        id: tool.id,
+        name: tool.name,
+        description: tool.description,
+        type: tool.type,
+        parameters: tool.parameters,
+        enabled: enabled,
+        iconName: tool.iconName,
+      );
+      await updateTool(updated);
+    }
+  }
+
   /// 删除工具
   Future<void> deleteTool(String id) async {
     await _storage.deleteSetting('agent_tool_$id');

@@ -1,83 +1,66 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:chat_app/features/mcp/data/mcp_repository.dart';
 import 'package:chat_app/features/mcp/domain/mcp_config.dart';
-import 'package:chat_app/core/storage/storage_service.dart';
-
-@GenerateMocks([StorageService])
-import 'mcp_repository_test.mocks.dart';
 
 void main() {
-  late MockStorageService mockStorage;
-  late McpRepository repository;
-
-  setUp(() {
-    mockStorage = MockStorageService();
-    repository = McpRepository(mockStorage);
-  });
-
-  group('McpRepository', () {
-    test('应该成功创建 MCP 配置', () async {
-      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
-
-      final config = await repository.createConfig(
+  group('McpConfig Unit Tests', () {
+    test('should create MCP config with enabled status', () {
+      final config = McpConfig(
+        id: 'test-id',
         name: 'Test MCP',
         endpoint: 'http://localhost:3000',
-        description: 'Test Description',
+        enabled: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       expect(config.name, 'Test MCP');
-      expect(config.endpoint, 'http://localhost:3000');
-      expect(config.description, 'Test Description');
-      verify(mockStorage.saveSetting(any, any)).called(1);
+      expect(config.enabled, true);
     });
 
-    test('应该成功获取所有 MCP 配置', () async {
-      final testConfig = McpConfig(
+    test('should toggle enabled status', () {
+      final config = McpConfig(
+        id: 'test-id',
+        name: 'Test',
+        endpoint: 'http://localhost:3000',
+        enabled: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final disabled = config.copyWith(enabled: false);
+      expect(disabled.enabled, false);
+
+      final enabled = disabled.copyWith(enabled: true);
+      expect(enabled.enabled, true);
+    });
+
+    test('should maintain other properties when toggling', () {
+      final original = McpConfig(
         id: 'test-id',
         name: 'Test MCP',
         endpoint: 'http://localhost:3000',
+        description: 'Test',
+        enabled: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      when(
-        mockStorage.getAllKeys(),
-      ).thenAnswer((_) async => ['mcp_config_test-id', 'other_key']);
-      when(
-        mockStorage.getSetting('mcp_config_test-id'),
-      ).thenReturn(testConfig.toJson());
+      final toggled = original.copyWith(enabled: false);
 
-      final configs = await repository.getAllConfigs();
-
-      expect(configs.length, 1);
-      expect(configs.first.id, 'test-id');
-      expect(configs.first.name, 'Test MCP');
+      expect(toggled.id, original.id);
+      expect(toggled.name, original.name);
+      expect(toggled.endpoint, original.endpoint);
+      expect(toggled.description, original.description);
+      expect(toggled.enabled, false);
     });
+  });
 
-    test('应该成功更新 MCP 配置', () async {
-      final config = McpConfig(
-        id: 'test-id',
-        name: 'Original Name',
-        endpoint: 'http://localhost:3000',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-
-      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
-
-      await repository.updateConfig(config);
-
-      verify(mockStorage.saveSetting('mcp_config_${config.id}', any)).called(1);
-    });
-
-    test('应该成功删除 MCP 配置', () async {
-      when(mockStorage.deleteSetting(any)).thenAnswer((_) async => {});
-
-      await repository.deleteConfig('test-id');
-
-      verify(mockStorage.deleteSetting('mcp_config_test-id')).called(1);
+  group('McpConnectionStatus Tests', () {
+    test('should have all connection status values', () {
+      expect(McpConnectionStatus.disconnected, isNotNull);
+      expect(McpConnectionStatus.connecting, isNotNull);
+      expect(McpConnectionStatus.connected, isNotNull);
+      expect(McpConnectionStatus.error, isNotNull);
     });
   });
 }

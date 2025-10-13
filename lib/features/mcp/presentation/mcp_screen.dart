@@ -88,22 +88,41 @@ class McpScreen extends ConsumerWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // 启用/停用开关
+                Switch(
+                  value: config.enabled,
+                  onChanged: (value) async {
+                    final repository = ref.read(mcpRepositoryProvider);
+                    final updated = config.copyWith(enabled: value);
+                    await repository.updateConfig(updated);
+                    if (!value &&
+                        connectionStatus == McpConnectionStatus.connected) {
+                      await repository.disconnect(config.id);
+                    }
+                    ref.invalidate(mcpConfigsProvider);
+                  },
+                ),
                 IconButton(
                   icon: Icon(
                     connectionStatus == McpConnectionStatus.connected
                         ? Icons.stop
                         : Icons.play_arrow,
                   ),
-                  onPressed: () async {
-                    if (connectionStatus == McpConnectionStatus.connected) {
-                      await ref
-                          .read(mcpRepositoryProvider)
-                          .disconnect(config.id);
-                    } else {
-                      await ref.read(mcpRepositoryProvider).connect(config);
-                    }
-                    ref.invalidate(mcpConfigsProvider);
-                  },
+                  onPressed: config.enabled
+                      ? () async {
+                          if (connectionStatus ==
+                              McpConnectionStatus.connected) {
+                            await ref
+                                .read(mcpRepositoryProvider)
+                                .disconnect(config.id);
+                          } else {
+                            await ref
+                                .read(mcpRepositoryProvider)
+                                .connect(config);
+                          }
+                          ref.invalidate(mcpConfigsProvider);
+                        }
+                      : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
