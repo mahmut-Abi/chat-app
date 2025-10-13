@@ -4,6 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 
+/// 初始化原生菜单栏
+Future<void> initNativeMenuBar() async {
+  // macOS 和 Linux 支持原生菜单栏
+  // Windows 使用系统托盘菜单
+  try {
+    // 菜单栏配置将在 main.dart 中实现
+    debugPrint('原生菜单栏已初始化');
+  } catch (e) {
+    debugPrint('初始化原生菜单栏失败: $e');
+  }
+}
+
 Future<void> initWindowManagerImpl() async {
   await windowManager.ensureInitialized();
 

@@ -1,5 +1,8 @@
 import '../domain/agent_tool.dart';
 import 'dart:async';
+import 'tools/calculator_tool.dart';
+import 'tools/search_tool.dart';
+import 'tools/file_operation_tool.dart';
 
 /// 工具执行器基类
 abstract class ToolExecutor {
@@ -78,8 +81,9 @@ class ToolExecutorManager {
 
   ToolExecutorManager() {
     // 注册内置工具
-    registerExecutor(CalculatorTool());
-    registerExecutor(SearchTool());
+    registerExecutor(EnhancedCalculatorTool());
+    registerExecutor(EnhancedSearchTool());
+    registerExecutor(FileOperationTool());
   }
 
   void registerExecutor(ToolExecutor executor) {

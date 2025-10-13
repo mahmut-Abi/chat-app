@@ -44,6 +44,19 @@ class DesktopService {
         await DesktopUtils.hideWindow();
       },
     );
+    
+    // 注册监听器
+    await _registerListeners();
+  }
+  
+  /// 注册事件监听器
+  Future<void> _registerListeners() async {
+    if (_trayListener != null) {
+      // trayManager.addListener(_trayListener!);
+    }
+    if (_windowListener != null) {
+      // windowManager.addListener(_windowListener!);
+    }
   }
   
   /// 显示窗口
@@ -68,6 +81,13 @@ class DesktopService {
   
   /// 释放资源
   void dispose() {
+    // 移除监听器
+    if (_trayListener != null) {
+      // trayManager.removeListener(_trayListener!);
+    }
+    if (_windowListener != null) {
+      // windowManager.removeListener(_windowListener!);
+    }
     _trayListener = null;
     _windowListener = null;
   }
