@@ -177,7 +177,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
             ),
             const SizedBox(height: 16),
             Text(
@@ -186,7 +186,7 @@ class EmptyStateWidget extends StatelessWidget {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
               textAlign: TextAlign.center,
             ),

@@ -5,13 +5,10 @@ import 'dart:io';
 /// 分享工具类
 class ShareUtils {
   /// 分享文本
-  static Future<void> shareText(String text, {String? subject}) async {
-    try {
-      await Share.share(
-        text,
-        subject: subject,
-      );
-    } catch (e) {
+ static Future<void> shareText(String text) async {
+   try {
+      await Share.share(text);
+   } catch (e) {
       debugPrint('分享失败: $e');
     }
   }
@@ -20,10 +17,7 @@ class ShareUtils {
   static Future<void> shareFile(String filePath, {String? text}) async {
     try {
       final file = XFile(filePath);
-      await Share.shareXFiles(
-        [file],
-        text: text,
-      );
+      await Share.shareXFiles([file], text: text ?? '');
     } catch (e) {
       debugPrint('分享文件失败: $e');
     }
@@ -36,10 +30,7 @@ class ShareUtils {
   }) async {
     try {
       final files = filePaths.map((path) => XFile(path)).toList();
-      await Share.shareXFiles(
-        files,
-        text: text,
-      );
+      await Share.shareXFiles(files, text: text ?? '');
     } catch (e) {
       debugPrint('分享文件失败: $e');
     }

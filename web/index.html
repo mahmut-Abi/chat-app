@@ -25,7 +25,10 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
+        // 注册 Flutter Service Worker
         navigator.serviceWorker.register('/flutter_service_worker.js');
+        // 注册自定义 Service Worker (PWA 支持)
+        navigator.serviceWorker.register('/sw.js');
       });
     }
   </script>

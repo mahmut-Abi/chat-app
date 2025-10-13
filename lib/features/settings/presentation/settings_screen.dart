@@ -257,7 +257,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _showThemeDialog() async {
-    final settings = ref.read(appSettingsProvider);
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -267,29 +266,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             ListTile(
               title: const Text('浅色'),
-              leading: Radio<String>(
-                value: 'light',
-                groupValue: settings.themeMode,
-                onChanged: (value) => Navigator.pop(context, value),
-              ),
+              leading: const Icon(Icons.light_mode),
               onTap: () => Navigator.pop(context, 'light'),
             ),
             ListTile(
               title: const Text('深色'),
-              leading: Radio<String>(
-                value: 'dark',
-                groupValue: settings.themeMode,
-                onChanged: (value) => Navigator.pop(context, value),
-              ),
+              leading: const Icon(Icons.dark_mode),
               onTap: () => Navigator.pop(context, 'dark'),
             ),
             ListTile(
               title: const Text('跟随系统'),
-              leading: Radio<String>(
-                value: 'system',
-                groupValue: settings.themeMode,
-                onChanged: (value) => Navigator.pop(context, value),
-              ),
+              leading: const Icon(Icons.brightness_auto),
               onTap: () => Navigator.pop(context, 'system'),
             ),
           ],
