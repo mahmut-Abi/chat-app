@@ -47,6 +47,7 @@ class ChatMessageList extends StatelessWidget {
 
     return ListView.builder(
       controller: scrollController,
+      addRepaintBoundaries: true,
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
@@ -56,13 +57,15 @@ class ChatMessageList extends StatelessWidget {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
-        return MessageBubble(
-          message: message,
-          onDelete: () => onDeleteMessage(index),
-          onRegenerate: message.role == MessageRole.assistant
-              ? () => onRegenerateMessage(index)
-              : null,
-          onEdit: (newContent) => onEditMessage(index, newContent),
+        return RepaintBoundary(
+          child: MessageBubble(
+            message: message,
+            onDelete: () => onDeleteMessage(index),
+            onRegenerate: message.role == MessageRole.assistant
+                ? () => onRegenerateMessage(index)
+                : null,
+            onEdit: (newContent) => onEditMessage(index, newContent),
+          ),
         );
       },
     );
