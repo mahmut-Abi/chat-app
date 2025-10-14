@@ -2,56 +2,66 @@
 
 ## Overview
 
-Successfully created a **cross-platform AI chat application** similar to Cherry Studio, built with Flutter. The app supports Web, Desktop (Windows/macOS/Linux), and Mobile (iOS/Android) platforms.
+成功创建了一个**跨平台 AI 聊天应用**，类似 Cherry Studio，使用 Flutter 构建。应用支持 Web、桌面端（Windows/macOS/Linux）和移动端（iOS/Android）平台。
 
-## What Was Built
+**项目状态**: ✅ Phase 1-7 已完成，Phase 8-9 进行中  
+**版本**: v1.0.0  
+**更新日期**: 2024-10-15
 
-### ✅ Phase 1: Project Initialization & Foundation (COMPLETED)
+## 已实现功能
 
-**Project Structure**
+### ✅ Phase 1: 项目初始化与基础架构（已完成）
+
+**项目结构**
 - ✅ Feature-first architecture (core/features/shared)
 - ✅ Proper directory organization
 - ✅ Dependencies configured in pubspec.yaml
 - ✅ Analysis options and linting rules
 - ✅ .gitignore configured
+- ✅ .gitignore 配置
 
-**Core Dependencies Added**
+**核心依赖**
 - State Management: `flutter_riverpod` 2.4.9
 - Navigation: `go_router` 13.0.0
 - Networking: `dio` 5.4.0 + `retrofit` 4.0.3
 - Storage: `hive` 2.2.3 + `flutter_secure_storage` 9.0.0
 - Code Generation: `freezed` + `json_serializable`
 - Platform Support: `window_manager`, `file_picker`, `share_plus`
+- 平台支持: `window_manager`, `file_picker`, `share_plus`
 
-### ✅ Phase 2: Core Functionality (COMPLETED)
+### ✅ Phase 2: 核心功能（已完成）
 
-**Network Layer**
+**网络层**
 - ✅ DIO client with interceptors and error handling
 - ✅ OpenAI API client with streaming support
 - ✅ Exception handling (Network, Timeout, Unauthorized, RateLimit)
 - ✅ SSE (Server-Sent Events) streaming implementation
+- ✅ SSE（Server-Sent Events）流式响应实现
 
-**Data Models**
+**数据模型**
 - ✅ `Message` - with role, content, timestamp, streaming state
 - ✅ `Conversation` - with messages, metadata, settings
 - ✅ `ApiConfig` - for multiple API provider configurations
 - ✅ `ModelConfig` - for temperature, tokens, penalties
 - ✅ `ChatCompletionRequest/Response` - OpenAI API DTOs
+- ✅ `ChatCompletionRequest/Response` - OpenAI API 数据传输对象
 
-**Storage Layer**
+**存储层**
 - ✅ StorageService with Hive for local data
 - ✅ Secure storage for API keys (flutter_secure_storage)
 - ✅ Conversation persistence
 - ✅ Settings persistence
 - ✅ API configuration management
+- ✅ API 配置管理
 
-**Repositories**
+**仓库层**
 - ✅ ChatRepository - conversation CRUD, message sending
 - ✅ SettingsRepository - API configs, app settings
+- ✅ SettingsRepository - API 配置、应用设置
 
-### ✅ Phase 3: User Interface (COMPLETED)
+### ✅ Phase 3: 用户界面（已完成）
 
-**Screens**
+**界面**
 1. **HomeScreen** (`lib/features/chat/presentation/home_screen.dart`)
    - Sidebar with conversation list
    - New chat creation
@@ -217,71 +227,57 @@ chat-app/
 ## What's NOT Yet Implemented
 
 ### Phase 4-5: Advanced Features (TODO)
-- ⏳ Markdown rendering
-- ⏳ Code syntax highlighting
-- ⏳ Model parameter configuration UI
-- ⏳ System prompt templates
-- ⏳ Multi-modal support (image upload)
-- ⏳ Export/import conversations
-- ⏳ Search functionality
-- ⏳ Conversation tags/groups
+### ✅ Phase 4-5: 高级功能（已完成）
+- ✅ Markdown 渲染（支持代码高亮、LaTeX 公式）
+- ✅ 模型参数配置 UI
+- ✅ 系统提示词模板
+- ✅ 多模态支持（图片上传）
+- ✅ 导出/导入对话（Markdown/PDF/JSON）
+- ✅ 搜索功能
+- ✅ 对话标签/分组
 
-### Phase 6-7: Extended Functionality (TODO)
-- ⏳ MCP (Model Context Protocol) support
-- ⏳ Agent functionality
-- ⏳ Tool/function calling
-- ⏳ Plugin system
+### ✅ Phase 6-7: 扩展功能（已完成）
+- ✅ MCP (Model Context Protocol) 支持
+- ✅ Agent 功能
+- ✅ 工具/函数调用
+- ✅ 提示词模板系统
+- ✅ Token 使用统计
 
-### Phase 8: Testing & Optimization (TODO)
-- ⏳ Comprehensive unit tests
-- ⏳ Widget tests
-- ⏳ Integration tests
-- ⏳ Performance optimization
-- ⏳ Accessibility improvements
+### ⏳ Phase 8: 测试与优化（进行中）
+- ✅ UI 优化（iOS 原生风格、全屏配置页面）
+- ✅ 性能优化（滚动、键盘体验）
+- ⏳ 单元测试补充
+- ⏳ 集成测试
+- ⏳ 无障碍功能改进
 
-## Next Steps to Complete
+### ⏳ Phase 9: 发布准备（进行中）
+- ✅ GitHub Actions CI/CD
+- ✅ 文档完善
+- ⏳ 应用商店素材
+- ⏳ 应用商店发布
 
-### Immediate (Phase 3 completion)
-1. **Add Markdown Support**
-   - Integrate `flutter_markdown`
-   - Style code blocks
-   - Add copy button to code
+## 下一步计划
 
-2. **Add Code Highlighting**
-   - Integrate `flutter_highlight`
-   - Support major languages
+### 短期目标
+1. **测试覆盖率**
+   - 增加单元测试
+   - 添加 Widget 测试
+   - 集成测试
 
-3. **Enhance Message UI**
-   - Add timestamps
-   - Add message actions (copy, regenerate, edit)
-   - Improve error display
+2. **性能优化**
+   - 图片缓存
+   - 内存优化
+   - 启动时间优化
 
-### Short-term (Phase 4)
-1. **Model Configuration**
-   - UI for temperature, max tokens, etc.
-   - Save per-conversation settings
-   - Model selection dropdown
+### 中期目标
+1. **应用商店发布**
+   - iOS App Store
+   - Google Play Store
+   - 桌面端安装包
 
-2. **System Prompts**
-   - Template library
-   - Custom prompt editor
-   - Per-conversation prompts
-
-3. **Export/Import**
-   - JSON export
-   - Markdown export
-   - Import from file
-
-### Medium-term (Phase 5-6)
-1. **Platform Optimization**
-   - Desktop keyboard shortcuts
-   - Mobile gestures
-   - Window management (tray, minimize)
-
-2. **MCP Integration**
-   - Research MCP protocol
-   - Design integration architecture
-   - Implement basic MCP support
+2. **Web 版本**
+   - PWA 优化
+   - 部署到生产环境
 
 ## How to Run
 
@@ -368,15 +364,21 @@ flutter test --coverage
 
 ## Conclusion
 
-The project has successfully completed **Phases 1-3** of the roadmap:
-- ✅ Project initialization
-- ✅ Core functionality (API + storage)
-- ✅ Basic UI implementation
+## 项目总结
 
-**Current Status**: Ready for use with basic chat functionality
+项目已成功完成 **Phase 1-7** 的路线图：
+- ✅ 项目初始化与基础架构
+- ✅ 核心功能（API + 存储）
+- ✅ 基础 UI 实现
+- ✅ 高级功能（Markdown、模型配置、导出等）
+- ✅ 跨平台适配与优化
+- ✅ MCP 集成
+- ✅ Agent 功能
 
-**Next Milestone**: Phase 4 (Advanced Features) - Markdown, code highlighting, model configuration
+**当前状态**: 功能完善，可用于生产环境
 
-**Future Vision**: Full-featured AI chat app with MCP and Agent support
+**下一里程碑**: Phase 8-9（测试优化与发布准备）
 
-The foundation is solid, the architecture is clean, and the app is ready for continued development! 🚀
+**未来规划**: 持续优化性能，扩展更多 AI 模型支持，增加云同步功能
+
+基础稳固，架构清晰，应用已准备好发布！ 🚀
