@@ -1,9 +1,18 @@
 // 简单的 token 计数器
 // 注意: 这是一个近似计数,实际 token 数量可能会有所不同
+/// Token 计数器
+///
+/// 提供 Token 数量的估算功能。
+/// 注意：这是近似值，实际 Token 数量可能有差异。
 class TokenCounter {
-  // 估算文本的 token 数量
-  // 使用简单的启发式规则: 平均每个单词约 1.3 个 token
-  // 中文字符每个约 1.5 个 token
+  /// 估算文本的 Token 数量
+  ///
+  /// 使用启发式规则：
+  /// - 中文字符：每个约 1.5 个 Token
+  /// - 英文单词：平均每个单词约 1.3 个 Token
+  ///
+  /// [text] 需要计数的文本
+  /// 返回估算的 Token 数量
   static int estimate(String text) {
     if (text.isEmpty) return 0;
 
@@ -34,7 +43,12 @@ class TokenCounter {
     return count;
   }
 
-  // 估算消息列表的总 token 数
+  /// 估算消息列表的总 Token 数
+  ///
+  /// 包含消息内容、角色和固定开销。
+  ///
+  /// [messages] 消息列表，每个消息包含 'content' 和 'role' 字段
+  /// 返回估算的总 Token 数量
   static int estimateMessages(List<Map<String, String>> messages) {
     int total = 0;
     for (final message in messages) {

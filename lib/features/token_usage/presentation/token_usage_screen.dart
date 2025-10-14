@@ -27,8 +27,8 @@ class TokenUsageScreen extends ConsumerWidget {
               conversationId: conv.id,
               conversationTitle: conv.title,
               messageId: msg.id,
-              model: 'gpt-3.5-turbo', // TODO: 从消息中获取实际模型
-              promptTokens: 0, // TODO: 分离 prompt 和 completion tokens
+              model: conv.settings['model'] as String? ?? 'gpt-3.5-turbo',
+              promptTokens: 0, // 暂无分离数据，后续优化
               completionTokens: msg.tokenCount!,
               totalTokens: msg.tokenCount!,
               timestamp: msg.timestamp,

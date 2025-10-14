@@ -2,9 +2,16 @@ import '../../../features/chat/domain/conversation.dart';
 import '../../../features/chat/domain/message.dart';
 import 'package:intl/intl.dart';
 
-// 对话导出为 Markdown 格式的工具类
+/// Markdown 导出工具类
+///
+/// 提供将对话导出为 Markdown 格式的功能。
 class MarkdownExport {
-  // 导出单个对话为 Markdown
+  /// 导出单个对话为 Markdown
+  ///
+  /// 生成包含标题、元数据和消息内容的 Markdown 文本。
+  ///
+  /// [conversation] 要导出的对话
+  /// 返回 Markdown 格式的字符串
   static String exportConversation(Conversation conversation) {
     final buffer = StringBuffer();
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -59,7 +66,12 @@ class MarkdownExport {
     return buffer.toString();
   }
 
-  // 导出多个对话为单个 Markdown 文件
+  /// 导出多个对话为单个 Markdown 文件
+  ///
+  /// 将多个对话合并为一个 Markdown 文件。
+  ///
+  /// [conversations] 要导出的对话列表
+  /// 返回 Markdown 格式的字符串
   static String exportConversations(List<Conversation> conversations) {
     final buffer = StringBuffer();
 

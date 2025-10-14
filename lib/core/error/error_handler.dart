@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../network/api_exception.dart';
 
+/// 统一错误处理类
+///
+/// 提供一致的错误消息处理和展示功能。
 class ErrorHandler {
+  /// 获取用户友好的错误消息
   static String getErrorMessage(Object error) {
     if (error is NetworkException) {
       return '网络连接失败，请检查网络设置';
@@ -42,6 +46,7 @@ class ErrorHandler {
     );
   }
 
+  /// 显示错误对话框
   static Future<void> showErrorDialog(
     BuildContext context,
     Object error, {
