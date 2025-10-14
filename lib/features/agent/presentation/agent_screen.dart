@@ -289,6 +289,17 @@ class _ToolsTab extends ConsumerWidget {
                   },
                 ),
                 IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ToolConfigScreen(tool: tool),
+                      ),
+                    );
+                    if (result == true) ref.invalidate(agentToolsProvider);
+                  },
+                ),
+                IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () => _deleteTool(context, ref, tool.id),
                 ),
