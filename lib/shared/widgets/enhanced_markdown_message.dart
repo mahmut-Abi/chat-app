@@ -8,6 +8,21 @@ import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter/services.dart';
 import '../../core/providers/providers.dart';
 
+// Markdown 渲染缓存
+class _MarkdownCache {
+  static final Map<String, Widget> _cache = {};
+  static const int _maxCacheSize = 100;
+
+  static Widget? get(String key) => _cache[key];
+
+  static void set(String key, Widget widget) {
+    if (_cache.length >= _maxCacheSize) {
+      _cache.remove(_cache.keys.first);
+    }
+    _cache[key] = widget;
+  }
+}
+
 // 增强的 Markdown 消息渲染组件，支持 LaTeX
 class EnhancedMarkdownMessage extends ConsumerWidget {
   final String content;
@@ -25,7 +40,17 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
     final enableLatex = settings.enableLatex;
     final enableCodeHighlight = settings.enableCodeHighlight;
 
-    return MarkdownBody(
+    // 使用内容和配置创建缓存键
+    final cacheKey = '$content-$enableLatex-$enableCodeHighlight-$selectable';
+
+    // 尝试从缓存获取
+    final cached = _MarkdownCache.get(cacheKey);
+    if (cached != null) {
+      return cached;
+    }
+
+    // 渲染并缓存
+    final widget = MarkdownBody(
       data: content,
       selectable: selectable,
       builders: {
@@ -53,6 +78,10 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         ),
       ),
     );
+
+    // 存入缓存
+    _MarkdownCache.set(cacheKey, widget);
+    return widget;
   }
 }
 

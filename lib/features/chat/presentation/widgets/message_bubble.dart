@@ -25,110 +25,113 @@ class MessageBubble extends StatelessWidget {
     final isUser = message.role == MessageRole.user;
     final isMobile = MediaQuery.of(context).size.width < 600;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        mainAxisAlignment: isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isUser) _buildAvatar(context, isUser),
-          const SizedBox(width: 8),
-          Flexible(
-            child: GestureDetector(
-              onLongPress: isMobile ? () => _showContextMenu(context) : null,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isUser
-                      ? Theme.of(context).colorScheme.primaryContainer
-                      : Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).dividerColor),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 显示图片附件
-                    if (message.images != null && message.images!.isNotEmpty)
-                      _buildImageAttachments(context),
-                    if (message.images != null && message.images!.isNotEmpty)
-                      const SizedBox(height: 8),
-                    if (message.hasError)
-                      Text(
-                        message.content,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+    // 使用 RepaintBoundary 减少不必要的重绘
+    return RepaintBoundary(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisAlignment: isUser
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!isUser) _buildAvatar(context, isUser),
+            const SizedBox(width: 8),
+            Flexible(
+              child: GestureDetector(
+                onLongPress: isMobile ? () => _showContextMenu(context) : null,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isUser
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 显示图片附件
+                      if (message.images != null && message.images!.isNotEmpty)
+                        _buildImageAttachments(context),
+                      if (message.images != null && message.images!.isNotEmpty)
+                        const SizedBox(height: 8),
+                      if (message.hasError)
+                        Text(
+                          message.content,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        )
+                      else if (message.role == MessageRole.assistant)
+                        EnhancedMarkdownMessage(content: message.content)
+                      else
+                        SelectableText(
+                          message.content,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      )
-                    else if (message.role == MessageRole.assistant)
-                      EnhancedMarkdownMessage(content: message.content)
-                    else
-                      SelectableText(
-                        message.content,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (message.tokenCount != null) ...[
-                          Text(
-                            '${message.tokenCount} tokens',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant
-                                      .withValues(alpha: 0.6),
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 1,
-                            height: 12,
-                            color: Theme.of(context).dividerColor,
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                        // 移动端隐藏按钮，桌面端显示
-                        if (!isMobile)
-                          MessageActions(
-                            isUserMessage: isUser,
-                            onCopy: () => _copyMessage(context),
-                            onShare: () =>
-                                ShareUtils.shareText(message.content),
-                            onEdit: isUser && onEdit != null
-                                ? () => _showEditDialog(context)
-                                : null,
-                            onDelete: onDelete,
-                            onRegenerate: !isUser && onRegenerate != null
-                                ? onRegenerate
-                                : null,
-                          ),
-                        if (message.isStreaming)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: SizedBox(
-                              width: 12,
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (message.tokenCount != null) ...[
+                            Text(
+                              '${message.tokenCount} tokens',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
+                                        .withValues(alpha: 0.6),
+                                  ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 1,
                               height: 12,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).dividerColor,
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          // 移动端隐藏按钮，桌面端显示
+                          if (!isMobile)
+                            MessageActions(
+                              isUserMessage: isUser,
+                              onCopy: () => _copyMessage(context),
+                              onShare: () =>
+                                  ShareUtils.shareText(message.content),
+                              onEdit: isUser && onEdit != null
+                                  ? () => _showEditDialog(context)
+                                  : null,
+                              onDelete: onDelete,
+                              onRegenerate: !isUser && onRegenerate != null
+                                  ? onRegenerate
+                                  : null,
+                            ),
+                          if (message.isStreaming)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          if (isUser) _buildAvatar(context, isUser),
-        ],
+            const SizedBox(width: 8),
+            if (isUser) _buildAvatar(context, isUser),
+          ],
+        ),
       ),
     );
   }
