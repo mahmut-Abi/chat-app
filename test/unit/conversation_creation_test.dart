@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chat_app/features/chat/data/chat_repository.dart';
-import 'package:chat_app/features/chat/domain/message.dart';
 import 'package:chat_app/core/network/openai_api_client.dart';
 import 'package:chat_app/core/storage/storage_service.dart';
 import 'package:mockito/mockito.dart';
+import 'package:chat_app/features/chat/domain/message.dart';
 import 'package:mockito/annotations.dart';
 
 @GenerateMocks([OpenAIApiClient, StorageService])

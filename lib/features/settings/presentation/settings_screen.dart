@@ -15,6 +15,11 @@ import '../../../core/network/dio_client.dart';
 import 'background_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'api_config_screen.dart';
+import 'widgets/api_config_section.dart';
+import 'widgets/theme_settings_section.dart';
+import 'widgets/data_management_section.dart';
+import 'widgets/advanced_settings_section.dart';
+import 'widgets/about_section.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -44,8 +49,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(appSettingsProvider);
-
     return Scaffold(
       appBar: AppBar(title: const Text('设置')),
       body: ListView(
@@ -53,11 +56,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildSection(
             title: 'API 配置',
             children: [
-              ..._apiConfigs.map((config) => _buildApiConfigTile(config)),
-              ListTile(
-                leading: const Icon(Icons.add),
-                title: const Text('添加 API 配置'),
-                onTap: _addApiConfig,
+              ApiConfigSection(
+                apiConfigs: _apiConfigs,
+                onAddConfig: _addApiConfig,
+                onEditConfig: _editApiConfig,
+                onDeleteConfig: _deleteApiConfig,
+                onTestConnection: _testApiConnection,
               ),
             ],
           ),
@@ -65,161 +69,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildSection(
             title: '外观',
             children: [
-              ListTile(
-                leading: const Icon(Icons.palette),
-                title: const Text('主题模式'),
-                subtitle: Text(_getThemeModeText(settings.themeMode)),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _showThemeDialog,
-              ),
-              ListTile(
-                leading: const Icon(Icons.color_lens),
-                title: const Text('主题颜色'),
-                subtitle: Text(settings.themeColor ?? '默认'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _showThemeColorDialog,
-              ),
-              ListTile(
-                leading: const Icon(Icons.format_size),
-                title: const Text('字体大小'),
-                subtitle: Text('${settings.fontSize.toInt()}'),
-                trailing: SizedBox(
-                  width: 150,
-                  child: Slider(
-                    value: settings.fontSize,
-                    min: 12.0,
-                    max: 20.0,
-                    divisions: 8,
-                    label: settings.fontSize.toInt().toString(),
-                    onChanged: (value) {
-                      _updateFontSize(value);
-                    },
-                  ),
-                ),
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.code),
-                title: const Text('启用 Markdown 渲染'),
-                subtitle: const Text('支持文本格式化和代码高亮'),
-                value: settings.enableMarkdown,
-                onChanged: (value) {
-                  _updateMarkdownEnabled(value);
-                },
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.highlight),
-                title: const Text('启用代码高亮'),
-                subtitle: const Text('高亮显示代码块'),
-                value: settings.enableCodeHighlight,
-                onChanged: (value) {
-                  _updateCodeHighlightEnabled(value);
-                },
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.functions),
-                title: const Text('启用 LaTeX 数学公式'),
-                subtitle: const Text('渲染数学公式（实验性）'),
-                value: settings.enableLatex,
-                onChanged: (value) {
-                  _updateLatexEnabled(value);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.wallpaper),
-                title: const Text('背景设置'),
-                subtitle: const Text('自定义聊天背景'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _showBackgroundDialog,
+              ThemeSettingsSection(
+                onShowThemeDialog: _showThemeDialog,
+                onShowThemeColorDialog: _showThemeColorDialog,
+                onFontSizeChange: _updateFontSize,
+                onMarkdownChange: _updateMarkdownEnabled,
+                onCodeHighlightChange: _updateCodeHighlightEnabled,
+                onLatexChange: _updateLatexEnabled,
+                onShowBackgroundDialog: _showBackgroundDialog,
               ),
             ],
           ),
           const Divider(),
           _buildSection(
             title: '高级功能',
-            children: [
-              ListTile(
-                leading: const Icon(Icons.cloud),
-                title: const Text('MCP 配置'),
-                subtitle: const Text('配置 Model Context Protocol 服务器'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/mcp'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.token),
-                title: const Text('Token 消耗记录'),
-                subtitle: const Text('查看所有对话的 Token 消耗'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/token-usage'),
-              ),
-            ],
+            children: [const AdvancedSettingsSection()],
           ),
           const Divider(),
           _buildSection(
             title: '数据管理',
             children: [
-              ListTile(
-                leading: const Icon(Icons.download),
-                title: const Text('导出数据'),
-                subtitle: const Text('导出所有对话和配置'),
-                trailing: _isExporting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : null,
-                onTap: _isExporting ? null : _exportData,
-              ),
-              ListTile(
-                leading: const Icon(Icons.picture_as_pdf),
-                title: const Text('导出为 PDF'),
-                subtitle: const Text('将对话导出为 PDF 文件'),
-                onTap: _exportToPdf,
-              ),
-              ListTile(
-                leading: const Icon(Icons.upload),
-                title: const Text('导入数据'),
-                subtitle: const Text('从文件恢复数据'),
-                trailing: _isImporting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : null,
-                onTap: _isImporting ? null : _importData,
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.delete_forever,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                title: Text(
-                  '清除所有数据',
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-                onTap: _showClearDataDialog,
+              DataManagementSection(
+                onExportData: _exportData,
+                onExportPdf: _exportToPdf,
+                onImportData: _importData,
+                onClearData: _showClearDataDialog,
+                isExporting: _isExporting,
+                isImporting: _isImporting,
               ),
             ],
           ),
           const Divider(),
-          _buildSection(
-            title: '关于',
-            children: [
-              const ListTile(
-                leading: Icon(Icons.info),
-                title: Text('版本'),
-                subtitle: Text('1.0.0'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.description),
-                title: const Text('开源许可'),
-                onTap: () {
-                  showLicensePage(context: context);
-                },
-              ),
-            ],
-          ),
+          _buildSection(title: '关于', children: [const AboutSection()]),
         ],
       ),
     );
@@ -245,88 +126,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ...children,
       ],
     );
-  }
-
-  Widget _buildApiConfigTile(ApiConfig config) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        onTap: () => _editApiConfig(config),
-        leading: const Icon(Icons.api),
-        title: Text(config.name),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(config.provider),
-            const SizedBox(height: 4),
-            Text(
-              config.baseUrl,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-        trailing: PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert),
-          onSelected: (value) {
-            switch (value) {
-              case 'test':
-                _testApiConnection(config);
-                break;
-              case 'edit':
-                _editApiConfig(config);
-                break;
-              case 'delete':
-                _deleteApiConfig(config);
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'test',
-              child: Row(
-                children: [
-                  Icon(Icons.wifi_tethering),
-                  SizedBox(width: 8),
-                  Text('测试连接'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [Icon(Icons.edit), SizedBox(width: 8), Text('编辑')],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('删除', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        isThreeLine: true,
-      ),
-    );
-  }
-
-  String _getThemeModeText(String mode) {
-    switch (mode) {
-      case 'light':
-        return '浅色';
-      case 'dark':
-        return '深色';
-      default:
-        return '跟随系统';
-    }
   }
 
   Future<void> _showThemeDialog() async {

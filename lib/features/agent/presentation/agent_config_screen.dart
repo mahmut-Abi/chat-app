@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../domain/agent_tool.dart';
-import '../data/agent_provider.dart';
+import '../../../core/providers/providers.dart';
 
 class AgentConfigScreen extends ConsumerStatefulWidget {
   final AgentConfig? config;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/mcp_config.dart';
-import '../data/mcp_provider.dart';
+import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
 
 /// MCP 配置界面

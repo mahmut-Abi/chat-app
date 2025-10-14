@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../domain/mcp_config.dart';
-import '../data/mcp_provider.dart';
+import '../../../core/providers/providers.dart';
 
 class McpConfigScreen extends ConsumerStatefulWidget {
   final McpConfig? config;
@@ -108,7 +108,7 @@ class _McpConfigScreenState extends ConsumerState<McpConfigScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<McpConnectionType>(
-              value: _connectionType,
+              initialValue: _connectionType,
               decoration: const InputDecoration(
                 labelText: '连接类型',
                 border: OutlineInputBorder(),

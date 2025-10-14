@@ -147,7 +147,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedProvider,
+              initialValue: _selectedProvider,
               decoration: const InputDecoration(
                 labelText: '提供商',
                 border: OutlineInputBorder(),

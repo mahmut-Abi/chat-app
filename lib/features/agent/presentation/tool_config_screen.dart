@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/agent_tool.dart';
-import '../data/agent_provider.dart';
+import '../../../core/providers/providers.dart';
 
 class ToolConfigScreen extends ConsumerStatefulWidget {
   final AgentTool? tool;
@@ -86,7 +86,7 @@ class _ToolConfigScreenState extends ConsumerState<ToolConfigScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<AgentToolType>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: const InputDecoration(
                 labelText: '工具类型',
                 border: OutlineInputBorder(),

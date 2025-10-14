@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/agent_tool.dart';
-import '../data/agent_provider.dart';
+import '../../../core/providers/providers.dart';
 import 'agent_config_screen.dart';
 import 'tool_config_screen.dart';
 

@@ -11,6 +11,11 @@ import '../../features/prompts/domain/prompt_template.dart';
 import '../constants/app_constants.dart';
 import '../utils/token_counter.dart';
 import 'package:flutter/foundation.dart';
+import '../../features/mcp/data/mcp_repository.dart';
+import '../../features/mcp/domain/mcp_config.dart';
+import '../../features/agent/data/agent_repository.dart';
+import '../../features/agent/data/tool_executor.dart';
+import '../../features/agent/domain/agent_tool.dart';
 
 // Storage Service
 final storageServiceProvider = Provider<StorageService>((ref) {
@@ -20,6 +25,55 @@ final storageServiceProvider = Provider<StorageService>((ref) {
 // Settings Repository
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository(ref.watch(storageServiceProvider));
+});
+
+// ============ MCP Providers ============
+
+/// MCP Repository Provider
+final mcpRepositoryProvider = Provider<McpRepository>((ref) {
+  final storage = ref.read(storageServiceProvider);
+  return McpRepository(storage);
+});
+
+/// MCP 配置列表 Provider
+final mcpConfigsProvider = FutureProvider<List<McpConfig>>((ref) async {
+  final storage = ref.read(storageServiceProvider);
+  final repository = McpRepository(storage);
+  return await repository.getAllConfigs();
+});
+
+/// MCP 连接状态 Provider
+final mcpConnectionStatusProvider =
+    Provider.family<McpConnectionStatus, String>((ref, configId) {
+      final repository = ref.watch(mcpRepositoryProvider);
+      return repository.getConnectionStatus(configId) ??
+          McpConnectionStatus.disconnected;
+    });
+
+// ============ Agent Providers ============
+
+/// Tool Executor Manager Provider
+final toolExecutorManagerProvider = Provider<ToolExecutorManager>((ref) {
+  return ToolExecutorManager();
+});
+
+/// Agent Repository Provider
+final agentRepositoryProvider = Provider<AgentRepository>((ref) {
+  final storage = ref.read(storageServiceProvider);
+  final executorManager = ref.read(toolExecutorManagerProvider);
+  return AgentRepository(storage, executorManager);
+});
+
+/// Agent 配置列表 Provider
+final agentConfigsProvider = FutureProvider<List<AgentConfig>>((ref) async {
+  final repository = ref.read(agentRepositoryProvider);
+  return await repository.getAllAgents();
+});
+
+/// Agent 工具列表 Provider
+final agentToolsProvider = FutureProvider<List<AgentTool>>((ref) async {
+  final repository = ref.read(agentRepositoryProvider);
+  return await repository.getAllTools();
 });
 
 // Active API Config
