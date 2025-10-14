@@ -17,6 +17,7 @@ class Conversation extends Equatable {
   final String? groupId;
   final int? totalTokens;
   final bool isPinned;
+  final bool isTemporary;
 
   const Conversation({
     required this.id,
@@ -30,6 +31,7 @@ class Conversation extends Equatable {
     this.groupId,
     this.totalTokens,
     this.isPinned = false,
+    this.isTemporary = false,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>
@@ -49,6 +51,7 @@ class Conversation extends Equatable {
     String? groupId,
     int? totalTokens,
     bool? isPinned,
+    bool? isTemporary,
   }) {
     return Conversation(
       id: id ?? this.id,
@@ -62,6 +65,7 @@ class Conversation extends Equatable {
       groupId: groupId ?? this.groupId,
       totalTokens: totalTokens ?? this.totalTokens,
       isPinned: isPinned ?? this.isPinned,
+      isTemporary: isTemporary ?? this.isTemporary,
     );
   }
 
@@ -78,6 +82,7 @@ class Conversation extends Equatable {
     groupId,
     totalTokens,
     isPinned,
+    isTemporary,
   ];
 }
 

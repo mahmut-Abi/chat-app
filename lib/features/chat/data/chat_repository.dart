@@ -122,10 +122,10 @@ class ChatRepository {
       systemPrompt: systemPrompt,
       tags: tags ?? [],
       groupId: groupId,
+      isTemporary: true, // 标记为临时对话
     );
 
-    // 立即保存空对话，确保 ChatScreen 能加载到对话
-    await _storage.saveConversation(conversation.id, conversation.toJson());
+    // 暂不保存到存储，等待用户发送第一条消息
 
     if (kDebugMode) {
       print('createConversation: 创建并保存新对话 ${conversation.id}');
@@ -135,7 +135,11 @@ class ChatRepository {
   }
 
   Future<void> saveConversation(Conversation conversation) async {
-    // 允许保存空对话，以支持新建对话的场景
+    // 如果对话有消息，将 isTemporary 设为 false
+    if (conversation.messages.isNotEmpty && conversation.isTemporary) {
+      conversation = conversation.copyWith(isTemporary: false);
+    }
+
     // 计算总 token 数
     int totalTokens = 0;
     for (final message in conversation.messages) {
@@ -174,7 +178,10 @@ class ChatRepository {
 
   List<Conversation> getAllConversations() {
     final conversations = _storage.getAllConversations();
-    return conversations.map((data) => Conversation.fromJson(data)).toList()
+    return conversations
+        .map((data) => Conversation.fromJson(data))
+        .where((conv) => !conv.isTemporary) // 过滤临时对话
+        .toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
@@ -331,7 +338,7 @@ class ChatRepository {
 
   // 获取排序后的对话列表（置顶在前）
   List<Conversation> getSortedConversations() {
-    final conversations = getAllConversations();
+    final conversations = getAllConversations(); // 已经过滤了临时对话
     conversations.sort((a, b) {
       // 置顶的在前
       if (a.isPinned != b.isPinned) {

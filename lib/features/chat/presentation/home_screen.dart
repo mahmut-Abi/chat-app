@@ -110,22 +110,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     if (kDebugMode) {
       print('HomeScreen._createNewConversation: 创建完成');
-      print('  id: ${conversation.id}');
-      print('  title: ${conversation.title}');
+      print('  id: \${conversation.id}');
+      print('  title: \${conversation.title}');
+      print('  isTemporary: \${conversation.isTemporary}');
     }
 
-    // 立即更新状态，确保 iOS 能看到新对话
+    // 不更新 _conversations，因为临时对话不应该显示在侧边栏
+    // 直接跳转到聊天界面
     if (mounted) {
       setState(() {
-        _conversations = chatRepo.getAllConversations();
-        _groups = chatRepo.getAllGroups();
         _selectedConversation = conversation;
       });
     }
 
     if (kDebugMode) {
       print('HomeScreen._createNewConversation: 状态已更新');
-      print('  总对话数: ${_conversations.length}');
     }
 
     if (mounted) {

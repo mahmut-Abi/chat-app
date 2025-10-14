@@ -202,25 +202,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
-        // 如果对话不存在,创建一个新对话
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('错误: 对话不存在')));
+        // 如果对话不存在，说明这是一个临时对话，需要创建并保存
+        if (kDebugMode) {
+          print('ChatScreen: 对话不存在，创建新对话');
         }
         conversation = Conversation(
           id: widget.conversationId,
-          title: '未知对话',
+          title: '新建对话',
           messages: [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
+          isTemporary: false, // 已经有消息，不再是临时对话
         );
       }
 
-      // 更新对话消息列表并保存
+      // 更新对话消息列表并保存（会自动将 isTemporary 设为 false）
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
+
+      // 刷新侧边栏对话列表（如果这是第一条消息，现在会显示在侧边栏）
+      _loadAllConversations();
 
       _calculateTokens();
     } catch (e) {
