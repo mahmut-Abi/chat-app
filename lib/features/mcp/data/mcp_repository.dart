@@ -38,6 +38,12 @@ class McpRepository {
     return config;
   }
 
+  /// 添加 MCP 配置 (createConfig 的别名)
+  Future<McpConfig> addConfig(McpConfig config) async {
+    await _storage.saveSetting('mcp_config_\${config.id}', config.toJson());
+    return config;
+  }
+
   /// 获取所有 MCP 配置
   Future<List<McpConfig>> getAllConfigs() async {
     try {

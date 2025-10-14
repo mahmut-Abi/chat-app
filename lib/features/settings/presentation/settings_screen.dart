@@ -14,6 +14,7 @@ import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
 import 'background_settings_dialog.dart';
 import 'package:go_router/go_router.dart';
+import 'api_config_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -56,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ListTile(
                 leading: const Icon(Icons.add),
                 title: const Text('添加 API 配置'),
-                onTap: _showAddApiConfigDialog,
+                onTap: _addApiConfig,
               ),
             ],
           ),
@@ -250,6 +251,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
+        onTap: () => _editApiConfig(config),
         leading: const Icon(Icons.api),
         title: Text(config.name),
         subtitle: Column(
@@ -275,7 +277,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 _testApiConnection(config);
                 break;
               case 'edit':
-                _showEditApiConfigDialog(config);
+                _editApiConfig(config);
                 break;
               case 'delete':
                 _deleteApiConfig(config);
@@ -526,442 +528,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _showAddApiConfigDialog() async {
-    final nameController = TextEditingController();
-    final baseUrlController = TextEditingController();
-    final apiKeyController = TextEditingController();
-    final proxyUrlController = TextEditingController();
-    final proxyUsernameController = TextEditingController();
-    final proxyPasswordController = TextEditingController();
-    final modelController = TextEditingController(text: 'gpt-3.5-turbo');
-    double temperature = 0.7;
-    int maxTokens = 2000;
-    double topP = 1.0;
-    double frequencyPenalty = 0.0;
-    double presencePenalty = 0.0;
-    String selectedProvider = 'OpenAI';
-    bool enableProxy = false;
+  Future<void> _addApiConfig() async {
+    final result = await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const ApiConfigScreen()));
 
-    final result = await showDialog<Map<String, String>>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('添加 API 配置'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: '配置名称',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedProvider,
-                  decoration: const InputDecoration(
-                    labelText: '提供商',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
-                      .map(
-                        (provider) => DropdownMenuItem(
-                          value: provider,
-                          child: Text(provider),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedProvider = value;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: baseUrlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Base URL',
-                    border: OutlineInputBorder(),
-                    hintText: 'https://api.openai.com/v1',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: apiKeyController,
-                  decoration: const InputDecoration(
-                    labelText: 'API Key',
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                // 模型参数设置
-                ExpansionTile(
-                  title: const Text('模型参数设置'),
-                  initiallyExpanded: false,
-                  children: [
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: modelController,
-                      decoration: const InputDecoration(
-                        labelText: '默认模型',
-                        border: OutlineInputBorder(),
-                        hintText: 'gpt-3.5-turbo',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    StatefulBuilder(
-                      builder: (context, setSliderState) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Temperature: ${temperature.toStringAsFixed(2)}',
-                          ),
-                          Slider(
-                            value: temperature,
-                            min: 0.0,
-                            max: 2.0,
-                            divisions: 20,
-                            onChanged: (value) {
-                              setSliderState(() => temperature = value);
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          Text('Max Tokens: $maxTokens'),
-                          Slider(
-                            value: maxTokens.toDouble(),
-                            min: 100,
-                            max: 4000,
-                            divisions: 39,
-                            onChanged: (value) {
-                              setSliderState(() => maxTokens = value.toInt());
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          Text('Top P: ${topP.toStringAsFixed(2)}'),
-                          Slider(
-                            value: topP,
-                            min: 0.0,
-                            max: 1.0,
-                            divisions: 10,
-                            onChanged: (value) {
-                              setSliderState(() => topP = value);
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Frequency Penalty: ${frequencyPenalty.toStringAsFixed(2)}',
-                          ),
-                          Slider(
-                            value: frequencyPenalty,
-                            min: 0.0,
-                            max: 2.0,
-                            divisions: 20,
-                            onChanged: (value) {
-                              setSliderState(() => frequencyPenalty = value);
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Presence Penalty: ${presencePenalty.toStringAsFixed(2)}',
-                          ),
-                          Slider(
-                            value: presencePenalty,
-                            min: 0.0,
-                            max: 2.0,
-                            divisions: 20,
-                            onChanged: (value) {
-                              setSliderState(() => presencePenalty = value);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SwitchListTile(
-                  title: const Text('启用 HTTP 代理'),
-                  value: enableProxy,
-                  onChanged: (value) {
-                    setState(() {
-                      enableProxy = value;
-                    });
-                  },
-                ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyUrlController,
-                    decoration: const InputDecoration(
-                      labelText: '代理地址',
-                      border: OutlineInputBorder(),
-                      hintText: 'http://proxy.example.com:8080',
-                    ),
-                  ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyUsernameController,
-                    decoration: const InputDecoration(
-                      labelText: '代理用户名（可选）',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: '代理密码（可选）',
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (nameController.text.isNotEmpty &&
-                    baseUrlController.text.isNotEmpty &&
-                    apiKeyController.text.isNotEmpty) {
-                  final result = <String, String>{
-                    'name': nameController.text,
-                    'provider': selectedProvider,
-                    'baseUrl': baseUrlController.text,
-                    'apiKey': apiKeyController.text,
-                    'defaultModel': modelController.text,
-                    'temperature': temperature.toString(),
-                    'maxTokens': maxTokens.toString(),
-                    'topP': topP.toString(),
-                    'frequencyPenalty': frequencyPenalty.toString(),
-                    'presencePenalty': presencePenalty.toString(),
-                  };
-                  if (enableProxy && proxyUrlController.text.isNotEmpty) {
-                    result['proxyUrl'] = proxyUrlController.text;
-                    if (proxyUsernameController.text.isNotEmpty) {
-                      result['proxyUsername'] = proxyUsernameController.text;
-                    }
-                    if (proxyPasswordController.text.isNotEmpty) {
-                      result['proxyPassword'] = proxyPasswordController.text;
-                    }
-                  }
-                  Navigator.pop(context, result);
-                }
-              },
-              child: const Text('添加'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null) {
-      final settingsRepo = ref.read(settingsRepositoryProvider);
-      await settingsRepo.createApiConfig(
-        name: result['name']!,
-        provider: result['provider']!,
-        baseUrl: result['baseUrl']!,
-        apiKey: result['apiKey']!,
-        proxyUrl: result['proxyUrl'],
-        proxyUsername: result['proxyUsername'],
-        proxyPassword: result['proxyPassword'],
-        defaultModel: result['defaultModel'],
-        temperature: double.tryParse(result['temperature'] ?? '0.7'),
-        maxTokens: int.tryParse(result['maxTokens'] ?? '2000'),
-        topP: double.tryParse(result['topP'] ?? '1.0'),
-        frequencyPenalty: double.tryParse(result['frequencyPenalty'] ?? '0.0'),
-        presencePenalty: double.tryParse(result['presencePenalty'] ?? '0.0'),
-      );
+    if (result == true) {
       _loadApiConfigs();
     }
-
-    nameController.dispose();
-    baseUrlController.dispose();
-    apiKeyController.dispose();
-    proxyUrlController.dispose();
-    proxyUsernameController.dispose();
-    proxyPasswordController.dispose();
-    modelController.dispose();
   }
 
-  Future<void> _showEditApiConfigDialog(ApiConfig config) async {
-    final nameController = TextEditingController(text: config.name);
-    final baseUrlController = TextEditingController(text: config.baseUrl);
-    final apiKeyController = TextEditingController(text: config.apiKey);
-    final proxyUrlController = TextEditingController(
-      text: config.proxyUrl ?? '',
-    );
-    final proxyUsernameController = TextEditingController(
-      text: config.proxyUsername ?? '',
-    );
-    final proxyPasswordController = TextEditingController(
-      text: config.proxyPassword ?? '',
-    );
-    String selectedProvider = config.provider;
-    bool enableProxy = config.proxyUrl != null && config.proxyUrl!.isNotEmpty;
-
-    final result = await showDialog<Map<String, String>>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('编辑 API 配置'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: '配置名称',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedProvider,
-                  decoration: const InputDecoration(
-                    labelText: '提供商',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
-                      .map(
-                        (provider) => DropdownMenuItem(
-                          value: provider,
-                          child: Text(provider),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedProvider = value;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: baseUrlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Base URL',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: apiKeyController,
-                  decoration: const InputDecoration(
-                    labelText: 'API Key',
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                SwitchListTile(
-                  title: const Text('启用 HTTP 代理'),
-                  value: enableProxy,
-                  onChanged: (value) {
-                    setState(() {
-                      enableProxy = value;
-                    });
-                  },
-                ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyUrlController,
-                    decoration: const InputDecoration(
-                      labelText: '代理地址',
-                      border: OutlineInputBorder(),
-                      hintText: 'http://proxy.example.com:8080',
-                    ),
-                  ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyUsernameController,
-                    decoration: const InputDecoration(
-                      labelText: '代理用户名（可选）',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                if (enableProxy) const SizedBox(height: 16),
-                if (enableProxy)
-                  TextField(
-                    controller: proxyPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: '代理密码（可选）',
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final result = <String, String>{
-                  'name': nameController.text,
-                  'provider': selectedProvider,
-                  'baseUrl': baseUrlController.text,
-                  'apiKey': apiKeyController.text,
-                };
-                if (enableProxy && proxyUrlController.text.isNotEmpty) {
-                  result['proxyUrl'] = proxyUrlController.text;
-                  if (proxyUsernameController.text.isNotEmpty) {
-                    result['proxyUsername'] = proxyUsernameController.text;
-                  }
-                  if (proxyPasswordController.text.isNotEmpty) {
-                    result['proxyPassword'] = proxyPasswordController.text;
-                  }
-                }
-                Navigator.pop(context, result);
-              },
-              child: const Text('保存'),
-            ),
-          ],
-        ),
-      ),
+  Future<void> _editApiConfig(ApiConfig config) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => ApiConfigScreen(config: config)),
     );
 
-    if (result != null) {
-      final settingsRepo = ref.read(settingsRepositoryProvider);
-      await settingsRepo.updateApiConfig(
-        config.id,
-        name: result['name']!,
-        provider: result['provider']!,
-        baseUrl: result['baseUrl']!,
-        apiKey: result['apiKey']!,
-        proxyUrl: result['proxyUrl'],
-        proxyUsername: result['proxyUsername'],
-        proxyPassword: result['proxyPassword'],
-      );
+    if (result == true) {
       _loadApiConfigs();
     }
-
-    nameController.dispose();
-    baseUrlController.dispose();
-    apiKeyController.dispose();
-    proxyUrlController.dispose();
-    proxyUsernameController.dispose();
-    proxyPasswordController.dispose();
   }
 
   Future<void> _deleteApiConfig(ApiConfig config) async {
