@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 
 /// PWA 服务（Web 端）
 class PwaService {
@@ -11,10 +12,9 @@ class PwaService {
 
     try {
       // 注册 Service Worker
-      if (html.window.navigator.serviceWorker != null) {
-        await html.window.navigator.serviceWorker!.register(_serviceWorkerPath);
-        debugPrint('Service Worker 注册成功');
-      }
+      final serviceWorker = web.window.navigator.serviceWorker;
+      await serviceWorker.register(_serviceWorkerPath.toJS).toDart;
+      debugPrint('Service Worker 注册成功');
     } catch (e) {
       debugPrint('Service Worker 注册失败: $e');
     }
@@ -26,7 +26,7 @@ class PwaService {
 
     try {
       // 检查是否以 standalone 模式运行
-      final mediaQuery = html.window.matchMedia('(display-mode: standalone)');
+      final mediaQuery = web.window.matchMedia('(display-mode: standalone)');
       return mediaQuery.matches;
     } catch (e) {
       return false;
@@ -53,12 +53,9 @@ class PwaService {
     if (!kIsWeb) return false;
 
     try {
-      final serviceWorker = html.window.navigator.serviceWorker;
-      if (serviceWorker != null) {
-        await serviceWorker.getRegistration();
-        return true;
-      }
-      return false;
+      final serviceWorker = web.window.navigator.serviceWorker;
+      await serviceWorker.getRegistration().toDart;
+      return true;
     } catch (e) {
       return false;
     }

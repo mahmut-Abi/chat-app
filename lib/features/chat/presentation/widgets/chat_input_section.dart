@@ -10,7 +10,7 @@ class ChatInputSection extends StatelessWidget {
   final List<File> selectedImages;
   final bool isLoading;
   final VoidCallback onSend;
-  final ValueChanged<List<File>> onImagesSelected;
+  final Function(List<File>) onImagesSelected;
 
   const ChatInputSection({
     super.key,
@@ -33,7 +33,6 @@ class ChatInputSection extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 图片选择器
           if (selectedImages.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -44,7 +43,6 @@ class ChatInputSection extends StatelessWidget {
             ),
           Row(
             children: [
-              // 图片按钮
               IconButton(
                 icon: Icon(
                   Icons.image,
@@ -56,8 +54,7 @@ class ChatInputSection extends StatelessWidget {
                 onPressed: () async {
                   final images = await ImageUtils.pickImages();
                   if (images != null && images.isNotEmpty) {
-                    final newImages = [...selectedImages, ...images];
-                    onImagesSelected(newImages);
+                    onImagesSelected([...selectedImages, ...images]);
                   }
                 },
               ),

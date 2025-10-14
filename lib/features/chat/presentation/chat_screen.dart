@@ -6,14 +6,13 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
-import 'widgets/message_bubble.dart';
-import 'widgets/image_picker_widget.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
 import '../../../shared/widgets/background_container.dart';
 import 'widgets/enhanced_sidebar.dart';
 import 'package:go_router/go_router.dart';
-import '../../../shared/widgets/glass_container.dart';
+import 'widgets/chat_message_list.dart';
+import 'widgets/chat_input_section.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -483,170 +482,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 Column(
                   children: [
                     Expanded(
-                      child: _messages.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.chat_bubble_outline,
-                                    size: 64,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    '开始新对话',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '输入消息开始与 AI 交流',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              controller: _scrollController,
-                              padding: EdgeInsets.only(
-                                left: 16,
-                                right: 16,
-                                top: isMobile ? 60 : 16,
-                                bottom: 16,
-                              ),
-                              itemCount: _messages.length,
-                              itemBuilder: (context, index) {
-                                final message = _messages[index];
-                                return MessageBubble(
-                                  message: message,
-                                  onDelete: () => _deleteMessage(index),
-                                  onRegenerate:
-                                      message.role == MessageRole.assistant
-                                      ? () => _regenerateMessage(index)
-                                      : null,
-                                  onEdit: (newContent) =>
-                                      _editMessage(index, newContent),
-                                );
-                              },
-                            ),
+                      child: ChatMessageList(
+                        messages: _messages,
+                        scrollController: _scrollController,
+                        isMobile: isMobile,
+                        onDeleteMessage: _deleteMessage,
+                        onRegenerateMessage: _regenerateMessage,
+                        onEditMessage: _editMessage,
+                      ),
                     ),
-                    _buildInputArea(),
+                    ChatInputSection(
+                      messageController: _messageController,
+                      selectedImages: _selectedImages,
+                      isLoading: _isLoading,
+                      onSend: _sendMessage,
+                      onImagesSelected: (images) {
+                        setState(() {
+                          _selectedImages = images;
+                        });
+                      },
+                    ),
                   ],
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInputArea() {
-    return GlassContainer(
-      blur: 15.0,
-      opacity: 0.15,
-      padding: const EdgeInsets.all(16),
-      border: Border(
-        top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 图片选择器
-          if (_selectedImages.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: ImagePickerWidget(
-                selectedImages: _selectedImages,
-                onImagesSelected: (images) {
-                  setState(() {
-                    _selectedImages = images;
-                  });
-                },
-              ),
-            ),
-          Row(
-            children: [
-              // 图片按钮
-              IconButton(
-                icon: Icon(
-                  Icons.image,
-                  color: _selectedImages.isNotEmpty
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-                tooltip: '添加图片',
-                onPressed: () async {
-                  final images = await ImageUtils.pickImages();
-                  if (images != null && images.isNotEmpty) {
-                    setState(() {
-                      _selectedImages.addAll(images);
-                    });
-                  }
-                },
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  maxLines: null,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  decoration: InputDecoration(
-                    hintText: '输入消息...',
-                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).hintColor,
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                  ),
-                  onSubmitted: (_) => _sendMessage(),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.send),
-                onPressed: _isLoading ? null : _sendMessage,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
