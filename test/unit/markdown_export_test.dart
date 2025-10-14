@@ -38,10 +38,10 @@ void main() {
       final conversation = Conversation(
         id: '123',
         title: '测试对话',
-        messages: [],
+        messages: const [],
         createdAt: DateTime(2024, 1, 1),
         updatedAt: DateTime(2024, 1, 1),
-        tags: ['标签1', '标签2'],
+        tags: const ['标签1', '标签2'],
       );
 
       final markdown = MarkdownExport.exportConversation(conversation);

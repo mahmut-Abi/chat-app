@@ -116,11 +116,11 @@ class ChatRepository {
     final conversation = Conversation(
       id: _uuid.v4(),
       title: title ?? 'New Conversation',
-      messages: [],
+      messages: const [],
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       systemPrompt: systemPrompt,
-      tags: tags ?? [],
+      tags: tags ?? const [],
       groupId: groupId,
       isTemporary: true, // 标记为临时对话
     );

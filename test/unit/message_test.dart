@@ -55,7 +55,7 @@ void main() {
     });
 
     test('应该正确处理图片附件', () {
-      final image = ImageAttachment(
+      const image = ImageAttachment(
         path: '/path/to/image.jpg',
         mimeType: 'image/jpeg',
       );
@@ -65,7 +65,7 @@ void main() {
         role: MessageRole.user,
         content: 'Check this image',
         timestamp: DateTime.now(),
-        images: [image],
+        images: const [image],
       );
 
       expect(message.images, isNotNull);
@@ -76,7 +76,7 @@ void main() {
 
   group('ChatCompletionRequest', () {
     test('应该正确创建请求', () {
-      final request = ChatCompletionRequest(
+      const request = ChatCompletionRequest(
         model: 'gpt-3.5-turbo',
         messages: [
           {'role': 'user', 'content': 'Hello'},
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('应该正确更新请求参数', () {
-      final request = ChatCompletionRequest(
+      const request = ChatCompletionRequest(
         model: 'gpt-3.5-turbo',
         messages: [],
       );

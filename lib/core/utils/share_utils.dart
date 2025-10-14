@@ -17,10 +17,7 @@ class ShareUtils {
     try {
       final file = XFile(filePath);
       await SharePlus.instance.share(
-        ShareParams(
-          files: [file],
-          text: text ?? '',
-        ),
+        ShareParams(files: [file], text: text ?? ''),
       );
     } catch (e) {
       debugPrint('分享文件失败: $e');
@@ -32,10 +29,7 @@ class ShareUtils {
     try {
       final files = filePaths.map((path) => XFile(path)).toList();
       await SharePlus.instance.share(
-        ShareParams(
-          files: files,
-          text: text ?? '',
-        ),
+        ShareParams(files: files, text: text ?? ''),
       );
     } catch (e) {
       debugPrint('分享文件失败: $e');

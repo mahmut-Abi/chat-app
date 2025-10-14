@@ -195,7 +195,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         conversation = Conversation(
           id: widget.conversationId,
           title: '新建对话',
-          messages: [],
+          messages: const [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           isTemporary: false, // 已经有消息，不再是临时对话
@@ -297,7 +297,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         conversation = Conversation(
           id: widget.conversationId,
           title: '未知对话',
-          messages: [],
+          messages: const [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
@@ -341,7 +341,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       conversation = Conversation(
         id: widget.conversationId,
         title: '未知对话',
-        messages: [],
+        messages: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -376,7 +376,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       conversation = Conversation(
         id: widget.conversationId,
         title: '未知对话',
-        messages: [],
+        messages: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

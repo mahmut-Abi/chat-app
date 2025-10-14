@@ -9,7 +9,7 @@ void main() {
       final conversation = Conversation(
         id: 'conv-1',
         title: 'Test Conversation',
-        messages: [],
+        messages: const [],
         createdAt: now,
         updatedAt: now,
       );
@@ -24,7 +24,7 @@ void main() {
       final conversation = Conversation(
         id: 'conv-1',
         title: 'Test',
-        messages: [],
+        messages: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -48,10 +48,10 @@ void main() {
       final conversation = Conversation(
         id: 'conv-1',
         title: 'Test',
-        messages: [],
+        messages: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-        tags: ['work', 'important'],
+        tags: const ['work', 'important'],
       );
 
       final json = conversation.toJson();
@@ -80,7 +80,7 @@ void main() {
 
   group('ModelConfig', () {
     test('应该正确创建模型配置', () {
-      final config = ModelConfig(model: 'gpt-4');
+      const config = ModelConfig(model: 'gpt-4');
 
       expect(config.model, 'gpt-4');
       expect(config.temperature, 0.7);
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('应该正确更新配置', () {
-      final config = ModelConfig(model: 'gpt-3.5-turbo');
+      const config = ModelConfig(model: 'gpt-3.5-turbo');
       final updated = config.copyWith(temperature: 0.9, maxTokens: 4096);
 
       expect(updated.temperature, 0.9);
