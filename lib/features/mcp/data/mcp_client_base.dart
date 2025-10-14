@@ -3,15 +3,9 @@ import '../domain/mcp_config.dart';
 /// MCP 客户端基类
 abstract class McpClientBase {
   final McpConfig config;
-  McpConnectionStatus _status = McpConnectionStatus.disconnected;
+  McpConnectionStatus status = McpConnectionStatus.disconnected;
 
   McpClientBase({required this.config});
-
-  McpConnectionStatus get status => _status;
-
-  set status(McpConnectionStatus value) {
-    _status = value;
-  }
 
   /// 连接到 MCP 服务器
   Future<bool> connect();
