@@ -12,7 +12,7 @@ import '../../chat/domain/conversation.dart';
 import '../../../shared/themes/app_theme.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/network/dio_client.dart';
-import 'background_settings_dialog.dart';
+import 'background_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'api_config_screen.dart';
 
@@ -366,9 +366,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showBackgroundDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const BackgroundSettingsDialog(),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const BackgroundSettingsScreen()),
     );
   }
 
