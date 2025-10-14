@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/mcp_config.dart';
 import '../data/mcp_provider.dart';
+import 'mcp_config_screen.dart';
 
 /// MCP 配置界面
 class McpScreen extends ConsumerWidget {
@@ -17,7 +18,14 @@ class McpScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _showAddDialog(context, ref),
+            onPressed: () async {
+              final result = await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const McpConfigScreen(),
+                ),
+              );
+              if (result == true) ref.invalidate(mcpConfigsProvider);
+            },
           ),
         ],
       ),
@@ -143,7 +151,14 @@ class McpScreen extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () => _showEditDialog(context, ref, config),
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => McpConfigScreen(config: config),
+                      ),
+                    );
+                    if (result == true) ref.invalidate(mcpConfigsProvider);
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
@@ -180,332 +195,6 @@ class McpScreen extends ConsumerWidget {
         return '连接失败';
       case McpConnectionStatus.disconnected:
         return '未连接';
-    }
-  }
-
-  Future<void> _showAddDialog(BuildContext context, WidgetRef ref) async {
-    McpConnectionType selectedType = McpConnectionType.http;
-    final nameController = TextEditingController();
-    final endpointController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final argsController = TextEditingController();
-    final envKeyController = TextEditingController();
-    final envValueController = TextEditingController();
-    final Map<String, String> envVars = {};
-
-    await showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('添加 MCP 服务器'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: '名称',
-                    hintText: '输入服务器名称',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<McpConnectionType>(
-                  initialValue: McpConnectionType.http,
-                  decoration: const InputDecoration(labelText: '连接类型'),
-                  items: const [
-                    DropdownMenuItem(
-                      value: McpConnectionType.http,
-                      child: Row(
-                        children: [
-                          Icon(Icons.http, size: 20),
-                          SizedBox(width: 8),
-                          Text('HTTP'),
-                        ],
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: McpConnectionType.stdio,
-                      child: Row(
-                        children: [
-                          Icon(Icons.terminal, size: 20),
-                          SizedBox(width: 8),
-                          Text('Stdio'),
-                        ],
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedType = value;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: endpointController,
-                  decoration: InputDecoration(
-                    labelText: selectedType == McpConnectionType.http
-                        ? '端点 URL'
-                        : '命令路径',
-                    hintText: selectedType == McpConnectionType.http
-                        ? 'http://localhost:3000'
-                        : '/path/to/mcp-server',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (selectedType == McpConnectionType.stdio) ...[
-                  TextField(
-                    controller: argsController,
-                    decoration: const InputDecoration(
-                      labelText: '命令参数（可选）',
-                      hintText: '使用空格分隔，如：--port 3000 --verbose',
-                    ),
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '环境变量（可选）',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  if (envVars.isNotEmpty)
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: envVars.entries
-                          .map(
-                            (entry) => Chip(
-                              label: Text('${entry.key}=${entry.value}'),
-                              onDeleted: () {
-                                setState(() {
-                                  envVars.remove(entry.key);
-                                });
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: envKeyController,
-                          decoration: const InputDecoration(
-                            labelText: 'Key',
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: envValueController,
-                          decoration: const InputDecoration(
-                            labelText: 'Value',
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          if (envKeyController.text.isNotEmpty) {
-                            setState(() {
-                              envVars[envKeyController.text] =
-                                  envValueController.text;
-                              envKeyController.clear();
-                              envValueController.clear();
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: '描述（可选）',
-                    hintText: '输入描述信息',
-                  ),
-                  maxLines: 2,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('取消'),
-            ),
-            ElevatedButton(
-              onPressed: () => _addConfig(
-                context,
-                ref,
-                nameController.text,
-                selectedType,
-                endpointController.text,
-                argsController.text,
-                envVars,
-                descriptionController.text,
-              ),
-              child: const Text('添加'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _addConfig(
-    BuildContext context,
-    WidgetRef ref,
-    String name,
-    McpConnectionType connectionType,
-    String endpoint,
-    String args,
-    Map<String, String> envVars,
-    String description,
-  ) async {
-    if (name.isEmpty || endpoint.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请填写名称和端点')));
-      return;
-    }
-
-    try {
-      final repository = ref.read(mcpRepositoryProvider);
-      await repository.createConfig(
-        name: name,
-        connectionType: connectionType,
-        endpoint: endpoint,
-        args: args.isEmpty
-            ? null
-            : args.split(' ').where((s) => s.isNotEmpty).toList(),
-        env: envVars.isEmpty ? null : envVars,
-        description: description.isEmpty ? null : description,
-      );
-
-      ref.invalidate(mcpConfigsProvider);
-
-      if (context.mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('添加成功')));
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('添加失败: $e')));
-      }
-    }
-  }
-
-  Future<void> _showEditDialog(
-    BuildContext context,
-    WidgetRef ref,
-    McpConfig config,
-  ) async {
-    final nameController = TextEditingController(text: config.name);
-    final endpointController = TextEditingController(text: config.endpoint);
-    final descriptionController = TextEditingController(
-      text: config.description ?? '',
-    );
-
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('编辑 MCP 服务器'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: '名称'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: endpointController,
-              decoration: const InputDecoration(labelText: '端点'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(labelText: '描述（可选）'),
-              maxLines: 2,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _updateConfig(
-                context,
-                ref,
-                config,
-                nameController.text,
-                endpointController.text,
-                descriptionController.text,
-              );
-            },
-            child: const Text('保存'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _updateConfig(
-    BuildContext context,
-    WidgetRef ref,
-    McpConfig config,
-    String name,
-    String endpoint,
-    String description,
-  ) async {
-    if (name.isEmpty || endpoint.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请填写名称和端点')));
-      return;
-    }
-
-    try {
-      final repository = ref.read(mcpRepositoryProvider);
-      final updated = config.copyWith(
-        name: name,
-        endpoint: endpoint,
-        description: description.isEmpty ? null : description,
-      );
-      await repository.updateConfig(updated);
-
-      ref.invalidate(mcpConfigsProvider);
-
-      if (context.mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('保存成功')));
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
-      }
     }
   }
 
