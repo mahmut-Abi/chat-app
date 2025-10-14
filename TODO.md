@@ -4,30 +4,30 @@
 
   高优先级修复
 
-  - ⚠️ 修复4个 warning 级别问题
+  - ✅ 修复4个 warning 级别问题
       - lib/core/services/pwa_service.dart:59 - 不必要的 null 比较
       - lib/features/agent/data/agent_integration.dart:9 - 未使用字段 _executorManager
       - lib/features/chat/presentation/chat_screen.dart:35 - 未使用字段 _totalTokens
       - test/unit/conversation_creation_test.dart:3 - 未使用导入
       - test/unit/storage_service_test.dart:3 - 未使用导入
-  - 🔄 替换已废弃 API
+  - ✅ 替换已废弃 API
       - dart:html → package:web + dart:js_interop (lib/core/services/pwa_service.dart:2)
       - Share → SharePlus.instance (lib/core/utils/share_utils.dart)
       - TextFormField value → initialValue (多个表单界面)
 
   中优先级优化
 
-  - 🎯 优化 const 使用 - 45个 info 级别的 prefer_const_constructors 警告
+  - ✅ 优化 const 使用 - 45个 info 级别的 prefer_const_constructors 警告
   - 🔒 BuildContext 异步安全 - 修复 use_build_context_synchronously 问题
 
   ### 架构与代码组织
 
   模块化改进
 
-  - 📦 提取共享业务逻辑
+  - ✅ 提取共享业务逻辑
       - 将 lib/features/chat/data/batch_operations.dart (76行) 迁移到 core/utils/
       - 创建 core/mixins/ 存放可复用的 mixin
-  - 🧩 拆分大型文件 (>400行)
+  - 🟡 拆分大型文件 (部分完成)
 
     lib/features/settings/presentation/settings_screen.dart        817行 ⚠️
     lib/features/chat/presentation/chat_screen.dart                674行 ⚠️
@@ -40,7 +40,7 @@
 
   状态管理优化
 
-  - 🔄 统一 Provider 命名规范
+  - ✅ 统一 Provider 命名规范
       - 将 lib/features/mcp/data/mcp_provider.dart (25行) 合并到 core/providers/
       - 将 lib/features/agent/data/agent_provider.dart (29行) 合并到 core/providers/
 
@@ -50,8 +50,8 @@
 
   - ❌ 无 Widget 测试 - test/widget/ 目录为空
   - ❌ 无 Integration 测试 - test/integration/ 目录为空
-  - ⚠️ 缺少关键模块单元测试
-      - lib/features/prompts/ - 提示词模板功能 (3个文件,692行代码)
+  - 🟡 缺少关键模块单元测试
+      - lib/features/prompts/ - 提示词模板功能 (✅ 已添加单元测试)
       - lib/core/routing/app_router.dart - 路由配置
       - lib/core/utils/pdf_export.dart (248行) - PDF导出
 
@@ -114,7 +114,7 @@
 
   错误处理
 
-  - 🛡️ 统一错误处理机制
+  - ✅ 统一错误处理机制
       - 创建 core/error/error_handler.dart
       - 标准化 API 错误提示
   - 📝 改进 TODO 项
@@ -142,8 +142,8 @@
 
   缺失文档
 
-  - 📚 API 文档 - docs/api.md
-  - 🏗️ 架构设计文档 - docs/architecture.md
+  - ✅ API 文档 - docs/api.md
+  - ✅ 架构设计文档 - docs/architecture.md
   - 🔌 MCP 使用示例 - 扩展 docs/mcp-integration.md
   - 🤖 Agent 开发指南 - docs/agent-development.md
 
@@ -189,11 +189,11 @@
 
   ### 立即行动项 (Quick Wins)
 
-  1. ✅ 修复 4个 warning 级别问题 (30分钟)
-  2. ✅ 删除未使用的导入和字段 (15分钟)
-  3. ✅ 更新 dev_dependencies 到最新版本 (10分钟)
-  4. ✅ 为核心业务逻辑添加单元测试 (2-3小时)
-  5. ✅ 拆分超大文件 (settings_screen.dart) (1-2小时)
+  1. ✅ 修复 4个 warning 级别问题 - 已完成
+  2. ✅ 删除未使用的导入和字段 - 已完成
+  3. ✅ 更新 dev_dependencies 到最新版本 - 已完成
+  4. ✅ 为核心业务逻辑添加单元测试 - 已添加 prompts 测试
+  5. ✅ 拆分超大文件 - settings 已模块化，chat 已提取 InputSection
 
   ### 长期路线图
 
@@ -214,4 +214,3 @@
   - 添加云同步功能
   - 完整的国际化支持
   - 高级 Agent 功能
-
