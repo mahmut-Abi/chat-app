@@ -135,8 +135,16 @@ class ChatRepository {
   }
 
   Future<void> saveConversation(Conversation conversation) async {
-    // 如果对话有消息，将 isTemporary 设为 false
-    if (conversation.messages.isNotEmpty && conversation.isTemporary) {
+    // 跳过保存空对话
+    if (conversation.messages.isEmpty) {
+      if (kDebugMode) {
+        print('saveConversation: 跳过保存空对话 ${conversation.id}');
+      }
+      return;
+    }
+
+    // 如果对话有消息,将 isTemporary 设为 false
+    if (conversation.isTemporary) {
       conversation = conversation.copyWith(isTemporary: false);
     }
 
