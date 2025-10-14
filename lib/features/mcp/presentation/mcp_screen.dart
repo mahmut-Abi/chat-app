@@ -21,6 +21,7 @@ class McpScreen extends ConsumerWidget {
             onPressed: () async {
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(
+                  fullscreenDialog: true,
                   builder: (context) => const McpConfigScreen(),
                 ),
               );
@@ -154,6 +155,7 @@ class McpScreen extends ConsumerWidget {
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
+                        fullscreenDialog: true,
                         builder: (context) => McpConfigScreen(config: config),
                       ),
                     );

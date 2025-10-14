@@ -43,6 +43,7 @@ class _AgentTab extends ConsumerWidget {
             onPressed: () async {
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(
+                  fullscreenDialog: true,
                   builder: (context) => const AgentConfigScreen(),
                 ),
               );
@@ -132,6 +133,7 @@ class _AgentTab extends ConsumerWidget {
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
+                        fullscreenDialog: true,
                         builder: (context) => AgentConfigScreen(config: agent),
                       ),
                     );
@@ -205,6 +207,7 @@ class _ToolsTab extends ConsumerWidget {
             onPressed: () async {
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(
+                  fullscreenDialog: true,
                   builder: (context) => const ToolConfigScreen(),
                 ),
               );
@@ -293,6 +296,7 @@ class _ToolsTab extends ConsumerWidget {
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
+                        fullscreenDialog: true,
                         builder: (context) => ToolConfigScreen(tool: tool),
                       ),
                     );

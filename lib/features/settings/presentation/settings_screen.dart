@@ -367,7 +367,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _showBackgroundDialog() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const BackgroundSettingsScreen()),
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => const BackgroundSettingsScreen(),
+      ),
     );
   }
 
@@ -539,7 +542,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _editApiConfig(ApiConfig config) async {
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => ApiConfigScreen(config: config)),
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => ApiConfigScreen(config: config),
+      ),
     );
 
     if (result == true) {
