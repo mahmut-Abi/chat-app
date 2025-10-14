@@ -183,8 +183,7 @@ jobs:
         if: success() && matrix.platform == 'linux' && matrix.arch == 'x64'
         run: |
           mkdir -p artifacts
-          cd build/linux/x64/release/bundle
-          tar -czf ../../../../artifacts/chat-app-linux-${{ matrix.arch }}.tar.gz .
+          tar -czf artifacts/chat-app-linux-${{ matrix.arch }}.tar.gz -C build/linux/x64/release/bundle .
         shell: bash
 
       - name: Prepare artifacts (Android APK)
