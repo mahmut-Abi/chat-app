@@ -39,7 +39,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load models: \$e')));
+        ).showSnackBar(const SnackBar(content: Text('Failed to load models')));
       }
     }
   }
@@ -51,7 +51,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         title: const Text('Model Management'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadModels,
           ),
         ],
@@ -67,7 +67,10 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
                   const SizedBox(height: 16),
                   const Text('No models available'),
                   const SizedBox(height: 16),
-                  ElevatedButton(onPressed: _loadModels, child: Text('Retry')),
+                  ElevatedButton(
+                    onPressed: _loadModels,
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             )

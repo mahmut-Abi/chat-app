@@ -1,14 +1,12 @@
 import '../domain/agent_tool.dart';
 import 'agent_repository.dart';
-import 'tool_executor.dart';
 import '../../chat/domain/message.dart';
 
 /// Agent 与聊天功能集成
 class AgentIntegration {
   final AgentRepository _repository;
-  final ToolExecutorManager _executorManager;
 
-  AgentIntegration(this._repository, this._executorManager);
+  AgentIntegration(this._repository);
 
   /// 处理带 Agent 的消息
   Future<Message> processMessageWithAgent(

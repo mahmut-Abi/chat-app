@@ -53,10 +53,10 @@ class PwaService {
     if (!kIsWeb) return false;
 
     try {
-      if (html.window.navigator.serviceWorker != null) {
-        final registration = await html.window.navigator.serviceWorker!
-            .getRegistration();
-        return registration != null;
+      final serviceWorker = html.window.navigator.serviceWorker;
+      if (serviceWorker != null) {
+        await serviceWorker.getRegistration();
+        return true;
       }
       return false;
     } catch (e) {

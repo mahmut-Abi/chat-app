@@ -30,7 +30,7 @@ class PdfExport {
             padding: const pw.EdgeInsets.all(10),
             decoration: pw.BoxDecoration(
               border: pw.Border.all(color: PdfColors.grey300),
-              borderRadius: pw.BorderRadius.all(pw.Radius.circular(5)),
+              borderRadius: const pw.BorderRadius.all(pw.Radius.circular(5)),
             ),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -52,7 +52,7 @@ class PdfExport {
               padding: const pw.EdgeInsets.all(10),
               decoration: pw.BoxDecoration(
                 color: PdfColors.grey100,
-                borderRadius: pw.BorderRadius.all(pw.Radius.circular(5)),
+                borderRadius: const pw.BorderRadius.all(pw.Radius.circular(5)),
               ),
               child: pw.Text(conversation.systemPrompt!),
             ),
@@ -86,7 +86,7 @@ class PdfExport {
                               ? PdfColors.blue100
                               : PdfColors.green100,
                           borderRadius: pw.BorderRadius.all(
-                            pw.Radius.circular(3),
+                            const pw.Radius.circular(3),
                           ),
                         ),
                         child: pw.Text(
@@ -112,7 +112,9 @@ class PdfExport {
                     padding: const pw.EdgeInsets.all(10),
                     decoration: pw.BoxDecoration(
                       color: PdfColors.grey50,
-                      borderRadius: pw.BorderRadius.all(pw.Radius.circular(5)),
+                      borderRadius: const pw.BorderRadius.all(
+                        pw.Radius.circular(5),
+                      ),
                       border: pw.Border.all(color: PdfColors.grey300),
                     ),
                     child: pw.Text(

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chat_app/core/storage/storage_service.dart';
 import 'package:hive/hive.dart';
 
 // Mock 的 Hive 初始化方法

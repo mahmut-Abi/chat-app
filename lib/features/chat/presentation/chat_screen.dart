@@ -7,7 +7,6 @@ import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
 import 'widgets/message_bubble.dart';
-import '../../../core/utils/token_counter.dart';
 import 'widgets/image_picker_widget.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
@@ -31,8 +30,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final List<Message> _messages = [];
   bool _isLoading = false;
   final _uuid = const Uuid();
-  ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
-  int _totalTokens = 0;
+  final ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
   List<File> _selectedImages = [];
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
@@ -79,19 +77,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _calculateTokens() {
-    int total = 0;
-    for (final message in _messages) {
-      if (message.tokenCount != null) {
-        total += message.tokenCount!;
-      } else {
-        total += TokenCounter.estimate(message.content);
-      }
-    }
-    if (mounted) {
-      setState(() {
-        _totalTokens = total;
-      });
-    }
+    // Token 统计已移至 token_usage 功能模块
   }
 
   void _scrollToBottom() {
@@ -449,7 +435,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         final conversation = await chatRepo.createConversation(
                           title: '新建对话',
                         );
-                        if (mounted) {
+                        if (mounted && context.mounted) {
                           context.go('/chat/${conversation.id}');
                         }
                       },
@@ -458,7 +444,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         await chatRepo.deleteConversation(id);
                         _loadAllConversations();
                         if (id == widget.conversationId) {
-                          if (mounted) {
+                          if (mounted && context.mounted) {
                             context.go('/');
                           }
                         }
