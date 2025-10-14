@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
+import 'prompt_config_screen.dart';
 
 class PromptsScreen extends ConsumerStatefulWidget {
   const PromptsScreen({super.key});
@@ -69,7 +70,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
         error: (error, stack) => Center(child: Text('加载失败: $error')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateDialog(),
+        onPressed: _navigateToCreate,
         child: const Icon(Icons.add),
       ),
     );
@@ -164,7 +165,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
                         ],
                         onSelected: (value) {
                           if (value == 'edit') {
-                            _showEditDialog(template);
+                            _navigateToEdit(template);
                           } else if (value == 'delete') {
                             _deleteTemplate(template.id);
                           }
@@ -243,191 +244,36 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     );
   }
 
-  Future<void> _showCreateDialog() async {
-    final nameController = TextEditingController();
-    final contentController = TextEditingController();
-    final categoryController = TextEditingController(text: '通用');
-    final tagsController = TextEditingController();
+  Future<void> _navigateToCreate() async {
+    final result = await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const PromptConfigScreen()));
 
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('创建提示词模板'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: '名称',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: categoryController,
-                decoration: const InputDecoration(
-                  labelText: '分类',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: contentController,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: '内容',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: tagsController,
-                decoration: const InputDecoration(
-                  labelText: '标签 (用逗号分隔)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('创建'),
-          ),
-        ],
-      ),
-    );
-
-    if (result == true && mounted) {
-      final tags = tagsController.text
-          .split(',')
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-
-      final promptsRepo = ref.read(promptsRepositoryProvider);
-      await promptsRepo.createTemplate(
-        name: nameController.text,
-        content: contentController.text,
-        category: categoryController.text,
-        tags: tags,
-      );
-
+    if (result == true) {
       ref.invalidate(promptTemplatesProvider);
-
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('模板已创建')));
       }
     }
-
-    nameController.dispose();
-    contentController.dispose();
-    categoryController.dispose();
-    tagsController.dispose();
   }
 
-  Future<void> _showEditDialog(PromptTemplate template) async {
-    final nameController = TextEditingController(text: template.name);
-    final contentController = TextEditingController(text: template.content);
-    final categoryController = TextEditingController(text: template.category);
-    final tagsController = TextEditingController(
-      text: template.tags.join(', '),
-    );
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('编辑提示词模板'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: '名称',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: categoryController,
-                decoration: const InputDecoration(
-                  labelText: '分类',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: contentController,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: '内容',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: tagsController,
-                decoration: const InputDecoration(
-                  labelText: '标签 (用逗号分隔)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('保存'),
-          ),
-        ],
+  Future<void> _navigateToEdit(PromptTemplate template) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PromptConfigScreen(template: template),
       ),
     );
 
-    if (result == true && mounted) {
-      final tags = tagsController.text
-          .split(',')
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-
-      final promptsRepo = ref.read(promptsRepositoryProvider);
-      await promptsRepo.updateTemplate(
-        template.id,
-        name: nameController.text,
-        content: contentController.text,
-        category: categoryController.text,
-        tags: tags,
-      );
-
+    if (result == true) {
       ref.invalidate(promptTemplatesProvider);
-
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('模板已更新')));
       }
     }
-
-    nameController.dispose();
-    contentController.dispose();
-    categoryController.dispose();
-    tagsController.dispose();
   }
 
   Future<void> _toggleFavorite(String id) async {
