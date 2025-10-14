@@ -157,18 +157,17 @@ jobs:
         if: success() && matrix.platform == 'web'
         run: |
           mkdir -p artifacts
-          cd build/web
-          zip -r ../../artifacts/chat-app-web-${{ matrix.arch }}.zip .
+          # cd build/web
+          zip -r artifacts/chat-app-web-${{ matrix.arch }}.zip build/web/*
         shell: bash
 
       - name: Prepare artifacts (macOS)
         if: success() && matrix.platform == 'macos'
         run: |
           mkdir -p artifacts
-          cd build/macos/Build/Products/Release
           # 创建 ZIP 包
-          if [ -d "chat_app.app" ]; then
-            zip -r ../../../../artifacts/chat-app-macos-${{ matrix.arch }}.zip chat_app.app
+          if [ -d "build/macos/Build/Products/Release/chat_app.app" ]; then
+            zip -r artifacts/chat-app-macos-${{ matrix.arch }}.zip build/macos/Build/Products/Release/chat_app.app
           fi
         shell: bash
 
@@ -203,10 +202,9 @@ jobs:
         if: success() && matrix.platform == 'ios'
         run: |
           mkdir -p artifacts
-          cd build/ios/Release-iphoneos
           # 创建 IPA (需要签名的话会失败,这里只是打包文件)
-          if [ -d "Runner.app" ]; then
-            zip -r ../../../artifacts/chat-app-ios-${{ matrix.arch }}.zip Runner.app
+          if [ -d "build/ios/Release-iphoneos/Runner.app" ]; then
+            zip -r artifacts/chat-app-ios-${{ matrix.arch }}.zip build/ios/Release-iphoneos/Runner.app
           fi
         shell: bash
 
