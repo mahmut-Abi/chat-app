@@ -7,6 +7,7 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import 'chat_screen.dart';
 import 'widgets/enhanced_sidebar.dart';
+import 'widgets/conversation_search_screen.dart';
 import 'widgets/group_management_dialog.dart';
 import '../../../shared/utils/responsive_utils.dart';
 import '../../../core/utils/desktop_utils.dart';
@@ -367,96 +368,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   void _showSearch() {
-    showSearch(
-      context: context,
-      delegate: ConversationSearchDelegate(
-        conversations: _conversations,
-        onConversationSelected: (conversation) {
-          setState(() {
-            _selectedConversation = conversation;
-          });
-          context.go('/chat/${conversation.id}');
-        },
-      ),
-    );
-  }
-}
-
-class ConversationSearchDelegate extends SearchDelegate<Conversation?> {
-  final List<Conversation> conversations;
-  final Function(Conversation) onConversationSelected;
-
-  ConversationSearchDelegate({
-    required this.conversations,
-    required this.onConversationSelected,
-  });
-
-  @override
-  String get searchFieldLabel => '搜索对话...';
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return _buildSearchResults();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return _buildSearchResults();
-  }
-
-  Widget _buildSearchResults() {
-    final results = conversations.where((conv) {
-      final searchLower = query.toLowerCase();
-      return conv.title.toLowerCase().contains(searchLower) ||
-          conv.messages.any(
-            (msg) => msg.content.toLowerCase().contains(searchLower),
-          );
-    }).toList();
-
-    if (results.isEmpty) {
-      return const Center(child: Text('没有找到相关对话'));
-    }
-
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        final conversation = results[index];
-        return ListTile(
-          leading: const Icon(Icons.chat_bubble_outline),
-          title: Text(conversation.title),
-          subtitle: Text(
-            '${conversation.messages.length} 条消息',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: () {
-            close(context, conversation);
-            onConversationSelected(conversation);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ConversationSearchScreen(
+          conversations: _conversations,
+          onConversationSelected: (conversation) {
+            setState(() {
+              _selectedConversation = conversation;
+            });
+            context.go('/chat/\${conversation.id}');
           },
-        );
-      },
+        ),
+      ),
     );
   }
 }
