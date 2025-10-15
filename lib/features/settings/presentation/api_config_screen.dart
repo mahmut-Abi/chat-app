@@ -5,6 +5,9 @@ import '../../../core/providers/providers.dart';
 import '../domain/api_config.dart';
 import '../../../core/network/dio_client.dart';
 import '../../../core/network/openai_api_client.dart';
+import 'widgets/api_config_basic_section.dart';
+import 'widgets/api_config_proxy_section.dart';
+import 'widgets/api_config_model_section.dart';
 
 class ApiConfigScreen extends ConsumerStatefulWidget {
   final ApiConfig? config;
@@ -108,60 +111,13 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _buildBasicSection(),
-            const SizedBox(height: 24),
-            _buildProxySection(),
-            const SizedBox(height: 24),
-            _buildModelSection(),
-            const SizedBox(height: 32),
-            _buildActionButtons(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBasicSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('基本配置', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: '配置名称 *',
-                hintText: '例如: 我的 OpenAI',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.label),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '请输入配置名称';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedProvider,
-              decoration: const InputDecoration(
-                labelText: '提供商',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.cloud),
-              ),
-              items: ['OpenAI', 'Azure OpenAI', 'Ollama', 'Custom']
-                  .map(
-                    (provider) => DropdownMenuItem(
-                      value: provider,
-                      child: Text(provider),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
+            ApiConfigBasicSection(
+              nameController: _nameController,
+              baseUrlController: _baseUrlController,
+              apiKeyController: _apiKeyController,
+              organizationController: _organizationController,
+              selectedProvider: _selectedProvider,
+              onProviderChanged: (value) {
                 if (value != null) {
                   setState(() {
                     _selectedProvider = value;
@@ -170,201 +126,42 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
                 }
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _baseUrlController,
-              decoration: const InputDecoration(
-                labelText: 'Base URL *',
-                hintText: 'https://api.openai.com/v1',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.link),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '请输入 Base URL';
-                }
-                return null;
+            const SizedBox(height: 24),
+            ApiConfigProxySection(
+              enableProxy: _enableProxy,
+              proxyUrlController: _proxyUrlController,
+              proxyUsernameController: _proxyUsernameController,
+              proxyPasswordController: _proxyPasswordController,
+              onProxyChanged: (value) {
+                setState(() => _enableProxy = value ?? false);
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _apiKeyController,
-              decoration: const InputDecoration(
-                labelText: 'API Key *',
-                hintText: 'sk-...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.key),
-              ),
-              obscureText: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '请输入 API Key';
-                }
-                return null;
+            const SizedBox(height: 24),
+            ApiConfigModelSection(
+              modelController: _modelController,
+              temperature: _temperature,
+              maxTokens: _maxTokens,
+              topP: _topP,
+              frequencyPenalty: _frequencyPenalty,
+              presencePenalty: _presencePenalty,
+              onTemperatureChanged: (value) {
+                setState(() => _temperature = value);
+              },
+              onMaxTokensChanged: (value) {
+                setState(() => _maxTokens = value.round());
+              },
+              onTopPChanged: (value) {
+                setState(() => _topP = value);
+              },
+              onFrequencyPenaltyChanged: (value) {
+                setState(() => _frequencyPenalty = value);
+              },
+              onPresencePenaltyChanged: (value) {
+                setState(() => _presencePenalty = value);
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _organizationController,
-              decoration: const InputDecoration(
-                labelText: 'Organization ID (可选)',
-                hintText: 'org-...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.business),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProxySection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text('代理设置', style: Theme.of(context).textTheme.titleLarge),
-                const Spacer(),
-                Switch(
-                  value: _enableProxy,
-                  onChanged: (value) {
-                    setState(() {
-                      _enableProxy = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            if (_enableProxy) ...[
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _proxyUrlController,
-                decoration: const InputDecoration(
-                  labelText: '代理 URL',
-                  hintText: 'http://proxy.example.com:8080',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.vpn_lock),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _proxyUsernameController,
-                decoration: const InputDecoration(
-                  labelText: '代理用户名 (可选)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _proxyPasswordController,
-                decoration: const InputDecoration(
-                  labelText: '代理密码 (可选)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModelSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('模型参数', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _modelController,
-              decoration: const InputDecoration(
-                labelText: '默认模型',
-                hintText: 'gpt-3.5-turbo',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.psychology),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text('Temperature: ${_temperature.toStringAsFixed(2)}'),
-            Slider(
-              value: _temperature,
-              min: 0.0,
-              max: 2.0,
-              divisions: 20,
-              label: _temperature.toStringAsFixed(2),
-              onChanged: (value) {
-                setState(() {
-                  _temperature = value;
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-            Text('Max Tokens: $_maxTokens'),
-            Slider(
-              value: _maxTokens.toDouble(),
-              min: 100,
-              max: 8000,
-              divisions: 79,
-              label: _maxTokens.toString(),
-              onChanged: (value) {
-                setState(() {
-                  _maxTokens = value.toInt();
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-            Text('Top P: ${_topP.toStringAsFixed(2)}'),
-            Slider(
-              value: _topP,
-              min: 0.0,
-              max: 1.0,
-              divisions: 20,
-              label: _topP.toStringAsFixed(2),
-              onChanged: (value) {
-                setState(() {
-                  _topP = value;
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-            Text('Frequency Penalty: ${_frequencyPenalty.toStringAsFixed(2)}'),
-            Slider(
-              value: _frequencyPenalty,
-              min: 0.0,
-              max: 2.0,
-              divisions: 20,
-              label: _frequencyPenalty.toStringAsFixed(2),
-              onChanged: (value) {
-                setState(() {
-                  _frequencyPenalty = value;
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-            Text('Presence Penalty: ${_presencePenalty.toStringAsFixed(2)}'),
-            Slider(
-              value: _presencePenalty,
-              min: 0.0,
-              max: 2.0,
-              divisions: 20,
-              label: _presencePenalty.toStringAsFixed(2),
-              onChanged: (value) {
-                setState(() {
-                  _presencePenalty = value;
-                });
-              },
-            ),
+            const SizedBox(height: 32),
+            _buildActionButtons(),
           ],
         ),
       ),
@@ -407,9 +204,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       return;
     }
 
-    setState(() {
-      _isTesting = true;
-    });
+    setState(() => _isTesting = true);
 
     try {
       final dioClient = DioClient(
@@ -459,9 +254,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isTesting = false;
-        });
+        setState(() => _isTesting = false);
       }
     }
   }
