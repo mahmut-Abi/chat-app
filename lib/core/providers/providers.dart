@@ -36,9 +36,10 @@ final mcpRepositoryProvider = Provider<McpRepository>((ref) {
 });
 
 /// MCP 配置列表 Provider
-final mcpConfigsProvider = FutureProvider<List<McpConfig>>((ref) async {
-  final storage = ref.read(storageServiceProvider);
-  final repository = McpRepository(storage);
+final mcpConfigsProvider = FutureProvider.autoDispose<List<McpConfig>>((
+  ref,
+) async {
+  final repository = ref.watch(mcpRepositoryProvider);
   return await repository.getAllConfigs();
 });
 
@@ -65,14 +66,18 @@ final agentRepositoryProvider = Provider<AgentRepository>((ref) {
 });
 
 /// Agent 配置列表 Provider
-final agentConfigsProvider = FutureProvider<List<AgentConfig>>((ref) async {
-  final repository = ref.read(agentRepositoryProvider);
+final agentConfigsProvider = FutureProvider.autoDispose<List<AgentConfig>>((
+  ref,
+) async {
+  final repository = ref.watch(agentRepositoryProvider);
   return await repository.getAllAgents();
 });
 
 /// Agent 工具列表 Provider
-final agentToolsProvider = FutureProvider<List<AgentTool>>((ref) async {
-  final repository = ref.read(agentRepositoryProvider);
+final agentToolsProvider = FutureProvider.autoDispose<List<AgentTool>>((
+  ref,
+) async {
+  final repository = ref.watch(agentRepositoryProvider);
   return await repository.getAllTools();
 });
 
@@ -172,9 +177,8 @@ final promptsRepositoryProvider = Provider<PromptsRepository>((ref) {
 });
 
 // Prompt Templates Provider
-final promptTemplatesProvider = FutureProvider<List<PromptTemplate>>((
-  ref,
-) async {
-  final promptsRepo = ref.watch(promptsRepositoryProvider);
-  return await promptsRepo.getAllTemplates();
-});
+final promptTemplatesProvider =
+    FutureProvider.autoDispose<List<PromptTemplate>>((ref) async {
+      final promptsRepo = ref.watch(promptsRepositoryProvider);
+      return await promptsRepo.getAllTemplates();
+    });
