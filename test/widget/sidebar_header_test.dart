@@ -5,17 +5,13 @@ import 'package:chat_app/features/chat/presentation/widgets/sidebar_header.dart'
 void main() {
   group('SidebarHeader Widget 测试', () {
     testWidgets('应该正确显示所有元素', (WidgetTester tester) async {
-      bool createPressed = false;
-      bool managePressed = false;
-      bool searchPressed = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: SidebarHeader(
-              onCreateConversation: () => createPressed = true,
-              onManageGroups: () => managePressed = true,
-              onSearch: () => searchPressed = true,
+              onCreateConversation: () {},
+              onManageGroups: () {},
+              onSearch: () {},
             ),
           ),
         ),

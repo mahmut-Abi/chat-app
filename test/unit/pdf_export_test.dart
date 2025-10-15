@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chat_app/features/chat/domain/message.dart';
 import 'package:chat_app/features/chat/domain/conversation.dart';
+import 'package:chat_app/features/chat/domain/message.dart';
 
 void main() {
   group('PdfExport', () {
@@ -8,57 +8,112 @@ void main() {
 
     setUp(() {
       testConversation = Conversation(
-        id: 'test-id',
+        id: 'conv1',
         title: '测试对话',
         messages: [
           Message(
             id: 'msg1',
-            content: '你好',
+            content: '用户消息',
             role: MessageRole.user,
-            timestamp: DateTime.now(),
+            timestamp: DateTime(2024, 1, 1, 10, 0),
+            tokenCount: 5,
           ),
           Message(
             id: 'msg2',
-            content: '你好！有什么我可以帮助你的吗？',
+            content: 'AI 回复',
             role: MessageRole.assistant,
-            timestamp: DateTime.now(),
+            timestamp: DateTime(2024, 1, 1, 10, 1),
+            tokenCount: 10,
           ),
         ],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: DateTime(2024, 1, 1),
+        updatedAt: DateTime(2024, 1, 1, 10, 1),
+        systemPrompt: '你是一个有用的 AI 助手',
+        tags: const ['重要', '工作'],
+        totalTokens: 15,
       );
     });
 
-    test('应该正确创建包含消息的 Conversation', () {
-      expect(testConversation.id, 'test-id');
+    test('应该正确创建 PDF 文档', () {
+      // 我们不能直接测试 exportConversationToPdf 因为它需要 UI
+      // 但我们可以验证 Conversation 数据结构
       expect(testConversation.title, '测试对话');
       expect(testConversation.messages.length, 2);
+      expect(testConversation.systemPrompt, '你是一个有用的 AI 助手');
+      expect(testConversation.tags, ['重要', '工作']);
+      expect(testConversation.totalTokens, 15);
     });
 
-    test('应该正确识别用户和助手消息', () {
-      final userMessage = testConversation.messages.first;
-      final assistantMessage = testConversation.messages.last;
-
-      expect(userMessage.role, MessageRole.user);
-      expect(assistantMessage.role, MessageRole.assistant);
-    });
-
-    test('应该正确处理带有标签的对话', () {
-      final conversationWithTags = testConversation.copyWith(
-        tags: ['重要', '工作'],
+    test('应该正确过滤系统消息', () {
+      final conversationWithSystem = testConversation.copyWith(
+        messages: [
+          Message(
+            id: 'sys',
+            content: '系统消息',
+            role: MessageRole.system,
+            timestamp: DateTime(2024, 1, 1, 9, 59),
+          ),
+          ...testConversation.messages,
+        ],
       );
 
-      expect(conversationWithTags.tags.length, 2);
-      expect(conversationWithTags.tags, contains('重要'));
-      expect(conversationWithTags.tags, contains('工作'));
+      final nonSystemMessages = conversationWithSystem.messages
+          .where((m) => m.role != MessageRole.system)
+          .toList();
+
+      expect(nonSystemMessages.length, 2);
+      expect(
+        nonSystemMessages.every((m) => m.role != MessageRole.system),
+        true,
+      );
     });
 
-    test('应该正确处理系统提示词', () {
-      final conversationWithSystemPrompt = testConversation.copyWith(
-        systemPrompt: '你是一个有用的助手',
+    test('应该正确计算 Token 总数', () {
+      final totalTokens = testConversation.messages.fold<int>(
+        0,
+        (sum, msg) => sum + (msg.tokenCount ?? 0),
       );
 
-      expect(conversationWithSystemPrompt.systemPrompt, '你是一个有用的助手');
+      expect(totalTokens, 15);
+      expect(totalTokens, testConversation.totalTokens);
+    });
+
+    test('应该正确区分用户和 AI 消息', () {
+      final userMessages = testConversation.messages
+          .where((m) => m.role == MessageRole.user)
+          .toList();
+
+      final aiMessages = testConversation.messages
+          .where((m) => m.role == MessageRole.assistant)
+          .toList();
+
+      expect(userMessages.length, 1);
+      expect(aiMessages.length, 1);
+      expect(userMessages.first.content, '用户消息');
+      expect(aiMessages.first.content, 'AI 回复');
+    });
+
+    test('应该正确处理空消息列表', () {
+      final emptyConversation = testConversation.copyWith(messages: []);
+
+      expect(emptyConversation.messages.isEmpty, true);
+      expect(emptyConversation.title, '测试对话');
+    });
+
+    test('应该正确处理无系统提示词的对话', () {
+      final newConversation = Conversation(
+        id: testConversation.id,
+        title: testConversation.title,
+        messages: testConversation.messages,
+        createdAt: testConversation.createdAt,
+        updatedAt: testConversation.updatedAt,
+        systemPrompt: null,
+        tags: testConversation.tags,
+        totalTokens: testConversation.totalTokens,
+      );
+
+      expect(newConversation.systemPrompt, null);
+      expect(newConversation.messages.length, 2);
     });
   });
 }

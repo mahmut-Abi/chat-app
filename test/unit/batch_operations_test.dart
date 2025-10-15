@@ -21,15 +21,15 @@ void main() {
           ],
           createdAt: DateTime(2024, 1, 1),
           updatedAt: DateTime(2024, 1, 1),
-          tags: ['重要'],
+          tags: const ['重要'],
         ),
         Conversation(
           id: 'conv2',
           title: '对话2',
-          messages: [],
+          messages: const [],
           createdAt: DateTime(2024, 1, 2),
           updatedAt: DateTime(2024, 1, 2),
-          tags: ['工作'],
+          tags: const ['工作'],
         ),
       ];
     });
