@@ -28,3 +28,11 @@ echo "Available hooks:"
 echo "  • pre-commit: Runs flutter analyze before commit"
 echo ""
 echo "To skip hooks, use: git commit --no-verify"
+
+# 安装 pre-push hook
+if [ ! -f .git/hooks/pre-push ]; then
+  ln -s ../../scripts/pre-push.sh .git/hooks/pre-push
+  echo "✅ Pre-push hook 已安装"
+else
+  echo "ℹ️  Pre-push hook 已存在"
+fi

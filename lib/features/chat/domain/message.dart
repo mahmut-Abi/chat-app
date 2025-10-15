@@ -35,6 +35,9 @@ class Message extends Equatable {
   final Map<String, dynamic>? metadata;
   final int? tokenCount;
   final List<ImageAttachment>? images;
+  final String? model; // 消息使用的模型
+  final int? promptTokens; // Prompt token 数量
+  final int? completionTokens; // Completion token 数量
 
   const Message({
     required this.id,
@@ -47,6 +50,9 @@ class Message extends Equatable {
     this.metadata,
     this.tokenCount,
     this.images,
+    this.model,
+    this.promptTokens,
+    this.completionTokens,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
@@ -65,6 +71,9 @@ class Message extends Equatable {
     Map<String, dynamic>? metadata,
     int? tokenCount,
     List<ImageAttachment>? images,
+    String? model,
+    int? promptTokens,
+    int? completionTokens,
   }) {
     return Message(
       id: id ?? this.id,
@@ -77,6 +86,9 @@ class Message extends Equatable {
       metadata: metadata ?? this.metadata,
       tokenCount: tokenCount ?? this.tokenCount,
       images: images ?? this.images,
+      model: model ?? this.model,
+      promptTokens: promptTokens ?? this.promptTokens,
+      completionTokens: completionTokens ?? this.completionTokens,
     );
   }
 
@@ -92,6 +104,9 @@ class Message extends Equatable {
     metadata,
     tokenCount,
     images,
+    model,
+    promptTokens,
+    completionTokens,
   ];
 }
 
