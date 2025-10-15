@@ -34,7 +34,7 @@ class SidebarFooter extends StatelessWidget {
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
+              crossAxisCount: 4,
               mainAxisSpacing: 4,
               crossAxisSpacing: 4,
               childAspectRatio: 1.2,
@@ -68,6 +68,12 @@ class SidebarFooter extends StatelessWidget {
                   icon: Icons.access_time,
                   label: 'Token',
                   onTap: () => context.push('/token-usage'),
+                ),
+                _buildFeatureCard(
+                  context,
+                  icon: Icons.article,
+                  label: '日志',
+                  onTap: () => context.push('/logs'),
                 ),
                 _buildFeatureCard(
                   context,

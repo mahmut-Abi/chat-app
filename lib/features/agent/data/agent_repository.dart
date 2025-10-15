@@ -2,11 +2,13 @@ import '../domain/agent_tool.dart';
 import '../../../core/storage/storage_service.dart';
 import 'tool_executor.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/services/log_service.dart';
 
 /// Agent 仓库
 class AgentRepository {
   final StorageService _storage;
   final ToolExecutorManager _executorManager;
+  final _log = LogService();
 
   AgentRepository(this._storage, this._executorManager);
 
@@ -27,6 +29,7 @@ class AgentRepository {
       updatedAt: DateTime.now(),
     );
 
+    _log.info('创建 Agent: name=$name, tools=${toolIds.length}');
     await _storage.saveSetting('agent_${agent.id}', agent.toJson());
     return agent;
   }
@@ -46,6 +49,7 @@ class AgentRepository {
       parameters: parameters ?? {},
     );
 
+    _log.info('创建工具: name=$name, type=$type');
     await _storage.saveSetting('agent_tool_${tool.id}', tool.toJson());
     return tool;
   }
@@ -55,6 +59,7 @@ class AgentRepository {
     AgentTool tool,
     Map<String, dynamic> input,
   ) async {
+    _log.debug('执行工具: ${tool.name}');
     return _executorManager.execute(tool, input);
   }
 
@@ -122,6 +127,7 @@ class AgentRepository {
 
   /// 删除 Agent
   Future<void> deleteAgent(String id) async {
+    _log.info('删除 Agent: id=$id');
     await _storage.deleteSetting('agent_$id');
   }
 
@@ -158,6 +164,7 @@ class AgentRepository {
 
   /// 删除工具
   Future<void> deleteTool(String id) async {
+    _log.info('删除工具: id=$id');
     await _storage.deleteSetting('agent_tool_$id');
   }
 }

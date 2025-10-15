@@ -7,11 +7,13 @@ import '../../../core/storage/storage_service.dart';
 import '../../../core/utils/token_counter.dart';
 import '../../../core/utils/markdown_export.dart';
 import 'package:flutter/foundation.dart';
+import '../../../core/services/log_service.dart';
 
 class ChatRepository {
   final OpenAIApiClient _apiClient;
   final StorageService _storage;
   final _uuid = const Uuid();
+  final _log = LogService();
 
   ChatRepository(this._apiClient, this._storage);
 
@@ -23,6 +25,7 @@ class ChatRepository {
     List<Message>? conversationHistory,
   }) async {
     try {
+      _log.info('发送消息: conversationId=$conversationId, model=${config.model}');
       final messages = _buildMessageList(conversationHistory, content);
 
       final request = ChatCompletionRequest(
@@ -47,6 +50,7 @@ class ChatRepository {
         tokenCount: tokenCount,
       );
     } catch (e) {
+      _log.error('发送消息失败', e);
       return Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,

@@ -3,11 +3,13 @@ import '../../../core/storage/storage_service.dart';
 import 'mcp_client_base.dart';
 import 'mcp_client_factory.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/services/log_service.dart';
 
 /// MCP 仓库
 class McpRepository {
   final StorageService _storage;
   final Map<String, McpClientBase> _clients = {};
+  final _log = LogService();
 
   McpRepository(this._storage);
 
@@ -35,6 +37,7 @@ class McpRepository {
     );
 
     await _storage.saveSetting('mcp_config_${config.id}', config.toJson());
+    _log.info('创建 MCP 配置: name=$name, type=$connectionType');
     return config;
   }
 
@@ -76,17 +79,22 @@ class McpRepository {
 
   /// 删除 MCP 配置
   Future<void> deleteConfig(String id) async {
+    _log.info('删除 MCP 配置: id=$id');
     await _disconnectClient(id);
     await _storage.deleteSetting('mcp_config_$id');
   }
 
   /// 连接到 MCP 服务器
   Future<bool> connect(McpConfig config) async {
+    _log.info('连接 MCP 服务器: name=${config.name}, endpoint=${config.endpoint}');
     final client = McpClientFactory.createClient(config);
     final success = await client.connect();
 
     if (success) {
       _clients[config.id] = client;
+      _log.info('MCP 连接成功: name=${config.name}');
+    } else {
+      _log.warning('MCP 连接失败: name=${config.name}');
     }
 
     return success;
@@ -94,6 +102,7 @@ class McpRepository {
 
   /// 断开 MCP 连接
   Future<void> disconnect(String configId) async {
+    _log.info('断开 MCP 连接: id=$configId');
     await _disconnectClient(configId);
   }
 

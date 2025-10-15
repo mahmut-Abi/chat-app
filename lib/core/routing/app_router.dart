@@ -8,6 +8,7 @@ import '../../features/mcp/presentation/mcp_screen.dart';
 import '../../features/token_usage/presentation/token_usage_screen.dart';
 import '../../features/agent/presentation/agent_screen.dart';
 import '../../features/prompts/presentation/prompts_screen.dart';
+import '../../features/logs/presentation/logs_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -42,6 +43,7 @@ class AppRouter {
         path: '/prompts',
         builder: (context, state) => const PromptsScreen(),
       ),
+      GoRoute(path: '/logs', builder: (context, state) => const LogsScreen()),
     ],
   );
 }

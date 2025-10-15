@@ -16,10 +16,16 @@ import '../../features/mcp/domain/mcp_config.dart';
 import '../../features/agent/data/agent_repository.dart';
 import '../../features/agent/data/tool_executor.dart';
 import '../../features/agent/domain/agent_tool.dart';
+import '../services/log_service.dart';
 
 // Storage Service
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
+});
+
+// Log Service
+final logServiceProvider = Provider<LogService>((ref) {
+  return LogService();
 });
 
 // Settings Repository
