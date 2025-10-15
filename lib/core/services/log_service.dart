@@ -1,9 +1,16 @@
 import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart';
 import '../storage/storage_service.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 
 /// 日志级别
 enum LogLevel { debug, info, warning, error }
+
+/// 日志导出格式
+enum LogExportFormat { text, json, csv }
 
 /// 日志记录
 class LogEntry {
@@ -43,6 +50,13 @@ class LogEntry {
     stackTrace: json['stackTrace'] as String?,
     extra: json['extra'] as Map<String, dynamic>?,
   );
+
+  /// 转换为 CSV 行
+  String toCsvRow() {
+    final msg = message.replaceAll('"', '""').replaceAll('\n', ' ');
+    final stack = stackTrace?.replaceAll('"', '""').replaceAll('\n', ' ') ?? '';
+    return '"$id","${timestamp.toIso8601String()}","${level.name}","$msg","$stack"';
+  }
 }
 
 /// 日志服务
@@ -64,15 +78,20 @@ class LogService {
   );
 
   final List<LogEntry> _logs = [];
-  final int _maxLogs = 1000; // 最多保存 1000 条日志
+  final int _maxLogs = 5000; // 最多保存 5000 条日志
   StorageService? _storage;
+  bool _isInitialized = false;
 
   LogService._internal();
 
   /// 初始化日志服务
   Future<void> init(StorageService storage) async {
+    if (_isInitialized) return;
+
     _storage = storage;
     await _loadLogsFromStorage();
+    _isInitialized = true;
+    info('日志服务初始化完成');
   }
 
   /// 加载存储的日志
@@ -112,7 +131,9 @@ class LogService {
 
   /// 记录 Debug 日志
   void debug(String message, [Map<String, dynamic>? extra]) {
-    _logger.d(message);
+    if (kDebugMode) {
+      _logger.d(message);
+    }
     _addLog(LogLevel.debug, message, extra: extra);
   }
 
@@ -191,21 +212,77 @@ class LogService {
         .toList();
   }
 
+  /// 获取日志统计信息
+  Map<String, dynamic> getStatistics() {
+    final stats = <String, dynamic>{
+      'total': _logs.length,
+      'debug': 0,
+      'info': 0,
+      'warning': 0,
+      'error': 0,
+    };
+
+    for (final log in _logs) {
+      stats[log.level.name] = (stats[log.level.name] as int) + 1;
+    }
+
+    return stats;
+  }
+
+  /// 获取最近的错误日志
+  List<LogEntry> getRecentErrors({int limit = 10}) {
+    return _logs
+        .where((log) => log.level == LogLevel.error)
+        .take(limit)
+        .toList();
+  }
+
   /// 清空日志
   Future<void> clearLogs() async {
     _logs.clear();
     await _saveLogsToStorage();
+    info('日志已清空');
   }
 
-  /// 导出日志为文本
-  String exportLogsAsText() {
+  /// 导出日志
+  String exportLogs({
+    LogExportFormat format = LogExportFormat.text,
+    LogLevel? levelFilter,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    var logs = _logs;
+
+    // 应用过滤
+    if (levelFilter != null) {
+      logs = logs.where((log) => log.level == levelFilter).toList();
+    }
+    if (startTime != null) {
+      logs = logs.where((log) => log.timestamp.isAfter(startTime)).toList();
+    }
+    if (endTime != null) {
+      logs = logs.where((log) => log.timestamp.isBefore(endTime)).toList();
+    }
+
+    switch (format) {
+      case LogExportFormat.text:
+        return _exportAsText(logs);
+      case LogExportFormat.json:
+        return _exportAsJson(logs);
+      case LogExportFormat.csv:
+        return _exportAsCsv(logs);
+    }
+  }
+
+  /// 导出为文本格式
+  String _exportAsText(List<LogEntry> logs) {
     final buffer = StringBuffer();
     buffer.writeln('========== 应用日志 ==========');
     buffer.writeln('导出时间: ${DateTime.now()}');
-    buffer.writeln('总记录数: ${_logs.length}');
+    buffer.writeln('总记录数: ${logs.length}');
     buffer.writeln('=====================================\n');
 
-    for (final log in _logs) {
+    for (final log in logs) {
       buffer.writeln('[${log.level.name.toUpperCase()}] ${log.timestamp}');
       buffer.writeln(log.message);
       if (log.stackTrace != null) {
@@ -219,5 +296,71 @@ class LogService {
     }
 
     return buffer.toString();
+  }
+
+  /// 导出为 JSON 格式
+  String _exportAsJson(List<LogEntry> logs) {
+    final data = {
+      'exportTime': DateTime.now().toIso8601String(),
+      'totalCount': logs.length,
+      'logs': logs.map((log) => log.toJson()).toList(),
+    };
+    return const JsonEncoder.withIndent('  ').convert(data);
+  }
+
+  /// 导出为 CSV 格式
+  String _exportAsCsv(List<LogEntry> logs) {
+    final buffer = StringBuffer();
+    buffer.writeln('ID,Timestamp,Level,Message,StackTrace');
+    for (final log in logs) {
+      buffer.writeln(log.toCsvRow());
+    }
+    return buffer.toString();
+  }
+
+  /// 导出日志到文件
+  Future<File> exportLogsToFile({
+    LogExportFormat format = LogExportFormat.text,
+    LogLevel? levelFilter,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) async {
+    final content = exportLogs(
+      format: format,
+      levelFilter: levelFilter,
+      startTime: startTime,
+      endTime: endTime,
+    );
+
+    final dir = await getApplicationDocumentsDirectory();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final extension = format == LogExportFormat.json
+        ? 'json'
+        : format == LogExportFormat.csv
+        ? 'csv'
+        : 'txt';
+    final file = File('${dir.path}/logs_$timestamp.$extension');
+    await file.writeAsString(content);
+
+    info('日志已导出到文件: ${file.path}');
+    return file;
+  }
+
+  /// 清理旧日志（保留最近 N 天）
+  Future<void> cleanOldLogs({int days = 7}) async {
+    final cutoffDate = DateTime.now().subtract(Duration(days: days));
+    final initialCount = _logs.length;
+    _logs.removeWhere((log) => log.timestamp.isBefore(cutoffDate));
+    final removedCount = initialCount - _logs.length;
+
+    if (removedCount > 0) {
+      await _saveLogsToStorage();
+      info('已清理 $removedCount 条旧日志（超过 $days 天）');
+    }
+  }
+
+  /// 导出日志为文本（向后兼容）
+  String exportLogsAsText() {
+    return exportLogs(format: LogExportFormat.text);
   }
 }

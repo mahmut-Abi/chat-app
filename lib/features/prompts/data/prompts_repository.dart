@@ -1,10 +1,12 @@
 import '../domain/prompt_template.dart';
 import '../../../core/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/services/log_service.dart';
 
 class PromptsRepository {
   final StorageService _storage;
   final _uuid = const Uuid();
+  final _log = LogService();
 
   PromptsRepository(this._storage);
 
@@ -22,6 +24,7 @@ class PromptsRepository {
       tags: tags,
       createdAt: DateTime.now(),
     );
+    _log.info('创建提示词模板: name=$name, category=$category');
 
     await _storage.savePromptTemplate(template.id, template.toJson());
     return template;
@@ -53,6 +56,7 @@ class PromptsRepository {
   }
 
   Future<void> deleteTemplate(String id) async {
+    _log.info('删除提示词模板: id=$id');
     await _storage.deletePromptTemplate(id);
   }
 

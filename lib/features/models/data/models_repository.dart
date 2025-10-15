@@ -1,16 +1,21 @@
 import '../domain/model.dart';
 import '../../../core/network/openai_api_client.dart';
+import '../../../core/services/log_service.dart';
 
 class ModelsRepository {
   final OpenAIApiClient _apiClient;
+  final _log = LogService();
 
   ModelsRepository(this._apiClient);
 
   Future<List<AiModel>> getAvailableModels() async {
     try {
+      _log.info('获取可用模型列表');
       final modelIds = await _apiClient.getAvailableModels();
+      _log.info('获取到 ${modelIds.length} 个模型');
       return modelIds.map((id) => _createModelFromId(id)).toList();
     } catch (e) {
+      _log.error('获取模型列表失败', e);
       return _getDefaultModels();
     }
   }

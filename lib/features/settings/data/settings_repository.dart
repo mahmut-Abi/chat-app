@@ -2,10 +2,12 @@ import '../domain/api_config.dart';
 import '../../../core/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
+import '../../../core/services/log_service.dart';
 
 class SettingsRepository {
   final StorageService _storage;
   final _uuid = const Uuid();
+  final _log = LogService();
 
   SettingsRepository(this._storage);
 
@@ -45,6 +47,7 @@ class SettingsRepository {
       presencePenalty: presencePenalty ?? 0.0,
     );
 
+    _log.info('创建 API 配置: name=$name, provider=$provider');
     await _storage.saveApiConfig(config.id, config.toJson());
     return config;
   }
@@ -71,6 +74,7 @@ class SettingsRepository {
 
   Future<void> setActiveApiConfig(String id) async {
     final configs = await getAllApiConfigs();
+    _log.info('设置活动 API 配置: id=$id');
 
     for (final config in configs) {
       final updated = config.copyWith(isActive: config.id == id);
@@ -79,6 +83,7 @@ class SettingsRepository {
   }
 
   Future<void> deleteApiConfig(String id) async {
+    _log.info('删除 API 配置: id=$id');
     await _storage.deleteApiConfig(id);
   }
 
@@ -111,6 +116,7 @@ class SettingsRepository {
 
   // App Settings
   Future<void> saveSettings(AppSettings settings) async {
+    _log.info('保存应用设置: themeMode=${settings.themeMode}');
     if (kDebugMode) {
       print('saveSettings: ${settings.toJson()}');
     }

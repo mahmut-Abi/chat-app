@@ -22,10 +22,11 @@ void main() {
       expect(routePaths, contains('/token-usage'));
       expect(routePaths, contains('/agent'));
       expect(routePaths, contains('/prompts'));
+      expect(routePaths, contains('/logs'));
     });
 
-    test('应该有 8 个路由', () {
-      expect(router.configuration.routes.length, 8);
+    test('应该有 9 个路由', () {
+      expect(router.configuration.routes.length, 9);
     });
 
     test('聊天路由应该支持参数', () {
