@@ -566,3 +566,57 @@ Docker 优化
 - ✅ 更新配置后立即生效
 - ✅ 无需重启应用
 - ✅ 所有 46 个测试通过
+
+### 新功能开发 (2024-10-15 - 第九轮)
+
+✅ **完整的日志系统**
+
+**功能特性**:
+1. 日志服务 (LogService)
+   - 支持 4 种日志级别: Debug, Info, Warning, Error
+   - 自动持久化到本地存储
+   - 最多保存 1000 条日志
+   - 支持日志搜索、过滤和导出
+
+2. 日志查看界面 (LogsScreen)
+   - 支持按级别过滤 (Debug/Info/Warning/Error)
+   - 支持关键词搜索
+   - 实时统计各级别日志数量
+   - 支持单条日志复制和全部导出
+   - 支持清空日志功能
+   - 展开查看详细信息 (堆栈跟踪、额外信息)
+
+3. UI 集成
+   - 在 sidebar_footer 中添加“日志”入口
+   - 调整 Grid 布局为 4 列 (7 个功能入口)
+   - 添加路由 /logs
+
+**日志集成点**:
+- ChatRepository
+  - 发送消息 (info)
+  - 收到响应 (info)
+  - 错误处理 (error)
+- McpRepository
+  - 创建配置 (info)
+  - 删除配置 (info)
+  - 连接服务器 (info)
+  - 连接成功/失败 (info/warning)
+  - 断开连接 (info)
+- AgentRepository
+  - 创建 Agent (info)
+  - 删除 Agent (info)
+  - 创建工具 (info)
+  - 删除工具 (info)
+  - 执行工具 (debug)
+
+**技术实现**:
+- 使用 logger 包进行控制台输出
+- 自定义 LogEntry 模型存储日志
+- 使用 StorageService 持久化日志
+- 单例模式确保全局唯一实例
+
+**用户体验**:
+- ✅ 可以实时查看程序运行日志
+- ✅ 方便排查问题
+- ✅ 支持复制和分享日志
+- ✅ 可以清空旧日志
