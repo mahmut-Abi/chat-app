@@ -2,8 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// 分享工具类
+///
+/// 提供分享文本和文件的便捷方法。
 class ShareUtils {
-  /// 分享文本 (使用 Share.share 方法)
+  /// 分享文本
+  ///
+  /// 使用系统分享功能分享文本内容。
+  ///
+  /// [text] 要分享的文本内容
   static Future<void> shareText(String text) async {
     try {
       await SharePlus.instance.share(ShareParams(text: text));

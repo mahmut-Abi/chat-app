@@ -5,9 +5,17 @@ import '../../features/chat/domain/message.dart';
 import '../../features/chat/domain/conversation.dart';
 import 'package:intl/intl.dart';
 
-// PDF 导出工具类
+/// PDF 导出工具类
+///
+/// 提供将对话导出为 PDF 文件的功能。
+/// 支持单个对话和批量对话导出。
 class PdfExport {
-  // 导出单个对话为 PDF
+  /// 导出单个对话为 PDF
+  ///
+  /// 生成包含对话标题、元数据和所有消息的 PDF 文档。
+  ///
+  /// [conversation] 要导出的对话
+  /// 返回一个 Future，完成时会调用系统分享/打印对话框
   static Future<void> exportConversationToPdf(Conversation conversation) async {
     final pdf = pw.Document();
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -148,7 +156,12 @@ class PdfExport {
     );
   }
 
-  // 导出多个对话为单个 PDF
+  /// 导出多个对话为单个 PDF
+  ///
+  /// 生成包含封面页和所有对话的 PDF 文档。
+  ///
+  /// [conversations] 要导出的对话列表
+  /// 返回一个 Future，完成时会调用系统分享/打印对话框
   static Future<void> exportConversationsToPdf(
     List<Conversation> conversations,
   ) async {
