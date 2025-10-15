@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../domain/conversation.dart';
 import 'conversation_tags_dialog.dart';
-import '../../../../shared/widgets/glass_container.dart';
+import 'sidebar_header.dart';
+import 'sidebar_filter_bar.dart';
+import 'sidebar_footer.dart';
 
-// 增强版侧边栏组件
 class EnhancedSidebar extends StatefulWidget {
   final List<Conversation> conversations;
   final List<ConversationGroup> groups;
@@ -73,153 +73,51 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
       ),
       child: Column(
         children: [
-          _buildHeader(),
-          _buildFilterBar(),
+          SidebarHeader(
+            onCreateConversation: widget.onCreateConversation,
+            onManageGroups: widget.onManageGroups,
+            onSearch: widget.onSearch,
+          ),
+          SidebarFilterBar(
+            groups: widget.groups,
+            allTags: _allTags,
+            selectedGroupId: _selectedGroupId,
+            selectedTag: _selectedTag,
+            onGroupSelected: (groupId) {
+              setState(() => _selectedGroupId = groupId);
+            },
+            onTagSelected: (tag) {
+              setState(() => _selectedTag = tag);
+            },
+          ),
           Expanded(
             child: _filteredConversations.isEmpty
                 ? _buildEmptyState()
                 : _buildConversationList(),
           ),
-          _buildFooter(),
+          const SidebarFooter(),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 12),
+  Widget _buildEmptyState() {
+    return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Text(
-                'Chat App',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              if (widget.onSearch != null)
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  tooltip: '搜索对话',
-                  onPressed: widget.onSearch,
-                ),
-              IconButton(
-                icon: const Icon(Icons.folder_outlined),
-                tooltip: '管理分组',
-                onPressed: widget.onManageGroups,
-              ),
-            ],
+          Icon(
+            Icons.chat_bubble_outline,
+            size: 64,
+            color: Theme.of(context).colorScheme.outline,
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: widget.onCreateConversation,
-              icon: const Icon(Icons.add),
-              label: const Text('新建对话'),
+          const SizedBox(height: 16),
+          Text(
+            '暂无对话',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 分组筛选
-          if (widget.groups.isNotEmpty) ...[
-            Row(
-              children: [
-                const Icon(Icons.folder, size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: DropdownButton<String?>(
-                    isExpanded: true,
-                    value: _selectedGroupId,
-                    hint: const Text('所有分组'),
-                    items: [
-                      const DropdownMenuItem(value: null, child: Text('所有分组')),
-                      ...widget.groups.map((group) {
-                        return DropdownMenuItem(
-                          value: group.id,
-                          child: Row(
-                            children: [
-                              if (group.color != null)
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  margin: const EdgeInsets.only(right: 8),
-                                  decoration: BoxDecoration(
-                                    color: Color(
-                                      int.parse(
-                                        '0xFF${group.color!.substring(1)}',
-                                      ),
-                                    ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              Text(group.name),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGroupId = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-          // 标签筛选
-          if (_allTags.isNotEmpty) ...[
-            Row(
-              children: [
-                const Icon(Icons.label, size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: [
-                      if (_selectedTag != null)
-                        FilterChip(
-                          label: Text(_selectedTag!),
-                          selected: true,
-                          onSelected: (_) {
-                            setState(() {
-                              _selectedTag = null;
-                            });
-                          },
-                        ),
-                      if (_selectedTag == null)
-                        ..._allTags.take(3).map((tag) {
-                          return ActionChip(
-                            label: Text(tag),
-                            onPressed: () {
-                              setState(() {
-                                _selectedTag = tag;
-                              });
-                            },
-                          );
-                        }),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );
@@ -234,195 +132,73 @@ class _EnhancedSidebarState extends State<EnhancedSidebar> {
 
         return ListTile(
           selected: isSelected,
-          leading: const Icon(Icons.chat_bubble_outline),
+          leading: Icon(
+            Icons.chat_bubble_outline,
+            color: isSelected ? Theme.of(context).colorScheme.primary : null,
+          ),
           title: Text(
             conversation.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: conversation.tags.isNotEmpty
-              ? Wrap(
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatDate(conversation.createdAt),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (conversation.tags.isNotEmpty)
+                Wrap(
                   spacing: 4,
                   children: conversation.tags.take(2).map((tag) {
                     return Chip(
                       label: Text(tag, style: const TextStyle(fontSize: 10)),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
                     );
                   }).toList(),
-                )
-              : Text(
-                  _formatDate(conversation.updatedAt),
-                  style: Theme.of(context).textTheme.bodySmall,
                 ),
+            ],
+          ),
+          onTap: () => widget.onConversationSelected(conversation),
           trailing: PopupMenuButton(
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'rename',
-                child: Row(
-                  children: [Icon(Icons.edit), SizedBox(width: 8), Text('重命名')],
+              PopupMenuItem(
+                child: ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: const Text('重命名'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onRenameConversation(conversation);
+                  },
                 ),
               ),
-              const PopupMenuItem(
-                value: 'tags',
-                child: Row(
-                  children: [
-                    Icon(Icons.label),
-                    SizedBox(width: 8),
-                    Text('管理标签'),
-                  ],
+              PopupMenuItem(
+                child: ListTile(
+                  leading: const Icon(Icons.local_offer),
+                  title: const Text('管理标签'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showTagsDialog(conversation);
+                  },
                 ),
               ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('删除', style: TextStyle(color: Colors.red)),
-                  ],
+              PopupMenuItem(
+                child: ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('删除', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onDeleteConversation(conversation.id);
+                  },
                 ),
               ),
             ],
-            onSelected: (value) {
-              switch (value) {
-                case 'rename':
-                  widget.onRenameConversation(conversation);
-                  break;
-                case 'tags':
-                  _showTagsDialog(conversation);
-                  break;
-                case 'delete':
-                  widget.onDeleteConversation(conversation.id);
-                  break;
-              }
-            },
           ),
-          onTap: () => widget.onConversationSelected(conversation),
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 64,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
-          Text('暂无对话', style: Theme.of(context).textTheme.bodyLarge),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 功能分组
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Text(
-                  '功能',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // 功能网格
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              childAspectRatio: 1.2,
-              children: [
-                _buildFeatureCard(
-                  icon: Icons.memory,
-                  label: '模型',
-                  onTap: () => context.push('/models'),
-                ),
-                _buildFeatureCard(
-                  icon: Icons.lightbulb,
-                  label: '提示词',
-                  onTap: () => context.push('/prompts'),
-                ),
-                _buildFeatureCard(
-                  icon: Icons.smart_toy,
-                  label: '智能体',
-                  onTap: () => context.push('/agent'),
-                ),
-                _buildFeatureCard(
-                  icon: Icons.extension,
-                  label: 'MCP',
-                  onTap: () => context.push('/mcp'),
-                ),
-                _buildFeatureCard(
-                  icon: Icons.access_time,
-                  label: 'Token',
-                  onTap: () => context.push('/token-usage'),
-                ),
-                _buildFeatureCard(
-                  icon: Icons.settings,
-                  label: '设置',
-                  onTap: () => context.push('/settings'),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureCard({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GlassContainer(
-      blur: 10.0,
-      opacity: 0.1,
-      borderRadius: BorderRadius.circular(8),
-      enableShadow: false,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 11),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
