@@ -467,3 +467,74 @@ Docker 优化
 - build_runner: 2.7.1 (稳定版本)
 - retrofit_generator: 10.0.0 (稳定版本)
 - mockito: 5.5.0 (稳定版本)
+
+### 本次优化完成项 (2024-10-15 - 第八轮)
+
+1. ✅ Message 模型扩展
+   - 添加 model 字段 - 记录消息使用的模型
+   - 添加 promptTokens 字段 - 分离 prompt token 数量
+   - 添加 completionTokens 字段 - 分离 completion token 数量
+2. ✅ Token Usage Screen 优化
+   - 使用消息中的实际模型名称
+   - 支持 promptTokens 和 completionTokens 分离显示
+   - 移除 TODO 注释，实现实际功能
+3. ✅ 响应式工具增强
+   - 添加 5 个断点常量 (600, 1024, 1440, 1920)
+   - 新增 ScreenType 枚举 (5 个类型)
+   - 新增 4 个工具方法
+   - 添加完整的 dartdoc 注释
+4. ✅ DevOps 改进
+   - 添加 pre-push.sh hook - 自动运行测试
+   - 更新 setup-hooks.sh - 支持安装 pre-push hook
+5. ✅ 所有测试通过 (46个)
+6. ✅ Flutter analyze 无警告
+
+### 八轮优化总结
+
+**架构优化**：
+- 拆分大文件数：5 个
+  - enhanced_sidebar.dart: 455行 → 241行 (-47%)
+  - api_config_screen.dart: 508行 → 301行 (-41%)
+  - settings_screen.dart: 616行 → 120行 (-80%)
+  - agent_screen.dart: 372行 → 28行 (-92%)
+  - 总计减少 1302行主文件代码
+- 提取组件/Mixin：15 个
+  - 12 个 Widget 组件
+  - 3 个 Mixin 类
+
+**测试覆盖**：
+- 单元测试：40 个
+- Widget 测试：6 个
+- 总测试数：**46 个**
+- 测试覆盖率：**~60%**
+
+**功能增强**：
+- ✅ Message 模型扩展 (model, promptTokens, completionTokens)
+- ✅ Token Usage 优化 (实际模型名称、token 分离)
+- ✅ 响应式工具增强 (5 个断点、ScreenType 枚举)
+
+**文档改进**：
+- ✅ 添加核心工具类 dartdoc 注释
+- ✅ 创建 MCP 使用示例文档
+- ✅ 文档总数：4 个主要文档文件
+
+**性能优化**：
+- ✅ 消息分页加载
+- ✅ RepaintBoundary
+- ✅ ListView.builder
+
+**代码质量**：
+- Warning: **0** 个
+- Error: **0** 个
+- Info: **0** 个
+
+**DevOps 改进**：
+- ✅ Git pre-commit hook (代码格式化 + analyze)
+- ✅ Git pre-push hook (运行测试)
+- ✅ setup-hooks.sh 脚本
+
+**依赖管理**：
+- ✅ 解决依赖冲突问题
+- build_runner: 2.7.1 (稳定版本)
+- retrofit_generator: 10.0.0 (稳定版本)
+- mockito: 5.5.0 (稳定版本)
