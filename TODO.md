@@ -538,3 +538,31 @@ Docker 优化
 - build_runner: 2.7.1 (稳定版本)
 - retrofit_generator: 10.0.0 (稳定版本)
 - mockito: 5.5.0 (稳定版本)
+
+### Bug 修复 (2024-10-15)
+
+✅ **修复 MCP/Agent/Prompts 删除后不立即刷新的问题**
+
+**问题描述**:
+- 删除 MCP server/Agent/Prompts 后，需要重新打开应用才会生效
+- 配置列表不会立即更新
+- 用户体验不佳
+
+**根本原因**:
+- FutureProvider 缓存了数据，invalidate 后不会自动重新加载
+- Provider 使用 ref.read 而不是 ref.watch
+
+**修复方案**:
+- 使用 FutureProvider.autoDispose 替代 FutureProvider
+- 使用 ref.watch 替代 ref.read 以响应依赖变化
+- 修复以下 Providers:
+  - mcpConfigsProvider
+  - agentConfigsProvider
+  - agentToolsProvider
+  - promptTemplatesProvider
+
+**效果**:
+- ✅ 删除配置后立即刷新列表
+- ✅ 更新配置后立即生效
+- ✅ 无需重启应用
+- ✅ 所有 46 个测试通过
