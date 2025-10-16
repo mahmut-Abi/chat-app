@@ -465,7 +465,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: '模型',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/models');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/models'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -475,7 +478,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: '提示词',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/prompts');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/prompts'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -485,7 +491,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: '智能体',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/agent');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/agent'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -495,7 +504,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: 'MCP',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/mcp');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/mcp'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -505,7 +517,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: 'Token',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/token-usage');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/token-usage'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -515,7 +530,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: '日志',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/logs');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/logs'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -525,7 +543,10 @@ class _ModernSidebarState extends State<ModernSidebar>
                     label: '设置',
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.push('/settings');
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                        () => context.push('/settings'),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
