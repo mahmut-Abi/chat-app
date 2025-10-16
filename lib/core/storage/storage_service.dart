@@ -153,14 +153,30 @@ class StorageService {
   }
 
   Future<List<Map<String, dynamic>>> getAllApiConfigs() async {
+    if (kDebugMode) {
+      print('StorageService.getAllApiConfigs: 检查所有 keys...');
+      print('  总 key 数: ${_settingsBoxInstance.keys.length}');
+    }
     final configs = <Map<String, dynamic>>[];
     for (final key in _settingsBoxInstance.keys) {
+      if (kDebugMode) {
+        print('  key: $key');
+      }
       if (key.toString().startsWith('api_config_')) {
+        if (kDebugMode) {
+          print('    -> 找到 API 配置 key');
+        }
         final data = _settingsBoxInstance.get(key);
         if (data != null) {
+          if (kDebugMode) {
+            print('    -> data: $data');
+          }
           configs.add(jsonDecode(data as String) as Map<String, dynamic>);
         }
       }
+    }
+    if (kDebugMode) {
+      print('StorageService.getAllApiConfigs: 找到 ${configs.length} 个配置');
     }
     return configs;
   }

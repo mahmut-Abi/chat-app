@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/platform_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
@@ -91,7 +92,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
 
     // 检查是否配置了 API
+    if (kDebugMode) {
+      print('ChatScreen: 检查 API 配置...');
+    }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
+    if (kDebugMode) {
+      print('ChatScreen: activeApiConfig = $activeApiConfig');
+      print(
+        'ChatScreen: activeApiConfig.isActive = ${activeApiConfig?.isActive}',
+      );
+    }
     if (activeApiConfig == null) {
       if (mounted) {
         final result = await showDialog<bool>(

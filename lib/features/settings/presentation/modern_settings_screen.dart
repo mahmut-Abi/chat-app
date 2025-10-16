@@ -63,12 +63,16 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    // 立即更新索引，支持滑动切换
-    final newIndex = _tabController.index.round();
-    if (_selectedIndex != newIndex) {
-      setState(() {
+    if (mounted) {
+      final newIndex = _tabController.index.round();
+      if (_selectedIndex != newIndex) {
+        // 先同步更新状态变量
         _selectedIndex = newIndex;
-      });
+        // 再触发 rebuild
+        setState(() {
+          // 状态已更新，只需触发 rebuild
+        });
+      }
     }
   }
 
@@ -189,7 +193,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               child: InkWell(
                 onTap: () {
                   if (_selectedIndex != index) {
-                    // 使用 animateTo 并设置 duration 为 0
+                    // 直接设置 TabController，由监听器触发 UI 更新
                     _tabController.animateTo(index, duration: Duration.zero);
                   }
                 },
@@ -319,7 +323,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         ),
         onTap: () {
           if (_selectedIndex != index) {
-            // 使用 animateTo 并设置 duration 为 0
+            // 直接设置 TabController，由监听器触发 UI 更新
             _tabController.animateTo(index, duration: Duration.zero);
           }
         },

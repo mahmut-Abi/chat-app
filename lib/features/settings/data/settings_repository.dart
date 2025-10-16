@@ -109,7 +109,18 @@ class SettingsRepository {
 
   Future<ApiConfig?> getActiveApiConfig() async {
     _log.debug('获取活动 API 配置');
+    if (kDebugMode) {
+      print('SettingsRepository.getActiveApiConfig: 开始检查...');
+    }
     final configs = await getAllApiConfigs();
+    if (kDebugMode) {
+      print('SettingsRepository.getActiveApiConfig: 找到 ${configs.length} 个配置');
+      for (final config in configs) {
+        print(
+          '  - ${config.name} (id: ${config.id}, isActive: ${config.isActive})',
+        );
+      }
+    }
     final activeConfig = configs.where((c) => c.isActive).firstOrNull;
     if (activeConfig != null) {
       _log.info('找到活动 API 配置', {
