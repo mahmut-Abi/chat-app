@@ -188,10 +188,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: () {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                  _tabController.animateTo(index);
+                  if (_selectedIndex != index) {
+                    // 直接跳转，不使用动画，确保标题与内容完全同步
+                    _tabController.index = index;
+                  }
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
@@ -318,10 +318,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
           ),
         ),
         onTap: () {
-          setState(() {
-            _selectedIndex = index;
-          });
-          _tabController.animateTo(index);
+          if (_selectedIndex != index) {
+            // 直接跳转，不使用动画，确保标题与内容完全同步
+            _tabController.index = index;
+          }
         },
       ),
     );

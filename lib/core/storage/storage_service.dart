@@ -231,87 +231,46 @@ class StorageService {
   // API Configs (Secure)
   Future<void> saveApiConfig(String id, Map<String, dynamic> config) async {
     final key = 'api_config_\$id';
-
-    // 重试机制：最多尝试 3 次
-    for (int attempt = 0; attempt < 3; attempt++) {
-      try {
-        // 先尝试直接写入，如果失败再删除
-        try {
-          await _secureStorage.write(
-            key: key,
-            value: jsonEncode(config),
-            iOptions: const IOSOptions(
-              accessibility: KeychainAccessibility.first_unlock,
-              synchronizable: false,
-            ),
-          );
-          _log.debug('API 配置保存成功', {'id': id, 'attempt': attempt});
-          return; // 成功后退出
-        } catch (writeError) {
-          // 如果是 -25299 错误，尝试删除后重试
-          if (writeError.toString().contains('-25299') ||
-              writeError.toString().contains('already exists')) {
-            _log.warning('API 配置已存在，尝试删除 (attempt $attempt)', {'id': id});
-
-            try {
-              await _secureStorage.delete(key: key);
-              // 等待更长时间确保删除完成
-              await Future.delayed(const Duration(milliseconds: 300));
-
-              // 再次尝试写入
-              await _secureStorage.write(
-                key: key,
-                value: jsonEncode(config),
-                iOptions: const IOSOptions(
-                  accessibility: KeychainAccessibility.first_unlock,
-                  synchronizable: false,
-                ),
-              );
-              _log.debug('API 配置删除后保存成功', {'id': id, 'attempt': attempt});
-              return; // 成功后退出
-            } catch (deleteWriteError) {
-              _log.warning('API 配置删除后写入失败', {
-                'id': id,
-                'attempt': attempt,
-                'error': deleteWriteError.toString(),
-              });
-              if (attempt == 2) {
-                rethrow;
-              }
-            }
-          } else {
-            // 其他错误，直接抛出
-            rethrow;
-          }
-        }
-      } catch (e) {
-        if (attempt == 2) {
-          // 最后一次尝试失败，抛出异常
-          _log.error('API 配置保存失败', {'id': id, 'error': e.toString()});
-          rethrow;
-        }
-        // 等待后重试
-        await Future.delayed(Duration(milliseconds: 100 * (attempt + 1)));
-      }
+    try {
+      // 改用 Hive 存储，避免 Keychain 问题
+      await _settingsBoxInstance.put(key, jsonEncode(config));
+      _log.debug('API 配置保存成功', {'id': id});
+    } catch (e) {
+      _log.error('API 配置保存失败', {'id': id, 'error': e.toString()});
+      rethrow;
     }
   }
 
   Future<Map<String, dynamic>?> getApiConfig(String id) async {
-    final data = await _secureStorage.read(key: 'api_config_\$id');
-    if (data == null) return null;
-    return jsonDecode(data) as Map<String, dynamic>;
+    try {
+      final data = _settingsBoxInstance.get('api_config_\$id');
+      if (data == null) return null;
+      return jsonDecode(data as String) as Map<String, dynamic>;
+    } catch (e) {
+      _log.warning('API 配置读取失败', {'id': id, 'error': e});
+      return null;
+    }
   }
 
   Future<List<Map<String, dynamic>>> getAllApiConfigs() async {
-    final allData = await _secureStorage.readAll();
-    return allData.entries
-        .where((e) => e.key.startsWith('api_config_'))
-        .map((e) => jsonDecode(e.value) as Map<String, dynamic>)
-        .toList();
+    try {
+      final allKeys = _settingsBoxInstance.keys
+          .where((key) => key.toString().startsWith('api_config_'))
+          .toList();
+
+      return allKeys
+          .map((key) => _settingsBoxInstance.get(key) as String?)
+          .where((data) => data != null)
+          .map((data) => jsonDecode(data!) as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      _log.warning('API 配置列表读取失败', {'error': e});
+      return [];
+    }
   }
 
   Future<void> deleteApiConfig(String id) async {
-    await _secureStorage.delete(key: 'api_config_\$id');
+    await _settingsBoxInstance.delete('api_config_\$id');
   }
 
   // App Settings (Secure - 持久化到 Keychain)
