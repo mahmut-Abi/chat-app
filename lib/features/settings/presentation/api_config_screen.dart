@@ -219,6 +219,26 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       final apiClient = OpenAIApiClient(dioClient);
       final result = await apiClient.testConnection();
 
+      // 测试成功后自动获取模型列表
+      if (result.success && mounted) {
+        try {
+          final models = await apiClient.getAvailableModels();
+          if (mounted) {
+            setState(() {
+              _availableModels = models;
+              // 如果没有选中模型或不在列表中，选择第一个
+              if (models.isNotEmpty &&
+                  (_selectedModel == null ||
+                      !models.contains(_selectedModel))) {
+                _selectedModel = models.first;
+              }
+            });
+          }
+        } catch (_) {
+          // 获取模型失败不影响测试连接结果
+        }
+      }
+
       if (mounted) {
         showDialog(
           context: context,
