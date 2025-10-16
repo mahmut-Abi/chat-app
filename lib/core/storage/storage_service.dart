@@ -2,8 +2,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import '../services/log_service.dart';
 
 class StorageService {
+  final LogService _log = LogService();
+
   static const String _conversationsBox = 'conversations';
   static const String _settingsBox = 'settings';
   static const String _groupsBox = 'conversation_groups';
@@ -19,12 +22,21 @@ class StorageService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> init() async {
+    _log.info('开始初始化存储服务');
     try {
       await Hive.initFlutter();
       _conversationsBoxInstance = await Hive.openBox(_conversationsBox);
       _settingsBoxInstance = await Hive.openBox(_settingsBox);
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
       _promptsBoxInstance = await Hive.openBox(_promptsBox);
+
+      _log.info('存储初始化成功', {
+        'conversationsCount': _conversationsBoxInstance.length,
+        'settingsCount': _settingsBoxInstance.length,
+        'groupsCount': _groupsBoxInstance.length,
+        'promptsCount': _promptsBoxInstance.length,
+      });
+
       if (kDebugMode) {
         print('存储初始化成功');
         print('  对话数: ${_conversationsBoxInstance.length}');
@@ -33,6 +45,7 @@ class StorageService {
         print('  提示词模板数: ${_promptsBoxInstance.length}');
       }
     } catch (e, stack) {
+      _log.error('存储初始化失败: ${e.toString()}', e, stack);
       if (kDebugMode) {
         print('存储初始化失败: $e');
         print('堆栈: $stack');
@@ -43,6 +56,7 @@ class StorageService {
 
   // Conversations
   Future<void> saveConversation(String id, Map<String, dynamic> data) async {
+    _log.debug('保存对话', {'id': id, 'title': data['title']});
     if (kDebugMode) {
       print('saveConversation: id=$id');
     }
@@ -50,23 +64,28 @@ class StorageService {
   }
 
   Map<String, dynamic>? getConversation(String id) {
+    _log.debug('读取对话', {'id': id});
     final data = _conversationsBoxInstance.get(id);
     if (data == null) return null;
     return jsonDecode(data as String) as Map<String, dynamic>;
   }
 
   List<Map<String, dynamic>> getAllConversations() {
+    final count = _conversationsBoxInstance.length;
+    _log.debug('读取所有对话', {'count': count});
     return _conversationsBoxInstance.values
         .map((e) => jsonDecode(e as String) as Map<String, dynamic>)
         .toList();
   }
 
   Future<void> deleteConversation(String id) async {
+    _log.info('删除对话', {'id': id});
     await _conversationsBoxInstance.delete(id);
   }
 
   // Conversation Groups
   Future<void> saveGroup(String id, Map<String, dynamic> data) async {
+    _log.debug('保存分组', {'id': id, 'name': data['name']});
     await _groupsBoxInstance.put(id, jsonEncode(data));
   }
 

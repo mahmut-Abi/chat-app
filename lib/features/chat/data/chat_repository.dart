@@ -25,7 +25,14 @@ class ChatRepository {
     List<Message>? conversationHistory,
   }) async {
     try {
-      _log.info('发送消息: conversationId=$conversationId, model=${config.model}');
+      _log.info('发送消息', {
+        'conversationId': conversationId,
+        'model': config.model,
+        'contentLength': content.length,
+        'historyCount': conversationHistory?.length ?? 0,
+        'temperature': config.temperature,
+        'maxTokens': config.maxTokens,
+      });
       final messages = _buildMessageList(conversationHistory, content);
 
       final request = ChatCompletionRequest(
@@ -42,6 +49,12 @@ class ChatRepository {
       final response = await _apiClient.createChatCompletion(request);
       final tokenCount = response.usage?.completionTokens;
 
+      _log.info('收到响应', {
+        'conversationId': conversationId,
+        'tokenCount': tokenCount,
+        'responseLength': response.choices.first.message.content.length,
+      });
+
       return Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,
@@ -50,7 +63,10 @@ class ChatRepository {
         tokenCount: tokenCount,
       );
     } catch (e) {
-      _log.error('发送消息失败', e);
+      _log.error('发送消息失败', {
+        'conversationId': conversationId,
+        'error': e.toString(),
+      });
       return Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,
@@ -69,6 +85,13 @@ class ChatRepository {
     required ModelConfig config,
     List<Message>? conversationHistory,
   }) async* {
+    _log.info('发送流式消息', {
+      'conversationId': conversationId,
+      'model': config.model,
+      'contentLength': content.length,
+      'historyCount': conversationHistory?.length ?? 0,
+    });
+
     try {
       final messages = _buildMessageList(conversationHistory, content);
 
@@ -86,9 +109,16 @@ class ChatRepository {
       await for (final chunk in _apiClient.createChatCompletionStream(
         request,
       )) {
+        _log.debug('收到流式响应块', {'chunkLength': chunk.length});
         yield chunk;
       }
+
+      _log.info('流式消息完成', {'conversationId': conversationId});
     } catch (e) {
+      _log.error('流式消息失败', {
+        'conversationId': conversationId,
+        'error': e.toString(),
+      });
       yield '[Error: ${e.toString()}]';
     }
   }
@@ -117,6 +147,13 @@ class ChatRepository {
     List<String>? tags,
     String? groupId,
   }) async {
+    _log.info('创建新对话', {
+      'title': title,
+      'hasSystemPrompt': systemPrompt != null,
+      'tagsCount': tags?.length ?? 0,
+      'groupId': groupId,
+    });
+
     final conversation = Conversation(
       id: _uuid.v4(),
       title: title ?? 'New Conversation',

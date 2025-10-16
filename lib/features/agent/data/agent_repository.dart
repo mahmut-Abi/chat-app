@@ -19,6 +19,12 @@ class AgentRepository {
     required List<String> toolIds,
     String? systemPrompt,
   }) async {
+    _log.info('创建 Agent 配置', {
+      'name': name,
+      'toolsCount': toolIds.length,
+      'hasSystemPrompt': systemPrompt != null,
+    });
+
     final agent = AgentConfig(
       id: const Uuid().v4(),
       name: name,
@@ -29,8 +35,8 @@ class AgentRepository {
       updatedAt: DateTime.now(),
     );
 
-    _log.info('创建 Agent: name=$name, tools=${toolIds.length}');
     await _storage.saveSetting('agent_${agent.id}', agent.toJson());
+    _log.debug('Agent 配置已保存', {'agentId': agent.id});
     return agent;
   }
 
@@ -41,6 +47,12 @@ class AgentRepository {
     required AgentToolType type,
     Map<String, dynamic>? parameters,
   }) async {
+    _log.info('创建 Agent 工具', {
+      'name': name,
+      'type': type.toString(),
+      'hasParameters': parameters?.isNotEmpty ?? false,
+    });
+
     final tool = AgentTool(
       id: const Uuid().v4(),
       name: name,
@@ -49,8 +61,8 @@ class AgentRepository {
       parameters: parameters ?? {},
     );
 
-    _log.info('创建工具: name=$name, type=$type');
     await _storage.saveSetting('agent_tool_${tool.id}', tool.toJson());
+    _log.debug('工具已保存', {'toolId': tool.id});
     return tool;
   }
 
@@ -59,12 +71,26 @@ class AgentRepository {
     AgentTool tool,
     Map<String, dynamic> input,
   ) async {
-    _log.debug('执行工具: ${tool.name}');
-    return _executorManager.execute(tool, input);
+    _log.info('开始执行工具', {
+      'toolName': tool.name,
+      'toolType': tool.type.toString(),
+      'inputKeys': input.keys.toList(),
+    });
+
+    final result = await _executorManager.execute(tool, input);
+
+    _log.info('工具执行完成', {
+      'toolName': tool.name,
+      'success': result.success,
+      'hasResult': result.result != null,
+    });
+
+    return result;
   }
 
   /// 获取所有 Agent
   Future<List<AgentConfig>> getAllAgents() async {
+    _log.debug('获取所有 Agent 配置');
     try {
       final keys = await _storage.getAllKeys();
       final agentKeys = keys

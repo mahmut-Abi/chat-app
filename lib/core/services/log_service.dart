@@ -66,6 +66,12 @@ class LogService {
   static final LogService _instance = LogService._internal();
   factory LogService() => _instance;
 
+  // 日志上下文堆栈，用于追踪操作层次
+  final List<String> _contextStack = [];
+
+  // 性能监控：开始时间戳
+  final Map<String, DateTime> _performanceTimers = {};
+
   final Logger _logger = Logger(
     printer: PrettyPrinter(
       methodCount: 0,
@@ -83,6 +89,50 @@ class LogService {
   bool _isInitialized = false;
 
   LogService._internal();
+
+  /// 进入日志上下文
+  void enterContext(String context) {
+    _contextStack.add(context);
+    debug('进入上下文: $context');
+  }
+
+  /// 退出日志上下文
+  void exitContext() {
+    if (_contextStack.isNotEmpty) {
+      final context = _contextStack.removeLast();
+      debug('退出上下文: $context');
+    }
+  }
+
+  /// 获取当前上下文路径
+  String get currentContext {
+    return _contextStack.isEmpty ? '' : _contextStack.join(' > ');
+  }
+
+  /// 开始性能计时
+  void startPerformanceTimer(String label) {
+    _performanceTimers[label] = DateTime.now();
+    debug('开始计时: $label');
+  }
+
+  /// 结束性能计时并记录结果
+  void stopPerformanceTimer(String label) {
+    final startTime = _performanceTimers.remove(label);
+    if (startTime != null) {
+      final duration = DateTime.now().difference(startTime);
+      info('性能指标: $label', {
+        'duration_ms': duration.inMilliseconds,
+        'duration_readable': '${duration.inMilliseconds}ms',
+      });
+    } else {
+      warning('性能计时器不存在: $label');
+    }
+  }
+
+  /// 清理所有性能计时器
+  void clearPerformanceTimers() {
+    _performanceTimers.clear();
+  }
 
   /// 初始化日志服务
   Future<void> init(StorageService storage) async {
@@ -131,30 +181,42 @@ class LogService {
 
   /// 记录 Debug 日志
   void debug(String message, [Map<String, dynamic>? extra]) {
+    final contextMsg = currentContext.isEmpty
+        ? message
+        : '[$currentContext] $message';
     if (kDebugMode) {
-      _logger.d(message);
+      _logger.d(contextMsg);
     }
-    _addLog(LogLevel.debug, message, extra: extra);
+    _addLog(LogLevel.debug, contextMsg, extra: extra);
   }
 
   /// 记录 Info 日志
   void info(String message, [Map<String, dynamic>? extra]) {
-    _logger.i(message);
-    _addLog(LogLevel.info, message, extra: extra);
+    final contextMsg = currentContext.isEmpty
+        ? message
+        : '[$currentContext] $message';
+    _logger.i(contextMsg);
+    _addLog(LogLevel.info, contextMsg, extra: extra);
   }
 
   /// 记录 Warning 日志
   void warning(String message, [Map<String, dynamic>? extra]) {
-    _logger.w(message);
-    _addLog(LogLevel.warning, message, extra: extra);
+    final contextMsg = currentContext.isEmpty
+        ? message
+        : '[$currentContext] $message';
+    _logger.w(contextMsg);
+    _addLog(LogLevel.warning, contextMsg, extra: extra);
   }
 
   /// 记录 Error 日志
   void error(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.e(message, error: error, stackTrace: stackTrace);
+    final contextMsg = currentContext.isEmpty
+        ? message
+        : '[$currentContext] $message';
+    _logger.e(contextMsg, error: error, stackTrace: stackTrace);
     _addLog(
       LogLevel.error,
-      message,
+      contextMsg,
       stackTrace: stackTrace?.toString(),
       extra: error != null ? {'error': error.toString()} : null,
     );

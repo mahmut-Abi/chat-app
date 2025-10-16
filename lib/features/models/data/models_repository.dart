@@ -10,12 +10,12 @@ class ModelsRepository {
 
   Future<List<AiModel>> getAvailableModels() async {
     try {
-      _log.info('获取可用模型列表');
+      _log.info('开始获取可用模型列表');
       final modelIds = await _apiClient.getAvailableModels();
-      _log.info('获取到 ${modelIds.length} 个模型');
+      _log.info('成功获取模型列表', {'count': modelIds.length});
       return modelIds.map((id) => _createModelFromId(id)).toList();
     } catch (e) {
-      _log.error('获取模型列表失败', e);
+      _log.warning('获取模型列表失败，使用默认列表', {'error': e.toString()});
       return _getDefaultModels();
     }
   }

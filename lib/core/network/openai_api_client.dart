@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../features/chat/domain/message.dart';
 import 'dio_client.dart';
+import '../services/log_service.dart';
 
 class ApiTestResult {
   final bool success;
@@ -13,11 +14,13 @@ class ApiTestResult {
 
 class OpenAIApiClient {
   final DioClient _dioClient;
+  final LogService _log = LogService();
 
   OpenAIApiClient(this._dioClient);
 
   // 测试 API 连接
   Future<ApiTestResult> testConnection() async {
+    _log.info('开始测试 API 连接');
     try {
       final response = await _dioClient.dio.get(
         '/models',
@@ -29,16 +32,21 @@ class OpenAIApiClient {
 
       if (response.statusCode == 200) {
         final models = (response.data['data'] as List).length;
+        _log.info('API 连接测试成功', {'modelsCount': models});
+        _log.info('API 连接测试成功', {'modelsCount': models});
         return ApiTestResult(success: true, message: '连接成功!找到 $models 个可用模型');
       } else {
+        _log.warning('API 连接测试失败', {'statusCode': response.statusCode});
         return ApiTestResult(
           success: false,
           message: '连接失败:状态码 ${response.statusCode}',
         );
       }
     } on DioException catch (e) {
+      _log.error('API 连接测试异常', {'error': e.toString()});
       return ApiTestResult(success: false, message: _getDioErrorMessage(e));
     } catch (e) {
+      _log.error('API 连接测试未知错误', {'error': e.toString()});
       return ApiTestResult(success: false, message: '连接失败:${e.toString()}');
     }
   }
@@ -80,14 +88,25 @@ class OpenAIApiClient {
   Future<ChatCompletionResponse> createChatCompletion(
     ChatCompletionRequest request,
   ) async {
+    _log.debug('创建聊天完成请求', {
+      'model': request.model,
+      'messagesCount': request.messages.length,
+    });
+
     try {
       final response = await _dioClient.dio.post(
         '/chat/completions',
         data: request.toJson(),
       );
 
+      _log.debug('聊天完成响应成功', {
+        'statusCode': response.statusCode,
+        'hasChoices': response.data['choices'] != null,
+      });
+
       return ChatCompletionResponse.fromJson(response.data);
     } catch (e) {
+      _log.error('聊天完成请求失败', {'error': e.toString()});
       rethrow;
     }
   }
@@ -95,6 +114,11 @@ class OpenAIApiClient {
   Stream<String> createChatCompletionStream(
     ChatCompletionRequest request,
   ) async* {
+    _log.debug('创建流式聊天完成请求', {
+      'model': request.model,
+      'messagesCount': request.messages.length,
+    });
+
     try {
       final response = await _dioClient.dio.post(
         '/chat/completions',
@@ -123,6 +147,7 @@ class OpenAIApiClient {
               final content = json['choices']?[0]?['delta']?['content'];
 
               if (content != null && content.isNotEmpty) {
+                _log.debug('收到流式响应块', {'contentLength': content.length});
                 yield content as String;
               }
             } catch (e) {
@@ -138,6 +163,7 @@ class OpenAIApiClient {
   }
 
   Future<List<String>> getAvailableModels() async {
+    _log.debug('获取可用模型列表');
     try {
       final response = await _dioClient.dio.get('/models');
       final models = (response.data['data'] as List)
@@ -145,8 +171,11 @@ class OpenAIApiClient {
           .where((id) => id.contains('gpt'))
           .toList();
 
+      _log.info('成功获取模型列表', {'count': models.length});
+      _log.info('成功获取模型列表', {'count': models.length});
       return models;
     } catch (e) {
+      _log.warning('获取模型列表失败，使用默认列表', {'error': e.toString()});
       // Return default models if API call fails
       return [
         'gpt-4',

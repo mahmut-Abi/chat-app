@@ -23,6 +23,14 @@ class McpRepository {
     String? description,
     Map<String, dynamic>? headers,
   }) async {
+    _log.info('创建 MCP 配置', {
+      'name': name,
+      'connectionType': connectionType.toString(),
+      'endpoint': endpoint,
+      'hasArgs': args != null,
+      'hasEnv': env != null,
+    });
+
     final config = McpConfig(
       id: const Uuid().v4(),
       name: name,
@@ -37,7 +45,7 @@ class McpRepository {
     );
 
     await _storage.saveSetting('mcp_config_${config.id}', config.toJson());
-    _log.info('创建 MCP 配置: name=$name, type=$connectionType');
+    _log.debug('MCP 配置已保存', {'configId': config.id});
     return config;
   }
 
@@ -49,6 +57,7 @@ class McpRepository {
 
   /// 获取所有 MCP 配置
   Future<List<McpConfig>> getAllConfigs() async {
+    _log.debug('获取所有 MCP 配置');
     try {
       final keys = await _storage.getAllKeys();
       final mcpKeys = keys.where((k) => k.startsWith('mcp_config_')).toList();
@@ -73,6 +82,7 @@ class McpRepository {
 
   /// 更新 MCP 配置
   Future<void> updateConfig(McpConfig config) async {
+    _log.info('更新 MCP 配置', {'configId': config.id, 'name': config.name});
     final updated = config.copyWith(updatedAt: DateTime.now());
     await _storage.saveSetting('mcp_config_${config.id}', updated.toJson());
   }
