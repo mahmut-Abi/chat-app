@@ -215,6 +215,8 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
         baseUrl: _baseUrlController.text,
         apiKey: _apiKeyController.text,
         proxyUrl: _enableProxy ? _proxyUrlController.text : null,
+        proxyUsername: _enableProxy ? _proxyUsernameController.text : null,
+        proxyPassword: _enableProxy ? _proxyPasswordController.text : null,
       );
       final apiClient = OpenAIApiClient(dioClient);
       final result = await apiClient.testConnection();
