@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/log_service.dart';
 
 /// 性能优化工具类
 class PerformanceUtils {
+  static final LogService _log = LogService();
+
   static const int _defaultCacheSize = 100;
   static final Map<String, dynamic> _cache = {};
   static final List<String> _cacheKeys = [];
@@ -10,10 +13,15 @@ class PerformanceUtils {
   /// 缓存数据
   static void cache(String key, dynamic value) {
     if (_cache.containsKey(key)) {
+      _log.debug('缓存已存在，跳过', {'key': key});
       return;
     }
 
     if (_cache.length >= _defaultCacheSize) {
+      _log.debug('缓存已满，移除最旧条目', {
+        'cacheSize': _cache.length,
+        'maxSize': _defaultCacheSize,
+      });
       // 移除最旧的缓存
       final oldestKey = _cacheKeys.first;
       _cache.remove(oldestKey);
@@ -22,17 +30,22 @@ class PerformanceUtils {
 
     _cache[key] = value;
     _cacheKeys.add(key);
+    _log.debug('添加缓存', {'key': key, 'currentSize': _cache.length});
   }
 
   /// 获取缓存
   static T? getCache<T>(String key) {
-    return _cache[key] as T?;
+    final value = _cache[key] as T?;
+    _log.debug('获取缓存', {'key': key, 'found': value != null});
+    return value;
   }
 
   /// 清除缓存
   static void clearCache() {
+    final count = _cache.length;
     _cache.clear();
     _cacheKeys.clear();
+    _log.info('清除所有缓存', {'clearedCount': count});
   }
 
   /// 性能监控
@@ -40,14 +53,17 @@ class PerformanceUtils {
     required String label,
     required Future<T> Function() task,
   }) async {
+    _log.startPerformanceTimer(label);
     final stopwatch = Stopwatch()..start();
     try {
       final result = await task();
       stopwatch.stop();
+      _log.stopPerformanceTimer(label);
       debugPrint('$label 执行耗时: ${stopwatch.elapsedMilliseconds}ms');
       return result;
     } catch (e) {
       stopwatch.stop();
+      _log.error('性能监控任务执行失败', e);
       debugPrint('$label 执行失败: $e');
       rethrow;
     }

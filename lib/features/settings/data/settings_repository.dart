@@ -28,6 +28,15 @@ class SettingsRepository {
     double? frequencyPenalty,
     double? presencePenalty,
   }) async {
+    _log.debug('开始创建 API 配置', {
+      'name': name,
+      'provider': provider,
+      'baseUrl': baseUrl,
+      'hasOrganization': organization != null,
+      'hasProxy': proxyUrl != null,
+      'defaultModel': defaultModel,
+    });
+
     final config = ApiConfig(
       id: _uuid.v4(),
       name: name,
@@ -47,44 +56,66 @@ class SettingsRepository {
       presencePenalty: presencePenalty ?? 0.0,
     );
 
-    _log.info('创建 API 配置: name=$name, provider=$provider');
+    _log.info('API 配置创建成功', {'configId': config.id, 'name': name});
     await _storage.saveApiConfig(config.id, config.toJson());
+    _log.debug('API 配置已保存到存储', {'configId': config.id});
     return config;
   }
 
   Future<void> saveApiConfig(ApiConfig config) async {
+    _log.debug('保存 API 配置', {'configId': config.id, 'name': config.name});
     await _storage.saveApiConfig(config.id, config.toJson());
   }
 
   Future<ApiConfig?> getApiConfig(String id) async {
+    _log.debug('获取 API 配置', {'configId': id});
     final data = await _storage.getApiConfig(id);
-    if (data == null) return null;
+    if (data == null) {
+      _log.debug('API 配置不存在', {'configId': id});
+      return null;
+    }
+    _log.debug('API 配置已找到', {'configId': id});
     return ApiConfig.fromJson(data);
   }
 
   Future<List<ApiConfig>> getAllApiConfigs() async {
+    _log.debug('获取所有 API 配置');
     final configs = await _storage.getAllApiConfigs();
+    _log.info('获取到 API 配置列表', {'count': configs.length});
     return configs.map((data) => ApiConfig.fromJson(data)).toList();
   }
 
   Future<ApiConfig?> getActiveApiConfig() async {
+    _log.debug('获取活动 API 配置');
     final configs = await getAllApiConfigs();
-    return configs.where((c) => c.isActive).firstOrNull;
+    final activeConfig = configs.where((c) => c.isActive).firstOrNull;
+    if (activeConfig != null) {
+      _log.info('找到活动 API 配置', {
+        'configId': activeConfig.id,
+        'name': activeConfig.name,
+      });
+    } else {
+      _log.warning('未找到活动 API 配置');
+    }
+    return activeConfig;
   }
 
   Future<void> setActiveApiConfig(String id) async {
+    _log.info('设置活动 API 配置', {'configId': id});
     final configs = await getAllApiConfigs();
-    _log.info('设置活动 API 配置: id=$id');
+    _log.debug('更新所有配置的活动状态', {'totalConfigs': configs.length});
 
     for (final config in configs) {
       final updated = config.copyWith(isActive: config.id == id);
       await saveApiConfig(updated);
     }
+    _log.info('活动 API 配置已更新', {'configId': id});
   }
 
   Future<void> deleteApiConfig(String id) async {
-    _log.info('删除 API 配置: id=$id');
+    _log.info('删除 API 配置', {'configId': id});
     await _storage.deleteApiConfig(id);
+    _log.debug('API 配置已删除', {'configId': id});
   }
 
   Future<void> updateApiConfig(
@@ -98,8 +129,14 @@ class SettingsRepository {
     String? proxyUsername,
     String? proxyPassword,
   }) async {
+    _log.info('更新 API 配置', {
+      'configId': id,
+      'name': name,
+      'provider': provider,
+    });
     final config = await getApiConfig(id);
     if (config != null) {
+      _log.debug('找到待更新的配置', {'configId': id});
       final updated = config.copyWith(
         name: name,
         provider: provider,
@@ -111,12 +148,19 @@ class SettingsRepository {
         proxyPassword: proxyPassword,
       );
       await saveApiConfig(updated);
+      _log.info('API 配置更新成功', {'configId': id});
+    } else {
+      _log.warning('更新失败：配置不存在', {'configId': id});
     }
   }
 
   // App Settings
   Future<void> saveSettings(AppSettings settings) async {
-    _log.info('保存应用设置: themeMode=${settings.themeMode}');
+    _log.info('保存应用设置', {
+      'themeMode': settings.themeMode,
+      'language': settings.language,
+      'fontSize': settings.fontSize,
+    });
     if (kDebugMode) {
       print('saveSettings: ${settings.toJson()}');
     }
@@ -124,6 +168,7 @@ class SettingsRepository {
   }
 
   AppSettings getSettings() {
+    _log.debug('读取应用设置');
     if (kDebugMode) {
       print('getSettings: 读取 app_settings');
     }
@@ -144,6 +189,7 @@ class SettingsRepository {
         print('getSettings 错误: $e');
         print('Stack: $stack');
       }
+      _log.error('读取应用设置失败', e, stack);
       return const AppSettings();
     }
   }
