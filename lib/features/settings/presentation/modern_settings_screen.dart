@@ -63,14 +63,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    // 不在监听器中更新，由点击事件直接控制
-    if (!_tabController.indexIsChanging) {
-      final newIndex = _tabController.index.round();
-      if (_selectedIndex != newIndex) {
-        setState(() {
-          _selectedIndex = newIndex;
-        });
-      }
+    // 立即更新索引，支持滑动切换
+    final newIndex = _tabController.index.round();
+    if (_selectedIndex != newIndex) {
+      setState(() {
+        _selectedIndex = newIndex;
+      });
     }
   }
 
@@ -191,11 +189,8 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               child: InkWell(
                 onTap: () {
                   if (_selectedIndex != index) {
-                    // 立即更新状态并跳转，不等待监听器
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                    _tabController.index = index;
+                    // 使用 animateTo 并设置 duration 为 0
+                    _tabController.animateTo(index, duration: Duration.zero);
                   }
                 },
                 borderRadius: BorderRadius.circular(12),
@@ -324,11 +319,8 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         ),
         onTap: () {
           if (_selectedIndex != index) {
-            // 立即更新状态并跳转，不等待监听器
-            setState(() {
-              _selectedIndex = index;
-            });
-            _tabController.index = index;
+            // 使用 animateTo 并设置 duration 为 0
+            _tabController.animateTo(index, duration: Duration.zero);
           }
         },
       ),
@@ -374,7 +366,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   Widget _buildTabView() {
     return TabBarView(
       controller: _tabController,
-      physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildApiTab(),
         _buildThemeTab(),
