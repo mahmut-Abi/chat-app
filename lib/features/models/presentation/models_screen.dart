@@ -188,7 +188,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('加载中...')  ,
+            Text('加载中...'),
           ],
         ),
       );

@@ -115,9 +115,13 @@ class ChatCompletionRequest {
   final String model;
   final List<Map<String, String>> messages;
   final double temperature;
+  @JsonKey(name: 'max_tokens')
   final int maxTokens;
+  @JsonKey(name: 'top_p')
   final double topP;
+  @JsonKey(name: 'frequency_penalty')
   final double frequencyPenalty;
+  @JsonKey(name: 'presence_penalty')
   final double presencePenalty;
   final bool stream;
 
@@ -184,6 +188,7 @@ class ChatCompletionResponse {
 class Choice {
   final int index;
   final MessageData message;
+  @JsonKey(name: 'finish_reason')
   final String? finishReason;
 
   const Choice({required this.index, required this.message, this.finishReason});
@@ -208,8 +213,11 @@ class MessageData {
 
 @JsonSerializable()
 class Usage {
+  @JsonKey(name: 'prompt_tokens')
   final int promptTokens;
+  @JsonKey(name: 'completion_tokens')
   final int completionTokens;
+  @JsonKey(name: 'total_tokens')
   final int totalTokens;
 
   const Usage({
