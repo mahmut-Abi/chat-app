@@ -84,7 +84,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
               const SizedBox(width: 12),
               Text(
                 widget.selectedAgent != null
-                    ? '智能体: \${widget.selectedAgent!.name}'
+                    ? '智能体: ${widget.selectedAgent!.name}'
                     : '选择智能体',
               ),
             ],
@@ -103,7 +103,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
               const SizedBox(width: 12),
               Text(
                 widget.selectedMcp != null
-                    ? 'MCP: \${widget.selectedMcp!.name}'
+                    ? 'MCP: ${widget.selectedMcp!.name}'
                     : '选择MCP',
               ),
             ],
@@ -123,82 +123,75 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
               const SizedBox(width: 12),
               Text(
                 widget.selectedModel != null
-                    ? '模型: \${widget.selectedModel!.name}'
+                    ? '模型: ${widget.selectedModel!.name}'
                     : '选择模型',
               ),
             ],
           ),
         ),
       ],
-      onSelected: (value) => _handleMenuAction(value),
+      onSelected: (value) {
+        switch (value) {
+          case 'image':
+            _pickImages();
+            break;
+          case 'file':
+            _pickFiles();
+            break;
+          case 'agent':
+            _showAgentSelector();
+            break;
+          case 'mcp':
+            _showMcpSelector();
+            break;
+          case 'model':
+            _showModelSelector();
+            break;
+        }
+      },
     );
   }
 
-  Future<void> _handleMenuAction(String action) async {
-    switch (action) {
-      case 'image':
-        await _pickImages();
-        break;
-      case 'file':
-        await _pickFiles();
-        break;
-      case 'agent':
-        await _showAgentSelector();
-        break;
-      case 'mcp':
-        await _showMcpSelector();
-        break;
-      case 'model':
-        await _showModelSelector();
-        break;
-    }
-  }
-
   Future<void> _pickImages() async {
-    final images = await ImageUtils.pickImages();
-    if (images != null && images.isNotEmpty) {
-      widget.onImagesSelected(images);
-    }
-  }
-
-  Future<void> _pickFiles() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        type: FileType.custom,
-        allowedExtensions: [
-          'pdf',
-          'doc',
-          'docx',
-          'txt',
-          'md',
-          'json',
-          'xml',
-          'csv',
-        ],
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        final files = result.files
-            .where((f) => f.path != null)
-            .map((f) => File(f.path!))
-            .toList();
-        if (files.isNotEmpty) {
-          widget.onFilesSelected(files);
-        }
+      final images = await ImageUtils.pickImages();
+      if (images != null && images.isNotEmpty) {
+        widget.onImagesSelected(images);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('文件选择失败: \$e')));
+        ).showSnackBar(const SnackBar(content: Text('图片选择失败')));
+      }
+    }
+  }
+
+  Future<void> _pickFiles() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+
+      if (result != null && result.files.isNotEmpty) {
+        final files = result.files.map((file) => File(file.path!)).toList();
+        widget.onFilesSelected(files);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('文件选择失败')));
       }
     }
   }
 
   Future<void> _showAgentSelector() async {
     final agentsAsync = ref.read(agentConfigsProvider);
-    final agents = agentsAsync.value ?? [];
+
+    final agents = agentsAsync.when(
+      data: (agents) => agents,
+      loading: () => <AgentConfig>[],
+      error: (error, stackTrace) => <AgentConfig>[],
+    );
 
     if (!mounted) return;
 
@@ -209,7 +202,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
         content: SizedBox(
           width: double.maxFinite,
           child: agents.isEmpty
-              ? const Center(child: Text('暂无智能体,请先在设置中创建'))
+              ? const Center(child: Text('暂无智能体配置，请先在设置中创建'))
               : ListView(
                   shrinkWrap: true,
                   children: [
@@ -264,7 +257,12 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
 
   Future<void> _showMcpSelector() async {
     final mcpsAsync = ref.read(mcpConfigsProvider);
-    final mcps = mcpsAsync.value ?? [];
+
+    final mcps = mcpsAsync.when(
+      data: (mcps) => mcps,
+      loading: () => <McpConfig>[],
+      error: (error, stackTrace) => <McpConfig>[],
+    );
 
     if (!mounted) return;
 
@@ -338,7 +336,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('获取模型列表失败: \$e')));
+        ).showSnackBar(const SnackBar(content: Text('获取模型列表失败')));
       }
       return;
     }

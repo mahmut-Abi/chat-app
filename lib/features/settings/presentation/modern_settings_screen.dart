@@ -35,7 +35,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   late TabController _tabController;
   int _selectedIndex = 0;
 
-  final List<_SettingsTab> _tabs = [
+  static const List<_SettingsTab> _tabs = [
     _SettingsTab(icon: Icons.api, label: 'API', title: 'API 配置'),
     _SettingsTab(icon: Icons.palette_outlined, label: '外观', title: '外观设置'),
     _SettingsTab(icon: Icons.extension_outlined, label: '高级', title: '高级功能'),
@@ -48,18 +48,21 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     super.initState();
     _log.info('初始化现代化设置页面');
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {
-          _selectedIndex = _tabController.index;
-        });
-      }
-    });
+    _tabController.addListener(_handleTabChange);
     _loadApiConfigs();
+  }
+
+  void _handleTabChange() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {
+        _selectedIndex = _tabController.index;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
   }
@@ -67,10 +70,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   Future<void> _loadApiConfigs() async {
     _log.debug('开始加载 API 配置');
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _errorMessage = null;
+        });
+      }
 
       final settingsRepo = ref.read(settingsRepositoryProvider);
       final configs = await settingsRepo.getAllApiConfigs();
@@ -87,7 +92,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = '加载配置失败：${e.toString()}';
+          _errorMessage = '加载配置失败：\${e.toString()}';
         });
       }
     }
@@ -101,9 +106,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       backgroundColor: colorScheme.surface,
       body: Row(
         children: [
-          // 左侧导航
           _buildSideNav(context),
-          // 右侧内容
           Expanded(
             child: _isLoading
                 ? _buildLoadingWidget()
@@ -127,137 +130,138 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       ),
       child: Column(
         children: [
-          // 头部
-          Container(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => context.pop(),
-                  tooltip: '返回',
-                ),
-                const SizedBox(width: 12),
-                Icon(
-                  Icons.settings_rounded,
-                  color: colorScheme.primary,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  '设置',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildSideNavHeader(context, colorScheme),
           const Divider(height: 1),
-          // 导航项
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: _tabs.length,
-              itemBuilder: (context, index) {
-                final tab = _tabs[index];
-                final isSelected = _selectedIndex == index;
+          Expanded(child: _buildNavList(context, colorScheme)),
+        ],
+      ),
+    );
+  }
 
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? colorScheme.primaryContainer
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    selected: isSelected,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    leading: Icon(
-                      tab.icon,
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                    title: Text(
-                      tab.label,
-                      style: TextStyle(
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: isSelected
-                            ? colorScheme.onPrimaryContainer
-                            : colorScheme.onSurface,
-                      ),
-                    ),
-                    onTap: () {
-                      _tabController.animateTo(index);
-                    },
-                  ),
-                );
-              },
-            ),
+  Widget _buildSideNavHeader(BuildContext context, ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+            tooltip: '返回',
+          ),
+          const SizedBox(width: 12),
+          Icon(Icons.settings_rounded, color: colorScheme.primary, size: 28),
+          const SizedBox(width: 12),
+          Text(
+            '设置',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildNavList(BuildContext context, ColorScheme colorScheme) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: _tabs.length,
+      itemBuilder: (context, index) {
+        return _buildNavItem(context, colorScheme, index);
+      },
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context,
+    ColorScheme colorScheme,
+    int index,
+  ) {
+    final tab = _tabs[index];
+    final isSelected = _selectedIndex == index;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected ? colorScheme.primaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        selected: isSelected,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: Icon(
+          tab.icon,
+          color: isSelected
+              ? colorScheme.onPrimaryContainer
+              : colorScheme.onSurfaceVariant,
+        ),
+        title: Text(
+          tab.label,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: isSelected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurface,
+          ),
+        ),
+        onTap: () => _tabController.animateTo(index),
+      ),
+    );
+  }
+
   Widget _buildContent(BuildContext context) {
+    return Column(
+      children: [
+        _buildContentHeader(context),
+        const Divider(height: 1),
+        Expanded(child: _buildTabView()),
+      ],
+    );
+  }
+
+  Widget _buildContentHeader(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final currentTab = _tabs[_selectedIndex];
 
-    return Column(
-      children: [
-        // 头部标题
-        Container(
-          padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
-          child: Row(
+    return Container(
+      padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
+      child: Row(
+        children: [
+          Icon(currentTab.icon, color: colorScheme.primary, size: 32),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(currentTab.icon, color: colorScheme.primary, size: 32),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentTab.title,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _getTabDescription(_selectedIndex),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              Text(
+                currentTab.title,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                _getTabDescription(_selectedIndex),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-        ),
-        const Divider(height: 1),
-        // 内容区域
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _buildApiTab(),
-              _buildThemeTab(),
-              _buildAdvancedTab(),
-              _buildDataTab(),
-              _buildAboutTab(),
-            ],
-          ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabView() {
+    return TabBarView(
+      controller: _tabController,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _buildApiTab(),
+        _buildThemeTab(),
+        _buildAdvancedTab(),
+        _buildDataTab(),
+        _buildAboutTab(),
       ],
     );
   }
