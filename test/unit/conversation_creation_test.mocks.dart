@@ -272,6 +272,55 @@ class MockStorageService extends _i1.Mock implements _i5.StorageService {
           as _i4.Future<void>);
 
   @override
+  _i4.Future<void> saveModel(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveModel, [id, data]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveAllModels(List<Map<String, dynamic>>? models) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveAllModels, [models]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  Map<String, dynamic>? getModel(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getModel, [id]))
+          as Map<String, dynamic>?);
+
+  @override
+  List<Map<String, dynamic>> getAllModels() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllModels, []),
+            returnValue: <Map<String, dynamic>>[],
+          )
+          as List<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> deleteModel(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteModel, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> clearAllModels() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearAllModels, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
   _i4.Future<void> clearAll() =>
       (super.noSuchMethod(
             Invocation.method(#clearAll, []),

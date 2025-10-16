@@ -11,6 +11,7 @@ class StorageService {
   static const String _settingsBox = 'settings';
   static const String _groupsBox = 'conversation_groups';
   static const String _promptsBox = 'prompt_templates';
+  static const String _modelsBox = 'models';
   // Used for API config method naming
   // ignore: unused_field
   static const String _apiConfigsBox = 'api_configs';
@@ -19,6 +20,7 @@ class StorageService {
   late Box _settingsBoxInstance;
   late Box _groupsBoxInstance;
   late Box _promptsBoxInstance;
+  late Box _modelsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> init() async {
@@ -29,12 +31,14 @@ class StorageService {
       _settingsBoxInstance = await Hive.openBox(_settingsBox);
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
       _promptsBoxInstance = await Hive.openBox(_promptsBox);
+      _modelsBoxInstance = await Hive.openBox(_modelsBox);
 
       _log.info('存储初始化成功', {
         'conversationsCount': _conversationsBoxInstance.length,
         'settingsCount': _settingsBoxInstance.length,
         'groupsCount': _groupsBoxInstance.length,
         'promptsCount': _promptsBoxInstance.length,
+        'modelsCount': _modelsBoxInstance.length,
       });
 
       if (kDebugMode) {
@@ -43,6 +47,7 @@ class StorageService {
         print('  设置数: ${_settingsBoxInstance.length}');
         print('  分组数: ${_groupsBoxInstance.length}');
         print('  提示词模板数: ${_promptsBoxInstance.length}');
+        print('  模型数: ${_modelsBoxInstance.length}');
       }
     } catch (e, stack) {
       _log.error('存储初始化失败: ${e.toString()}', e, stack);
@@ -192,6 +197,41 @@ class StorageService {
 
   Future<void> deleteApiConfig(String id) async {
     await _secureStorage.delete(key: 'api_config_\$id');
+  }
+
+  // Models
+  Future<void> saveModel(String id, Map<String, dynamic> data) async {
+    _log.debug('保存模型', {'id': id, 'name': data['name']});
+    await _modelsBoxInstance.put(id, jsonEncode(data));
+  }
+
+  Future<void> saveAllModels(List<Map<String, dynamic>> models) async {
+    _log.info('保存所有模型', {'count': models.length});
+    await _modelsBoxInstance.clear();
+    for (final model in models) {
+      await _modelsBoxInstance.put(model['id'], jsonEncode(model));
+    }
+  }
+
+  Map<String, dynamic>? getModel(String id) {
+    final data = _modelsBoxInstance.get(id);
+    if (data == null) return null;
+    return jsonDecode(data as String) as Map<String, dynamic>;
+  }
+
+  List<Map<String, dynamic>> getAllModels() {
+    return _modelsBoxInstance.values
+        .map((e) => jsonDecode(e as String) as Map<String, dynamic>)
+        .toList();
+  }
+
+  Future<void> deleteModel(String id) async {
+    await _modelsBoxInstance.delete(id);
+  }
+
+  Future<void> clearAllModels() async {
+    _log.info('清除所有模型');
+    await _modelsBoxInstance.clear();
   }
 
   // Clear all data

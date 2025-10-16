@@ -3,18 +3,21 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:chat_app/features/models/data/models_repository.dart';
 import 'package:chat_app/core/network/openai_api_client.dart';
+import 'package:chat_app/core/storage/storage_service.dart';
 
 import 'models_repository_test.mocks.dart';
 
-@GenerateMocks([OpenAIApiClient])
+@GenerateMocks([OpenAIApiClient, StorageService])
 void main() {
   group('ModelsRepository', () {
     late ModelsRepository repository;
     late MockOpenAIApiClient mockApiClient;
+    late MockStorageService mockStorage;
 
     setUp(() {
       mockApiClient = MockOpenAIApiClient();
-      repository = ModelsRepository(mockApiClient);
+      mockStorage = MockStorageService();
+      repository = ModelsRepository(mockApiClient, mockStorage);
     });
 
     test('应该成功获取可用模型', () async {

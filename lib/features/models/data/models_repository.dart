@@ -2,12 +2,48 @@ import '../domain/model.dart';
 import '../../settings/domain/api_config.dart';
 import '../../../core/network/openai_api_client.dart';
 import '../../../core/services/log_service.dart';
+import '../../../core/storage/storage_service.dart';
 import 'package:dio/dio.dart';
 
 class ModelsRepository {
   final _log = LogService();
+  final StorageService _storage;
 
-  ModelsRepository(OpenAIApiClient apiClient);
+  ModelsRepository(OpenAIApiClient apiClient, this._storage);
+
+  /// 从本地存储加载模型列表
+  Future<List<AiModel>> getCachedModels() async {
+    try {
+      _log.info('从缓存加载模型列表');
+      final modelsData = _storage.getAllModels();
+      final models = modelsData.map((data) => AiModel.fromJson(data)).toList();
+      _log.info('缓存加载成功', {'count': models.length});
+      return models;
+    } catch (e, stack) {
+      _log.error('缓存加载失败', e, stack);
+      return [];
+    }
+  }
+
+  /// 保存模型列表到本地存储
+  Future<void> cacheModels(List<AiModel> models) async {
+    try {
+      _log.info('缓存模型列表', {'count': models.length});
+      final modelsData = models.map((model) => model.toJson()).toList();
+      await _storage.saveAllModels(modelsData);
+      _log.info('模型缓存成功');
+    } catch (e, stack) {
+      _log.error('模型缓存失败', e, stack);
+    }
+  }
+
+  /// 刷新所有 API 配置的模型列表，并持久化
+  Future<List<AiModel>> refreshModels(List<ApiConfig> apiConfigs) async {
+    _log.info('开始刷新模型列表', {'apiCount': apiConfigs.length});
+    final allModels = await getAvailableModels(apiConfigs);
+    await cacheModels(allModels);
+    return allModels;
+  }
 
   /// 根据 API 配置获取模型列表
   Future<List<AiModel>> getModelsForApiConfig(ApiConfig config) async {

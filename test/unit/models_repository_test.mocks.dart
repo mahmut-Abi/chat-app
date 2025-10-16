@@ -6,6 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:chat_app/core/network/openai_api_client.dart' as _i2;
+import 'package:chat_app/core/storage/storage_service.dart' as _i5;
 import 'package:chat_app/features/chat/domain/message.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -87,4 +88,244 @@ class MockOpenAIApiClient extends _i1.Mock implements _i2.OpenAIApiClient {
             returnValue: _i4.Future<List<String>>.value(<String>[]),
           )
           as _i4.Future<List<String>>);
+}
+
+/// A class which mocks [StorageService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockStorageService extends _i1.Mock implements _i5.StorageService {
+  MockStorageService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<void> init() =>
+      (super.noSuchMethod(
+            Invocation.method(#init, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveConversation(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveConversation, [id, data]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  Map<String, dynamic>? getConversation(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getConversation, [id]))
+          as Map<String, dynamic>?);
+
+  @override
+  List<Map<String, dynamic>> getAllConversations() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllConversations, []),
+            returnValue: <Map<String, dynamic>>[],
+          )
+          as List<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> deleteConversation(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteConversation, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveGroup(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveGroup, [id, data]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  Map<String, dynamic>? getGroup(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getGroup, [id]))
+          as Map<String, dynamic>?);
+
+  @override
+  List<Map<String, dynamic>> getAllGroups() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllGroups, []),
+            returnValue: <Map<String, dynamic>>[],
+          )
+          as List<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> deleteGroup(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteGroup, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> savePromptTemplate(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#savePromptTemplate, [id, data]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<Map<String, dynamic>?> getPromptTemplate(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getPromptTemplate, [id]),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i4.Future<Map<String, dynamic>?>);
+
+  @override
+  _i4.Future<List<Map<String, dynamic>>> getAllPromptTemplates() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllPromptTemplates, []),
+            returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<void> deletePromptTemplate(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deletePromptTemplate, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveSetting(String? key, dynamic value) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveSetting, [key, value]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  T? getSetting<T>(String? key) =>
+      (super.noSuchMethod(Invocation.method(#getSetting, [key])) as T?);
+
+  @override
+  _i4.Future<List<String>> getAllKeys() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllKeys, []),
+            returnValue: _i4.Future<List<String>>.value(<String>[]),
+          )
+          as _i4.Future<List<String>>);
+
+  @override
+  _i4.Future<void> deleteSetting(String? key) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteSetting, [key]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveApiConfig(String? id, Map<String, dynamic>? config) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveApiConfig, [id, config]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<Map<String, dynamic>?> getApiConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getApiConfig, [id]),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i4.Future<Map<String, dynamic>?>);
+
+  @override
+  _i4.Future<List<Map<String, dynamic>>> getAllApiConfigs() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllApiConfigs, []),
+            returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<void> deleteApiConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteApiConfig, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveModel(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveModel, [id, data]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> saveAllModels(List<Map<String, dynamic>>? models) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveAllModels, [models]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  Map<String, dynamic>? getModel(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getModel, [id]))
+          as Map<String, dynamic>?);
+
+  @override
+  List<Map<String, dynamic>> getAllModels() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllModels, []),
+            returnValue: <Map<String, dynamic>>[],
+          )
+          as List<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> deleteModel(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteModel, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> clearAllModels() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearAllModels, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> clearAll() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearAll, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

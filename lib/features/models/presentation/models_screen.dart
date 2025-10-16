@@ -17,6 +17,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
   List<AiModel> _models = [];
   List<ApiConfig> _apiConfigs = [];
   bool _isLoading = true;
+  bool _isRefreshing = false;
   String? _errorMessage;
 
   @override
@@ -32,9 +33,24 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
     });
 
     try {
-      // 首先加载 API 配置
       final settingsRepo = ref.read(settingsRepositoryProvider);
       _apiConfigs = await settingsRepo.getAllApiConfigs();
+
+      final modelsRepo = ref.read(modelsRepositoryProvider);
+
+      // 先加载缓存的模型列表
+      final cachedModels = await modelsRepo.getCachedModels();
+
+      if (cachedModels.isNotEmpty) {
+        // 如果有缓存，直接显示
+        if (mounted) {
+          setState(() {
+            _models = cachedModels;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
 
       // 检查是否有配置完整的 API
       final validConfigs = _apiConfigs
@@ -52,9 +68,8 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         return;
       }
 
-      // 加载模型列表
-      final modelsRepo = ref.read(modelsRepositoryProvider);
-      final models = await modelsRepo.getAvailableModels(validConfigs);
+      // 无缓存时，从 API 加载
+      final models = await modelsRepo.refreshModels(validConfigs);
 
       if (mounted) {
         setState(() {
@@ -68,6 +83,71 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
           _isLoading = false;
           _errorMessage = '加载模型失败：${e.toString()}';
         });
+      }
+    }
+  }
+
+  /// 刷新模型列表（从 API 获取）
+  Future<void> _refreshModels() async {
+    if (_isRefreshing) return;
+
+    setState(() {
+      _isRefreshing = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      _apiConfigs = await settingsRepo.getAllApiConfigs();
+
+      final validConfigs = _apiConfigs
+          .where(
+            (config) => config.baseUrl.isNotEmpty && config.apiKey.isNotEmpty,
+          )
+          .toList();
+
+      if (validConfigs.isEmpty) {
+        if (mounted) {
+          setState(() {
+            _isRefreshing = false;
+            _errorMessage = '没有可用的 API 配置\n请先在设置中添加 API 配置';
+          });
+        }
+        return;
+      }
+
+      // 从 API 刷新并缓存
+      final modelsRepo = ref.read(modelsRepositoryProvider);
+      final models = await modelsRepo.refreshModels(validConfigs);
+
+      if (mounted) {
+        setState(() {
+          _models = models;
+          _isRefreshing = false;
+        });
+
+        // 显示成功提示
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('刷新成功：加载了 ${models.length} 个模型'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+          _errorMessage = '刷新失败：${e.toString()}';
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('刷新失败：${e.toString()}'),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
       }
     }
   }
@@ -91,7 +171,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _isLoading ? null : _loadModels,
+            onPressed: (_isLoading || _isRefreshing) ? null : _refreshModels,
             tooltip: '刷新',
           ),
         ],
@@ -101,14 +181,14 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
   }
 
   Widget _buildBody(ColorScheme colorScheme) {
-    if (_isLoading) {
+    if (_isLoading || _isRefreshing) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('加载中...'),
+            Text('加载中...')  ,
           ],
         ),
       );

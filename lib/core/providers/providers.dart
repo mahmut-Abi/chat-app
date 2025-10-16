@@ -123,7 +123,10 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
 
 // Models Repository
 final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
-  return ModelsRepository(ref.watch(openAIApiClientProvider));
+  return ModelsRepository(
+    ref.watch(openAIApiClientProvider),
+    ref.watch(storageServiceProvider),
+  );
 });
 
 // App Settings
