@@ -13,6 +13,7 @@ import 'mixins/settings_api_config_mixin.dart';
 import 'mixins/settings_data_mixin.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/background_container.dart';
+import '../../../core/utils/keyboard_utils.dart';
 
 /// 现代化设置页面
 class ModernSettingsScreen extends ConsumerStatefulWidget {
@@ -50,6 +51,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   void initState() {
     super.initState();
     _log.info('初始化现代化设置页面');
+    // 确保进入设置页面时没有焦点，避免 iOS 上弹出键盘
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        KeyboardUtils.dismissKeyboard(context);
+      }
+    });
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(_handleTabChange);
     _loadApiConfigs();
