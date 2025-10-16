@@ -62,8 +62,6 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
         child: Column(
           children: [
             _buildFilterBar(),
-            _buildStatsBar(logs),
-            const Divider(height: 1),
             Expanded(
               child: logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
             ),
@@ -130,42 +128,6 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatsBar(List<LogEntry> logs) {
-    final debugCount = logs.where((l) => l.level == LogLevel.debug).length;
-    final infoCount = logs.where((l) => l.level == LogLevel.info).length;
-    final warningCount = logs.where((l) => l.level == LogLevel.warning).length;
-    final errorCount = logs.where((l) => l.level == LogLevel.error).length;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatChip('总计', logs.length, Colors.grey),
-          _buildStatChip('Debug', debugCount, Colors.blue),
-          _buildStatChip('Info', infoCount, Colors.green),
-          _buildStatChip('Warning', warningCount, Colors.orange),
-          _buildStatChip('Error', errorCount, Colors.red),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatChip(String label, int count, Color color) {
-    return Chip(
-      avatar: CircleAvatar(
-        backgroundColor: color,
-        child: Text(
-          '$count',
-          style: const TextStyle(color: Colors.white, fontSize: 10),
-        ),
-      ),
-      label: Text(label),
-      visualDensity: VisualDensity.compact,
     );
   }
 

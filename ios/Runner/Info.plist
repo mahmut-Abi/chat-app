@@ -51,11 +51,18 @@
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<!-- 网络和文件访问权限描述 -->
+	<!-- 相册和相机权限 -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>需要访问相册以选择和分享图片</string>
 	<key>NSCameraUsageDescription</key>
 	<string>需要访问相机以拍摄照片</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>需要访问麦克风以进行语音输入</string>
+	<!-- 本地网络权限（iOS 14+） -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>需要访问本地网络以连接 AI 服务</string>
+	<!-- 通知权限 -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>需要发送通知以提醒您重要消息</string>
 </dict>
 </plist>
