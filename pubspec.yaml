@@ -25,6 +25,7 @@ dependencies:
   
   # Permissions
   permission_handler: ^11.3.0
+  connectivity_plus: ^7.0.0
   
   # Local Storage
   hive: ^2.2.3
