@@ -55,8 +55,9 @@ class OpenAIApiClient {
       _log.debug('DeepSeek 参数过滤', {
         'original': params.keys.toList(),
         'filtered': filtered.keys.toList(),
-        'values': filtered,
       });
+
+      _log.info('DeepSeek 过滤后的完整请求', {'filteredRequest': jsonEncode(filtered)});
     }
 
     return filtered;
@@ -140,6 +141,11 @@ class OpenAIApiClient {
     try {
       var requestData = request.toJson();
 
+      _log.info('原始请求数据', {
+        'provider': _provider ?? 'unknown',
+        'requestData': jsonEncode(requestData),
+      });
+
       // 如果指定了 provider，过滤不支持的参数
       if (_provider != null && _provider.isNotEmpty) {
         requestData = _filterRequestParams(requestData, _provider);
@@ -147,7 +153,7 @@ class OpenAIApiClient {
 
       _log.debug('发送聊天完成请求', {
         'provider': _provider,
-        'requestData': requestData,
+        'requestData': jsonEncode(requestData),
       });
 
       final response = await _dioClient.dio.post(
@@ -166,7 +172,10 @@ class OpenAIApiClient {
         _log.error('聊天完成请求失败', {
           'error': e.toString(),
           'statusCode': e.response?.statusCode,
-          'responseData': e.response?.data,
+          'responseData': jsonEncode(e.response?.data),
+          'requestData': e.requestOptions.data != null
+              ? jsonEncode(e.requestOptions.data)
+              : 'null',
         });
       } else {
         _log.error('聊天完成请求失败', {'error': e.toString()}, stackTrace);

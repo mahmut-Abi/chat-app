@@ -21,7 +21,14 @@ class StorageService {
   late Box _groupsBoxInstance;
   late Box _promptsBoxInstance;
   late Box _modelsBoxInstance;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock,
+      // 卸载应用时删除数据
+      synchronizable: false,
+    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   Future<void> init() async {
     _log.info('开始初始化存储服务');

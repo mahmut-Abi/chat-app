@@ -94,6 +94,9 @@ class DioClient {
             'method': error.requestOptions.method,
             'type': error.type.toString(),
             'message': error.message,
+            'statusCode': error.response?.statusCode,
+            'requestBody': error.requestOptions.data,
+            'responseBody': error.response?.data,
           });
           final apiException = _handleError(error);
           handler.reject(
