@@ -61,7 +61,7 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
         apiKey: config.apiKey,
         proxyUrl: config.proxyUrl,
       );
-      final apiClient = OpenAIApiClient(dioClient);
+      final apiClient = OpenAIApiClient(dioClient, config.provider);
       final result = await apiClient.testConnection();
 
       if (mounted) {

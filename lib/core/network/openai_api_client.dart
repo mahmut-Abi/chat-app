@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../features/chat/domain/message.dart';
 import 'dio_client.dart';
 import '../services/log_service.dart';
+import '../../features/settings/domain/api_config.dart';
 
 class ApiTestResult {
   final bool success;
@@ -15,8 +16,38 @@ class ApiTestResult {
 class OpenAIApiClient {
   final DioClient _dioClient;
   final LogService _log = LogService();
+  final String? _provider;
 
-  OpenAIApiClient(this._dioClient);
+  OpenAIApiClient(this._dioClient, [this._provider]);
+
+  // 根据 API 提供商过滤请求参数
+  Map<String, dynamic> _filterRequestParams(
+    Map<String, dynamic> params,
+    String provider,
+  ) {
+    final filtered = Map<String, dynamic>.from(params);
+
+    // DeepSeek 不支持的参数
+    if (provider.toLowerCase().contains('deepseek')) {
+      // DeepSeek 支持的基本参数: model, messages, temperature, max_tokens, top_p, stream
+      // 不支持: frequency_penalty, presence_penalty
+      filtered.remove('frequency_penalty');
+      filtered.remove('presence_penalty');
+
+      // 限制 temperature 范围 (0-2)
+      if (filtered['temperature'] != null) {
+        final temp = filtered['temperature'] as double;
+        filtered['temperature'] = temp.clamp(0.0, 2.0);
+      }
+
+      _log.debug('DeepSeek 参数过滤', {
+        'original': params.keys.toList(),
+        'filtered': filtered.keys.toList(),
+      });
+    }
+
+    return filtered;
+  }
 
   // 测试 API 连接
   Future<ApiTestResult> testConnection() async {
@@ -94,9 +125,16 @@ class OpenAIApiClient {
     });
 
     try {
+      var requestData = request.toJson();
+
+      // 如果指定了 provider，过滤不支持的参数
+      if (_provider != null && _provider!.isNotEmpty) {
+        requestData = _filterRequestParams(requestData, _provider!);
+      }
+
       final response = await _dioClient.dio.post(
         '/chat/completions',
-        data: request.toJson(),
+        data: requestData,
       );
 
       _log.debug('聊天完成响应成功', {
@@ -120,9 +158,16 @@ class OpenAIApiClient {
     });
 
     try {
+      var requestData = request.copyWith(stream: true).toJson();
+
+      // 如果指定了 provider，过滤不支持的参数
+      if (_provider != null && _provider!.isNotEmpty) {
+        requestData = _filterRequestParams(requestData, _provider!);
+      }
+
       final response = await _dioClient.dio.post(
         '/chat/completions',
-        data: request.copyWith(stream: true).toJson(),
+        data: requestData,
         options: Options(
           responseType: ResponseType.stream,
           headers: {'Accept': 'text/event-stream', 'Cache-Control': 'no-cache'},

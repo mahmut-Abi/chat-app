@@ -218,7 +218,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
         proxyUsername: _enableProxy ? _proxyUsernameController.text : null,
         proxyPassword: _enableProxy ? _proxyPasswordController.text : null,
       );
-      final apiClient = OpenAIApiClient(dioClient);
+      final apiClient = OpenAIApiClient(dioClient, _selectedProvider);
       final result = await apiClient.testConnection();
 
       // 测试成功后自动获取模型列表
@@ -303,7 +303,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
         proxyUsername: _enableProxy ? _proxyUsernameController.text : null,
         proxyPassword: _enableProxy ? _proxyPasswordController.text : null,
       );
-      final apiClient = OpenAIApiClient(dioClient);
+      final apiClient = OpenAIApiClient(dioClient, _selectedProvider);
       final models = await apiClient.getAvailableModels();
 
       if (mounted) {

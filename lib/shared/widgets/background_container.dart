@@ -35,23 +35,34 @@ class BackgroundContainer extends ConsumerWidget {
         // 背景图片
         Positioned.fill(child: _buildBackgroundImage(backgroundImage)),
 
-        // 模糊效果 (需要在遮罩前应用)
+        // 模糊效果 + 透明度遮罩（合并为一层）
         if (settings.enableBackgroundBlur)
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.transparent),
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 10.0,
+                  sigmaY: 10.0,
+                  tileMode: TileMode.clamp,
+                ),
+                child: Container(
+                  color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                    alpha: 1 - settings.backgroundOpacity,
+                  ),
+                ),
+              ),
             ),
           ),
 
-        // 透明度遮罩 (使用主题背景色半透明来降低背景可见度)
-        Positioned.fill(
-          child: Container(
-            color: Colors.white.withValues(
-              alpha: 1 - settings.backgroundOpacity,
+        // 只有模糊效果关闭时才需要单独的透明度遮罩
+        if (!settings.enableBackgroundBlur)
+          Positioned.fill(
+            child: Container(
+              color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                alpha: 1 - settings.backgroundOpacity,
+              ),
             ),
           ),
-        ),
 
         // 实际内容
         child,

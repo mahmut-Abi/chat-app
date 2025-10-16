@@ -110,7 +110,9 @@ final dioClientProvider = Provider<DioClient>((ref) {
 
 // OpenAI API Client
 final openAIApiClientProvider = Provider<OpenAIApiClient>((ref) {
-  return OpenAIApiClient(ref.watch(dioClientProvider));
+  final apiConfig = ref.watch(activeApiConfigProvider).value;
+  final provider = apiConfig?.provider;
+  return OpenAIApiClient(ref.watch(dioClientProvider), provider);
 });
 
 // Chat Repository
