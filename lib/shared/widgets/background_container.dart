@@ -29,6 +29,11 @@ class BackgroundContainer extends ConsumerWidget {
       );
     }
 
+    // 计算遮罩层的透明度:背景图片透明度越高,遮罩层应该越透明
+    // 用户设置的 opacity 表示背景图片的可见度 (0.0 = 不可见, 1.0 = 完全可见)
+    // 所以遮罩层的透明度应该是 1.0 - backgroundOpacity
+    final maskOpacity = 1.0 - settings.backgroundOpacity;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -46,9 +51,9 @@ class BackgroundContainer extends ConsumerWidget {
                   tileMode: TileMode.clamp,
                 ),
                 child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                    alpha: settings.backgroundOpacity,
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).scaffoldBackgroundColor.withValues(alpha: maskOpacity),
                 ),
               ),
             ),
@@ -58,9 +63,9 @@ class BackgroundContainer extends ConsumerWidget {
         if (!settings.enableBackgroundBlur)
           Positioned.fill(
             child: Container(
-              color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                alpha: settings.backgroundOpacity,
-              ),
+              color: Theme.of(
+                context,
+              ).scaffoldBackgroundColor.withValues(alpha: maskOpacity),
             ),
           ),
 
