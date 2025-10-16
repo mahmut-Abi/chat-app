@@ -119,13 +119,9 @@ class ChatCompletionRequest {
   final int maxTokens;
   @JsonKey(name: 'top_p')
   final double topP;
-  @JsonKey(
-    name: 'frequency_penalty',
-    includeIfNull: false,
-    includeToJson: false,
-  )
+  @JsonKey(name: 'frequency_penalty', includeIfNull: false)
   final double? frequencyPenalty;
-  @JsonKey(name: 'presence_penalty', includeIfNull: false, includeToJson: false)
+  @JsonKey(name: 'presence_penalty', includeIfNull: false)
   final double? presencePenalty;
   final bool stream;
 

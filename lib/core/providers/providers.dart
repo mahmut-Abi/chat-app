@@ -88,7 +88,9 @@ final agentToolsProvider = FutureProvider.autoDispose<List<AgentTool>>((
 });
 
 // Active API Config
-final activeApiConfigProvider = FutureProvider<ApiConfig?>((ref) async {
+final activeApiConfigProvider = FutureProvider.autoDispose<ApiConfig?>((
+  ref,
+) async {
   final settingsRepo = ref.watch(settingsRepositoryProvider);
   return settingsRepo.getActiveApiConfig();
 });
