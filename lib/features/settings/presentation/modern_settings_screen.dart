@@ -7,7 +7,6 @@ import '../domain/api_config.dart';
 import 'widgets/api_config_section.dart';
 import 'widgets/theme_settings_section.dart';
 import 'widgets/data_management_section.dart';
-import 'widgets/advanced_settings_section.dart';
 import 'widgets/about_section.dart';
 import 'mixins/settings_theme_mixin.dart';
 import 'mixins/settings_api_config_mixin.dart';
@@ -39,7 +38,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   static const List<_SettingsTab> _tabs = [
     _SettingsTab(icon: Icons.api, label: 'API', title: 'API 配置'),
     _SettingsTab(icon: Icons.palette_outlined, label: '外观', title: '外观设置'),
-    _SettingsTab(icon: Icons.apps_outlined, label: '工具', title: '工具与功能'),
     _SettingsTab(icon: Icons.extension_outlined, label: '高级', title: '高级功能'),
     _SettingsTab(icon: Icons.storage_outlined, label: '数据', title: '数据管理'),
     _SettingsTab(icon: Icons.info_outline, label: '关于', title: '关于应用'),
@@ -348,12 +346,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   Widget _buildTabView() {
     return TabBarView(
       controller: _tabController,
-      physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildApiTab(),
         _buildThemeTab(),
         _buildAdvancedTab(),
-        _buildToolsTab(),
         _buildDataTab(),
         _buildAboutTab(),
       ],
@@ -434,65 +430,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     );
   }
 
-  Widget _buildToolsTab() {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return ListView(
-      padding: const EdgeInsets.all(32),
-      children: [
-        _buildCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '工具与功能',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '快速访问应用的各项功能',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              const SizedBox(height: 24),
-              _buildToolCard(
-                icon: Icons.lightbulb_outline,
-                title: '提示词模板',
-                description: '管理和使用提示词模板',
-                onTap: () => context.push('/prompts'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.memory,
-                title: '模型管理',
-                description: '查看和管理 AI 模型',
-                onTap: () => context.push('/models'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.bar_chart,
-                title: 'Token 统计',
-                description: '查看 Token 使用情况',
-                onTap: () => context.push('/token-usage'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.description_outlined,
-                title: '日志查看',
-                description: '查看应用运行日志',
-                onTap: () => context.push('/logs'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildToolCard({
     required IconData icon,
     required String title,
@@ -517,11 +454,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                   color: colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  color: colorScheme.primary,
-                  size: 24,
-                ),
+                child: Icon(icon, color: colorScheme.primary, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -531,15 +464,15 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -557,9 +490,68 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   Widget _buildAdvancedTab() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ListView(
       padding: const EdgeInsets.all(32),
-      children: [_buildCard(child: const AdvancedSettingsSection())],
+      children: [
+        _buildCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '工具与功能',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '快速访问应用的各项功能',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildToolCard(
+                icon: Icons.lightbulb_outline,
+                title: '提示词模板',
+                description: '管理和使用提示词模板',
+                onTap: () => context.push('/prompts'),
+              ),
+              const SizedBox(height: 16),
+              _buildToolCard(
+                icon: Icons.memory,
+                title: '模型管理',
+                description: '查看和管理 AI 模型',
+                onTap: () => context.push('/models'),
+              ),
+              const SizedBox(height: 16),
+              _buildToolCard(
+                icon: Icons.cloud,
+                title: 'MCP 配置',
+                description: '配置 Model Context Protocol 服务器',
+                onTap: () => context.push('/mcp'),
+              ),
+              const SizedBox(height: 16),
+              _buildToolCard(
+                icon: Icons.bar_chart,
+                title: 'Token 统计',
+                description: '查看 Token 使用情况',
+                onTap: () => context.push('/token-usage'),
+              ),
+              const SizedBox(height: 16),
+              _buildToolCard(
+                icon: Icons.description_outlined,
+                title: '日志查看',
+                description: '查看应用运行日志',
+                onTap: () => context.push('/logs'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
