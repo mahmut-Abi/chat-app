@@ -235,39 +235,55 @@ class StorageService {
     // 重试机制：最多尝试 3 次
     for (int attempt = 0; attempt < 3; attempt++) {
       try {
-        // 先尝试读取现有值
-        final allData = await _secureStorage.readAll();
-        final exists = allData.containsKey(key);
+        // 先尝试直接写入，如果失败再删除
+        try {
+          await _secureStorage.write(
+            key: key,
+            value: jsonEncode(config),
+            iOptions: const IOSOptions(
+              accessibility: KeychainAccessibility.first_unlock,
+              synchronizable: false,
+            ),
+          );
+          _log.debug('API 配置保存成功', {'id': id, 'attempt': attempt});
+          return; // 成功后退出
+        } catch (writeError) {
+          // 如果是 -25299 错误，尝试删除后重试
+          if (writeError.toString().contains('-25299') ||
+              writeError.toString().contains('already exists')) {
+            _log.warning('API 配置已存在，尝试删除 (attempt $attempt)', {'id': id});
 
-        if (exists) {
-          // 如果存在，先删除
-          try {
-            await _secureStorage.delete(key: key);
-            // 等待更长时间确保删除完成
-            await Future.delayed(const Duration(milliseconds: 200));
-          } catch (deleteError) {
-            _log.warning('API 配置删除失败 (attempt $attempt)', {
-              'id': id,
-              'error': deleteError.toString(),
-            });
-            // 如果是最后一次尝试，继续尝试写入
-            if (attempt == 2) {
-              continue;
+            try {
+              await _secureStorage.delete(key: key);
+              // 等待更长时间确保删除完成
+              await Future.delayed(const Duration(milliseconds: 300));
+
+              // 再次尝试写入
+              await _secureStorage.write(
+                key: key,
+                value: jsonEncode(config),
+                iOptions: const IOSOptions(
+                  accessibility: KeychainAccessibility.first_unlock,
+                  synchronizable: false,
+                ),
+              );
+              _log.debug('API 配置删除后保存成功', {'id': id, 'attempt': attempt});
+              return; // 成功后退出
+            } catch (deleteWriteError) {
+              _log.warning('API 配置删除后写入失败', {
+                'id': id,
+                'attempt': attempt,
+                'error': deleteWriteError.toString(),
+              });
+              if (attempt == 2) {
+                rethrow;
+              }
             }
+          } else {
+            // 其他错误，直接抛出
+            rethrow;
           }
         }
-
-        // 写入新值，显式指定 iOptions
-        await _secureStorage.write(
-          key: key,
-          value: jsonEncode(config),
-          iOptions: const IOSOptions(
-            accessibility: KeychainAccessibility.first_unlock,
-            synchronizable: false,
-          ),
-        );
-        _log.debug('API 配置保存成功', {'id': id, 'attempt': attempt});
-        return; // 成功后退出
       } catch (e) {
         if (attempt == 2) {
           // 最后一次尝试失败，抛出异常
