@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
-import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/settings/presentation/modern_settings_screen.dart';
 import '../../features/models/presentation/models_screen.dart';
 import '../../features/mcp/presentation/mcp_screen.dart';
 import '../../features/token_usage/presentation/token_usage_screen.dart';
@@ -27,7 +27,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
+        builder: (context, state) => const ModernSettingsScreen(),
       ),
       GoRoute(
         path: '/models',

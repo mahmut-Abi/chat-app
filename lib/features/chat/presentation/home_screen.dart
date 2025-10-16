@@ -6,7 +6,7 @@ import '../../../shared/widgets/platform_dialog.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import 'chat_screen.dart';
-import 'widgets/enhanced_sidebar.dart';
+import 'widgets/modern_sidebar.dart';
 import 'widgets/conversation_search_screen.dart';
 import 'widgets/group_management_dialog.dart';
 import '../../../shared/utils/responsive_utils.dart';
@@ -226,7 +226,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       body: Row(
         children: [
-          EnhancedSidebar(
+          ModernSidebar(
             conversations: _conversations,
             groups: _groups,
             selectedConversation: _selectedConversation,
@@ -306,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         endDrawerEnableOpenDragGesture: false,
         drawer: Drawer(
           backgroundColor: Theme.of(context).cardColor,
-          child: EnhancedSidebar(
+          child: ModernSidebar(
             conversations: _conversations,
             groups: _groups,
             selectedConversation: _selectedConversation,

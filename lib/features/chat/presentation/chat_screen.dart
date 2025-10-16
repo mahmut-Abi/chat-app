@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
 import '../../../shared/widgets/background_container.dart';
-import 'widgets/enhanced_sidebar.dart';
+import 'widgets/modern_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_input_section.dart';
@@ -425,7 +425,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             drawer: isMobile
                 ? Drawer(
                     backgroundColor: Theme.of(context).cardColor,
-                    child: EnhancedSidebar(
+                    child: ModernSidebar(
                       conversations: _conversations,
                       groups: _groups,
                       selectedConversation: _conversations
