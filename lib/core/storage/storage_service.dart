@@ -22,7 +22,10 @@ class StorageService {
   late Box _promptsBoxInstance;
   late Box _modelsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock,
+      synchronizable: false,
+    ),
   );
 
   // 缓存 app_settings（同步访问）
@@ -229,14 +232,8 @@ class StorageService {
   Future<void> saveApiConfig(String id, Map<String, dynamic> config) async {
     final key = 'api_config_\$id';
     try {
-      await _secureStorage.write(
-        key: key,
-        value: jsonEncode(config),
-        iOptions: const IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock,
-          synchronizable: false,
-        ),
-      );
+      // 使用 FlutterSecureStorage 的默认配置（已在初始化时设置）
+      await _secureStorage.write(key: key, value: jsonEncode(config));
       _log.debug('API 配置保存成功', {'id': id});
     } catch (e) {
       _log.error('API 配置保存失败', {'id': id, 'error': e.toString()});
@@ -265,13 +262,10 @@ class StorageService {
   // App Settings (Secure - 持久化到 Keychain)
   Future<void> saveAppSettings(Map<String, dynamic> settings) async {
     try {
+      // 使用 FlutterSecureStorage 的默认配置（已在初始化时设置）
       await _secureStorage.write(
         key: 'app_settings',
         value: jsonEncode(settings),
-        iOptions: const IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock,
-          synchronizable: false,
-        ),
       );
       _cachedAppSettings = settings;
       _log.debug('应用设置保存成功');

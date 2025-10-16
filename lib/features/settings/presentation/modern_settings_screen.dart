@@ -63,13 +63,14 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    // 立即更新选中的索引，不要等待动画完成
-    // 这样可以确保 Tab 标题和滚动内容同步
-    final newIndex = _tabController.index.round();
-    if (_selectedIndex != newIndex) {
-      setState(() {
-        _selectedIndex = newIndex;
-      });
+    // 只在动画完成后更新索引，避免动画过程中的中间状态
+    if (!_tabController.indexIsChanging) {
+      final newIndex = _tabController.index;
+      if (_selectedIndex != newIndex) {
+        setState(() {
+          _selectedIndex = newIndex;
+        });
+      }
     }
   }
 
@@ -189,6 +190,9 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: () {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
                   _tabController.animateTo(index);
                 },
                 borderRadius: BorderRadius.circular(12),
