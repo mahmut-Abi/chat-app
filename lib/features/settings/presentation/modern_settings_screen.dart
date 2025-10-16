@@ -63,12 +63,14 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    // 同步 TabController 的索引变化
-    final newIndex = _tabController.index.round();
-    if (_selectedIndex != newIndex) {
-      setState(() {
-        _selectedIndex = newIndex;
-      });
+    // 不在监听器中更新，由点击事件直接控制
+    if (!_tabController.indexIsChanging) {
+      final newIndex = _tabController.index.round();
+      if (_selectedIndex != newIndex) {
+        setState(() {
+          _selectedIndex = newIndex;
+        });
+      }
     }
   }
 
@@ -372,6 +374,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   Widget _buildTabView() {
     return TabBarView(
       controller: _tabController,
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildApiTab(),
         _buildThemeTab(),
