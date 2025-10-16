@@ -22,7 +22,7 @@ void main() {
         mockApiClient.getAvailableModels(),
       ).thenAnswer((_) async => ['gpt-4', 'gpt-3.5-turbo']);
 
-      final models = await repository.getAvailableModels();
+      final models = await repository.getAvailableModels([]);
 
       expect(models.length, 2);
       expect(models[0].id, 'gpt-4');
@@ -32,7 +32,7 @@ void main() {
     test('应该在 API 失败时返回默认模型', () async {
       when(mockApiClient.getAvailableModels()).thenThrow(Exception('API 错误'));
 
-      final models = await repository.getAvailableModels();
+      final models = await repository.getAvailableModels([]);
 
       expect(models.isNotEmpty, true);
       expect(models.any((m) => m.id == 'gpt-4'), true);
@@ -44,7 +44,7 @@ void main() {
         mockApiClient.getAvailableModels(),
       ).thenAnswer((_) async => ['gpt-4-turbo']);
 
-      final models = await repository.getAvailableModels();
+      final models = await repository.getAvailableModels([]);
       final turboModel = models.firstWhere((m) => m.id == 'gpt-4-turbo');
 
       expect(turboModel.contextLength, 128000);
@@ -55,7 +55,7 @@ void main() {
         mockApiClient.getAvailableModels(),
       ).thenAnswer((_) async => ['gpt-4o', 'gpt-4-turbo']);
 
-      final models = await repository.getAvailableModels();
+      final models = await repository.getAvailableModels([]);
 
       expect(models.every((m) => m.supportsVision), true);
     });
@@ -65,7 +65,7 @@ void main() {
         mockApiClient.getAvailableModels(),
       ).thenAnswer((_) async => ['gpt-4', 'gpt-3.5-turbo']);
 
-      final models = await repository.getAvailableModels();
+      final models = await repository.getAvailableModels([]);
 
       expect(models.every((m) => m.supportsFunctions), true);
     });

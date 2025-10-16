@@ -7,6 +7,8 @@ part 'model.g.dart';
 class AiModel extends Equatable {
   final String id;
   final String name;
+  final String apiConfigId; // 关联的 API 配置 ID
+  final String apiConfigName; // API 配置名称，用于显示
   final String? description;
   final int? contextLength;
   final bool supportsFunctions;
@@ -16,6 +18,8 @@ class AiModel extends Equatable {
   const AiModel({
     required this.id,
     required this.name,
+    required this.apiConfigId,
+    required this.apiConfigName,
     this.description,
     this.contextLength,
     this.supportsFunctions = false,
@@ -31,6 +35,8 @@ class AiModel extends Equatable {
   AiModel copyWith({
     String? id,
     String? name,
+    String? apiConfigId,
+    String? apiConfigName,
     String? description,
     int? contextLength,
     bool? supportsFunctions,
@@ -40,6 +46,8 @@ class AiModel extends Equatable {
     return AiModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      apiConfigId: apiConfigId ?? this.apiConfigId,
+      apiConfigName: apiConfigName ?? this.apiConfigName,
       description: description ?? this.description,
       contextLength: contextLength ?? this.contextLength,
       supportsFunctions: supportsFunctions ?? this.supportsFunctions,
@@ -52,6 +60,8 @@ class AiModel extends Equatable {
   List<Object?> get props => [
     id,
     name,
+    apiConfigId,
+    apiConfigName,
     description,
     contextLength,
     supportsFunctions,

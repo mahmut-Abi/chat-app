@@ -327,11 +327,13 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   }
 
   Future<void> _showModelSelector() async {
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    final apiConfigs = await settingsRepo.getAllApiConfigs();
     final modelsRepo = ref.read(modelsRepositoryProvider);
     List<AiModel> models;
 
     try {
-      models = await modelsRepo.getAvailableModels();
+      models = await modelsRepo.getAvailableModels(apiConfigs);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
