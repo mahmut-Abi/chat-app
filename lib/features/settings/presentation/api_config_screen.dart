@@ -8,6 +8,7 @@ import '../../../core/network/openai_api_client.dart';
 import 'widgets/api_config_basic_section.dart';
 import 'widgets/api_config_proxy_section.dart';
 import 'widgets/api_config_model_section.dart';
+import '../../models/domain/model.dart';
 
 class ApiConfigScreen extends ConsumerStatefulWidget {
   final ApiConfig? config;
@@ -305,6 +306,31 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       );
       final apiClient = OpenAIApiClient(dioClient, _selectedProvider);
       final models = await apiClient.getAvailableModels();
+
+      // 保存模型到缓存，以便在聊天中使用
+      final modelsRepo = ref.read(modelsRepositoryProvider);
+      final tempConfig = ApiConfig(
+        id: widget.config?.id ?? 'temp',
+        name: _nameController.text,
+        provider: _selectedProvider,
+        baseUrl: _baseUrlController.text,
+        apiKey: _apiKeyController.text,
+        defaultModel: '',
+        isActive: false,
+      );
+      final aiModels = models.map((modelId) {
+        return AiModel(
+          id: modelId,
+          name: modelId,
+          apiConfigId: tempConfig.id,
+          apiConfigName: tempConfig.name,
+          description: '',
+          contextLength: 4096,
+          supportsFunctions: false,
+          supportsVision: false,
+        );
+      }).toList();
+      await modelsRepo.cacheModels(aiModels);
 
       if (mounted) {
         setState(() {
