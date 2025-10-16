@@ -452,112 +452,104 @@ class _ModernSidebarState extends State<ModernSidebar>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.psychology_outlined,
-                    label: '模型',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/models'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.lightbulb_outline,
-                    label: '提示词',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/prompts'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.smart_toy_outlined,
-                    label: '智能体',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/agent'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.extension_outlined,
-                    label: 'MCP',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/mcp'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.access_time_outlined,
-                    label: 'Token',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/token-usage'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.article_outlined,
-                    label: '日志',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/logs'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.settings_outlined,
-                    label: '设置',
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => context.push('/settings'),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _buildQuickAccessButton(
-                    context,
-                    icon: Icons.folder_outlined,
-                    label: '分组',
-                    onTap: widget.onManageGroups,
-                  ),
-                ],
-              ),
+            padding: const EdgeInsets.all(12),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.psychology_outlined,
+                  label: '模型',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/models'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.lightbulb_outline,
+                  label: '提示词',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/prompts'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.smart_toy_outlined,
+                  label: '智能体',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/agent'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.extension_outlined,
+                  label: 'MCP',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/mcp'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.access_time_outlined,
+                  label: 'Token',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/token-usage'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.article_outlined,
+                  label: '日志',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/logs'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.settings_outlined,
+                  label: '设置',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => context.push('/settings'),
+                    );
+                  },
+                ),
+                _buildQuickAccessButton(
+                  context,
+                  icon: Icons.folder_outlined,
+                  label: '分组',
+                  onTap: widget.onManageGroups,
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 12),
