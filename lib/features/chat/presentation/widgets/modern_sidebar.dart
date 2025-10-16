@@ -529,7 +529,12 @@ class _ModernSidebarState extends State<ModernSidebar>
                         context,
                         icon: Icons.folder_outlined,
                         label: '分组',
-                        onTap: widget.onManageGroups,
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            widget.onManageGroups();
+                          });
+                        },
                       ),
                       _buildQuickAccessButton(
                         context,
