@@ -64,7 +64,29 @@ class SettingsRepository {
 
   Future<void> saveApiConfig(ApiConfig config) async {
     _log.debug('保存 API 配置', {'configId': config.id, 'name': config.name});
+
+    // 如果这是第一个配置或者配置被标记为活动，确保只有它是活动的
+    if (config.isActive) {
+      final allConfigs = await getAllApiConfigs();
+      // 如果没有其他配置，这将是第一个，自动激活
+      // 如果有其他配置，取消它们的激活状态
+      for (final existingConfig in allConfigs) {
+        if (existingConfig.id != config.id && existingConfig.isActive) {
+          final updatedConfig = existingConfig.copyWith(isActive: false);
+          await _storage.saveApiConfig(
+            existingConfig.id,
+            updatedConfig.toJson(),
+          );
+        }
+      }
+    }
+
     await _storage.saveApiConfig(config.id, config.toJson());
+    _log.info('API 配置已保存', {
+      'configId': config.id,
+      'name': config.name,
+      'isActive': config.isActive,
+    });
   }
 
   Future<ApiConfig?> getApiConfig(String id) async {
