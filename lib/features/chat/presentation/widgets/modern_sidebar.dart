@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../../domain/conversation.dart';
 import 'conversation_tags_dialog.dart';
 import 'package:go_router/go_router.dart';
@@ -465,10 +466,9 @@ class _ModernSidebarState extends State<ModernSidebar>
                   label: '智能体',
                   onTap: () {
                     Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/agent'),
-                    );
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      context.push('/agent');
+                    });
                   },
                 ),
                 _buildQuickAccessButton(
@@ -477,10 +477,9 @@ class _ModernSidebarState extends State<ModernSidebar>
                   label: 'MCP',
                   onTap: () {
                     Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/mcp'),
-                    );
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      context.push('/mcp');
+                    });
                   },
                 ),
                 _buildQuickAccessButton(
@@ -495,10 +494,9 @@ class _ModernSidebarState extends State<ModernSidebar>
                   label: '设置',
                   onTap: () {
                     Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/settings'),
-                    );
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      context.push('/settings');
+                    });
                   },
                 ),
                 _buildQuickAccessButton(
