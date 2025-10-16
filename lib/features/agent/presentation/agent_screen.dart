@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/agent_tab.dart';
 import 'widgets/tools_tab.dart';
+import '../../../shared/widgets/background_container.dart';
 
 /// Agent 管理界面
 class AgentScreen extends ConsumerWidget {
@@ -21,7 +22,9 @@ class AgentScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: const TabBarView(children: [AgentTab(), ToolsTab()]),
+        body: const BackgroundContainer(
+          child: TabBarView(children: [AgentTab(), ToolsTab()]),
+        ),
       ),
     );
   }

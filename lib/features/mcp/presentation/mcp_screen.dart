@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
+import '../../../shared/widgets/background_container.dart';
 
 /// MCP 配置界面
 class McpScreen extends ConsumerWidget {
@@ -30,12 +31,14 @@ class McpScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: configsAsync.when(
-        data: (configs) => configs.isEmpty
-            ? _buildEmptyState(context)
-            : _buildConfigList(context, ref, configs),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('加载失败: $error')),
+      body: BackgroundContainer(
+        child: configsAsync.when(
+          data: (configs) => configs.isEmpty
+              ? _buildEmptyState(context)
+              : _buildConfigList(context, ref, configs),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(child: Text('加载失败: $error')),
+        ),
       ),
     );
   }

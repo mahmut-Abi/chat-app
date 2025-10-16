@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/token_record.dart';
 import 'package:intl/intl.dart';
+import '../../../shared/widgets/background_container.dart';
 
 /// Token 消耗记录页面
 class TokenUsageScreen extends ConsumerWidget {
@@ -49,16 +50,18 @@ class TokenUsageScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Token 消耗记录')),
-      body: Column(
-        children: [
-          _buildSummaryCard(context, totalTokens, records.length),
-          const Divider(height: 1),
-          Expanded(
-            child: records.isEmpty
-                ? _buildEmptyState(context)
-                : _buildRecordsList(context, records),
-          ),
-        ],
+      body: BackgroundContainer(
+        child: Column(
+          children: [
+            _buildSummaryCard(context, totalTokens, records.length),
+            const Divider(height: 1),
+            Expanded(
+              child: records.isEmpty
+                  ? _buildEmptyState(context)
+                  : _buildRecordsList(context, records),
+            ),
+          ],
+        ),
       ),
     );
   }

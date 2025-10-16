@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
 import 'prompt_config_screen.dart';
+import '../../../shared/widgets/background_container.dart';
 
 class PromptsScreen extends ConsumerStatefulWidget {
   const PromptsScreen({super.key});
@@ -36,38 +37,40 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           ),
         ],
       ),
-      body: templatesAsync.when(
-        data: (templates) {
-          var filteredTemplates = templates;
+      body: BackgroundContainer(
+        child: templatesAsync.when(
+          data: (templates) {
+            var filteredTemplates = templates;
 
-          if (_showOnlyFavorites) {
-            filteredTemplates = filteredTemplates
-                .where((t) => t.isFavorite)
-                .toList();
-          }
+            if (_showOnlyFavorites) {
+              filteredTemplates = filteredTemplates
+                  .where((t) => t.isFavorite)
+                  .toList();
+            }
 
-          if (_selectedCategory != '全部') {
-            filteredTemplates = filteredTemplates
-                .where((t) => t.category == _selectedCategory)
-                .toList();
-          }
+            if (_selectedCategory != '全部') {
+              filteredTemplates = filteredTemplates
+                  .where((t) => t.category == _selectedCategory)
+                  .toList();
+            }
 
-          final categories =
-              ['全部'] + templates.map((t) => t.category).toSet().toList();
+            final categories =
+                ['全部'] + templates.map((t) => t.category).toSet().toList();
 
-          return Column(
-            children: [
-              _buildCategoryFilter(categories),
-              Expanded(
-                child: filteredTemplates.isEmpty
-                    ? _buildEmptyState()
-                    : _buildTemplatesList(filteredTemplates),
-              ),
-            ],
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('加载失败: $error')),
+            return Column(
+              children: [
+                _buildCategoryFilter(categories),
+                Expanded(
+                  child: filteredTemplates.isEmpty
+                      ? _buildEmptyState()
+                      : _buildTemplatesList(filteredTemplates),
+                ),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(child: Text('加载失败: $error')),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreate,

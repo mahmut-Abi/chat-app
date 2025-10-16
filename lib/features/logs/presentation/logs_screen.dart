@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/log_service.dart';
 import '../../../core/providers/providers.dart';
 import 'package:intl/intl.dart';
+import '../../../shared/widgets/background_container.dart';
 
 /// 日志查看界面
 class LogsScreen extends ConsumerStatefulWidget {
@@ -57,15 +58,17 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _buildFilterBar(),
-          _buildStatsBar(logs),
-          const Divider(height: 1),
-          Expanded(
-            child: logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
-          ),
-        ],
+      body: BackgroundContainer(
+        child: Column(
+          children: [
+            _buildFilterBar(),
+            _buildStatsBar(logs),
+            const Divider(height: 1),
+            Expanded(
+              child: logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
+            ),
+          ],
+        ),
       ),
     );
   }

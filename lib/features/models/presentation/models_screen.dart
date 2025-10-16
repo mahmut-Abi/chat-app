@@ -4,6 +4,7 @@ import '../domain/model.dart';
 import '../../settings/domain/api_config.dart';
 import '../../../core/providers/providers.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/background_container.dart';
 
 class ModelsScreen extends ConsumerStatefulWidget {
   const ModelsScreen({super.key});
@@ -100,7 +101,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
           ),
         ],
       ),
-      body: _buildBody(colorScheme),
+      body: BackgroundContainer(child: _buildBody(colorScheme)),
     );
   }
 
