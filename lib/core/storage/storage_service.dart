@@ -229,10 +229,15 @@ class StorageService {
   Future<void> saveApiConfig(String id, Map<String, dynamic> config) async {
     final key = 'api_config_\$id';
     try {
-      // 先尝试删除（如果存在）
-      await _secureStorage.delete(key: key);
-      // 然后写入新值
-      await _secureStorage.write(key: key, value: jsonEncode(config));
+      await _secureStorage.write(
+        key: key,
+        value: jsonEncode(config),
+        iOptions: const IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock,
+          synchronizable: false,
+        ),
+      );
+      _log.debug('API 配置保存成功', {'id': id});
     } catch (e) {
       _log.error('API 配置保存失败', {'id': id, 'error': e.toString()});
       rethrow;
@@ -260,14 +265,16 @@ class StorageService {
   // App Settings (Secure - 持久化到 Keychain)
   Future<void> saveAppSettings(Map<String, dynamic> settings) async {
     try {
-      // 先删除旧值（如果存在）
-      await _secureStorage.delete(key: 'app_settings');
-      // 然后写入新值
       await _secureStorage.write(
         key: 'app_settings',
         value: jsonEncode(settings),
+        iOptions: const IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock,
+          synchronizable: false,
+        ),
       );
-      _cachedAppSettings = settings; // 更新缓存
+      _cachedAppSettings = settings;
+      _log.debug('应用设置保存成功');
     } catch (e) {
       _log.error('应用设置保存失败', {'error': e.toString()});
       rethrow;
