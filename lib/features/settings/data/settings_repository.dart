@@ -164,7 +164,8 @@ class SettingsRepository {
     if (kDebugMode) {
       print('saveSettings: ${settings.toJson()}');
     }
-    await _storage.saveSetting('app_settings', settings.toJson());
+    // 保存到 SecureStorage（持久化）
+    await _storage.saveAppSettings(settings.toJson());
   }
 
   AppSettings getSettings() {
@@ -173,7 +174,9 @@ class SettingsRepository {
       print('getSettings: 读取 app_settings');
     }
     try {
-      final data = _storage.getSetting<Map<String, dynamic>>('app_settings');
+      // 同步方法，先尝试从内存缓存读取
+      // 实际的异步加载在 AppSettingsNotifier 初始化时完成
+      final data = _storage.getCachedAppSettings();
       if (kDebugMode) {
         print('getSettings: data=$data');
       }

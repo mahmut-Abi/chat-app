@@ -22,13 +22,11 @@ class StorageService {
   late Box _promptsBoxInstance;
   late Box _modelsBoxInstance;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    iOptions: IOSOptions(
-      accessibility: KeychainAccessibility.first_unlock,
-      // 卸载应用时删除数据
-      synchronizable: false,
-    ),
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
+
+  // 缓存 app_settings（同步访问）
+  Map<String, dynamic>? _cachedAppSettings;
 
   Future<void> init() async {
     _log.info('开始初始化存储服务');
@@ -39,6 +37,12 @@ class StorageService {
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
       _promptsBoxInstance = await Hive.openBox(_promptsBox);
       _modelsBoxInstance = await Hive.openBox(_modelsBox);
+
+      // 迁移 Hive 中的 app_settings 到 SecureStorage（如果存在）
+      await _migrateAppSettings();
+
+      // 加载 app_settings 到缓存
+      await _loadAppSettingsCache();
 
       _log.info('存储初始化成功', {
         'conversationsCount': _conversationsBoxInstance.length,
@@ -63,6 +67,47 @@ class StorageService {
         print('堆栈: $stack');
       }
       rethrow;
+    }
+  }
+
+  // 加载 app_settings 到缓存
+  Future<void> _loadAppSettingsCache() async {
+    try {
+      final settingsJson = await _secureStorage.read(key: 'app_settings');
+      if (settingsJson != null) {
+        _cachedAppSettings = jsonDecode(settingsJson) as Map<String, dynamic>;
+        _log.debug('app_settings 已加载到缓存');
+      }
+    } catch (e) {
+      _log.warning('app_settings 加载失败', {'error': e});
+    }
+  }
+
+  // 迁移 app_settings 从 Hive 到 SecureStorage
+  Future<void> _migrateAppSettings() async {
+    try {
+      // 检查 SecureStorage 中是否已经有设置
+      final secureSettings = await _secureStorage.read(key: 'app_settings');
+      if (secureSettings != null) {
+        _log.debug('SecureStorage 中已有设置，跳过迁移');
+        return;
+      }
+
+      // 从 Hive 读取设置
+      final hiveSettings = _settingsBoxInstance.get('app_settings');
+      if (hiveSettings != null) {
+        _log.info('检测到 Hive 中的设置，开始迁移到 SecureStorage');
+        // 将设置转换为 JSON 字符串
+        final settingsJson = hiveSettings is String
+            ? hiveSettings
+            : jsonEncode(hiveSettings);
+
+        // 保存到 SecureStorage
+        await _secureStorage.write(key: 'app_settings', value: settingsJson);
+        _log.info('设置迁移完成');
+      }
+    } catch (e) {
+      _log.warning('设置迁移失败', {'error': e});
     }
   }
 
@@ -204,6 +249,26 @@ class StorageService {
 
   Future<void> deleteApiConfig(String id) async {
     await _secureStorage.delete(key: 'api_config_\$id');
+  }
+
+  // App Settings (Secure - 持久化到 Keychain)
+  Future<void> saveAppSettings(Map<String, dynamic> settings) async {
+    await _secureStorage.write(
+      key: 'app_settings',
+      value: jsonEncode(settings),
+    );
+    _cachedAppSettings = settings; // 更新缓存
+  }
+
+  Future<Map<String, dynamic>?> getAppSettings() async {
+    final data = await _secureStorage.read(key: 'app_settings');
+    if (data == null) return null;
+    return jsonDecode(data) as Map<String, dynamic>;
+  }
+
+  // 同步获取缓存的 app_settings
+  Map<String, dynamic>? getCachedAppSettings() {
+    return _cachedAppSettings;
   }
 
   // Models
