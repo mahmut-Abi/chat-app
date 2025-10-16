@@ -44,12 +44,13 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsProvider);
     final themeColor = _getThemeColor(settings);
+    final fontSize = settings.fontSize;
 
     return MaterialApp.router(
       title: 'Chat App',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.getLightTheme(themeColor),
-      darkTheme: AppTheme.getDarkTheme(themeColor),
+      theme: AppTheme.getLightTheme(themeColor, fontSize),
+      darkTheme: AppTheme.getDarkTheme(themeColor, fontSize),
       themeMode: _getThemeMode(settings.themeMode),
       routerConfig: AppRouter.router,
     );
