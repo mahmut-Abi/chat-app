@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import '../../domain/conversation.dart';
 import 'conversation_tags_dialog.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui';
 
 /// 现代化侧边栏组件
 class ModernSidebar extends StatefulWidget {
@@ -444,75 +445,119 @@ class _ModernSidebarState extends State<ModernSidebar>
 
   Widget _buildFooter(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final brightness = Theme.of(context).brightness;
+    final isDark = brightness == Brightness.dark;
 
     return Container(
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
+        // 毛玻璃效果背景
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark
+              ? [
+                  colorScheme.surface.withValues(alpha: 0.7),
+                  colorScheme.surface.withValues(alpha: 0.85),
+                ]
+              : [
+                  Colors.white.withValues(alpha: 0.7),
+                  Colors.white.withValues(alpha: 0.85),
+                ],
+        ),
+        // 顶部微妙分割线
+        border: Border(
+          top: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+            width: 0.5,
+          ),
+        ),
+        // 柔和阴影
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
+      child: ClipRect(
+        // 添加 BackdropFilter 实现毛玻璃效果
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              // 半透明叠加层
+              color: isDark
+                  ? colorScheme.surface.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.5),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.smart_toy_outlined,
-                  label: '智能体',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      context.push('/agent');
-                    });
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.extension_outlined,
-                  label: 'MCP',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      context.push('/mcp');
-                    });
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.folder_outlined,
-                  label: '分组',
-                  onTap: widget.onManageGroups,
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.settings_outlined,
-                  label: '设置',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      context.push('/settings');
-                    });
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.search_outlined,
-                  label: '搜索',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    if (widget.onSearch != null) widget.onSearch!();
-                  },
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      _buildQuickAccessButton(
+                        context,
+                        icon: Icons.smart_toy_outlined,
+                        label: '智能体',
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            context.push('/agent');
+                          });
+                        },
+                      ),
+                      _buildQuickAccessButton(
+                        context,
+                        icon: Icons.extension_outlined,
+                        label: 'MCP',
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            context.push('/mcp');
+                          });
+                        },
+                      ),
+                      _buildQuickAccessButton(
+                        context,
+                        icon: Icons.folder_outlined,
+                        label: '分组',
+                        onTap: widget.onManageGroups,
+                      ),
+                      _buildQuickAccessButton(
+                        context,
+                        icon: Icons.settings_outlined,
+                        label: '设置',
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            context.push('/settings');
+                          });
+                        },
+                      ),
+                      _buildQuickAccessButton(
+                        context,
+                        icon: Icons.search_outlined,
+                        label: '搜索',
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          if (widget.onSearch != null) widget.onSearch!();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-        ],
+        ),
       ),
     );
   }
@@ -524,31 +569,61 @@ class _ModernSidebarState extends State<ModernSidebar>
     required VoidCallback onTap,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final brightness = Theme.of(context).brightness;
+    final isDark = brightness == Brightness.dark;
 
     return Material(
-      color: colorScheme.surface,
-      borderRadius: BorderRadius.circular(8),
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: colorScheme.primary.withValues(alpha: 0.1),
+        highlightColor: colorScheme.primary.withValues(alpha: 0.05),
         child: Container(
-          constraints: const BoxConstraints(minWidth: 72),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          constraints: const BoxConstraints(minWidth: 56, minHeight: 68),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(8),
+            // 半透明背景
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(12),
+            // 微妙边框
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.06),
+              width: 0.5,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 22, color: colorScheme.primary),
-              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  // 图标背景渐变
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      colorScheme.primary.withValues(alpha: 0.15),
+                      colorScheme.primary.withValues(alpha: 0.08),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, size: 20, color: colorScheme.primary),
+              ),
+              const SizedBox(height: 6),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 11,
-                  color: colorScheme.onSurfaceVariant,
+                  color: colorScheme.onSurface.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500,
+                  letterSpacing: 0.2,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
