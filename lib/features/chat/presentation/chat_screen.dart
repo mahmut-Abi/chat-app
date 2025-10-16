@@ -16,6 +16,7 @@ import 'widgets/chat_input_section.dart';
 import '../../../features/agent/domain/agent_tool.dart';
 import '../../../features/mcp/domain/mcp_config.dart';
 import '../../../features/models/domain/model.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -102,6 +103,43 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty && _selectedImages.isEmpty) {
+      return;
+    }
+
+    // 检查是否配置了 API
+    final activeApiConfig = await ref.read(activeApiConfigProvider.future);
+    if (activeApiConfig == null) {
+      if (mounted) {
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('未配置 API'),
+            content: const Text(
+              '您还没有配置任何 API。\n\n'
+              '请先在设置中添加 OpenAI、DeepSeek 或其他 AI 服务的 API 配置。',
+            ),
+            icon: const Icon(
+              Icons.warning_amber,
+              color: Colors.orange,
+              size: 48,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('取消'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('前往设置'),
+              ),
+            ],
+          ),
+        );
+
+        if (result == true && mounted) {
+          context.push('/settings');
+        }
+      }
       return;
     }
 
