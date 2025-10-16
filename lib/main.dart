@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
+import 'dart:io';
 import 'core/routing/app_router.dart';
 import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
 import 'core/providers/providers.dart';
 import 'features/settings/domain/api_config.dart';
 import 'core/utils/desktop_utils.dart';
+import 'core/services/permission_service.dart';
+import 'core/services/log_service.dart';
 
 void main() async {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      // 检查和请求权限（仅移动端）
+      if (Platform.isIOS || Platform.isAndroid) {
+        final permissionService = PermissionService();
+        final log = LogService();
+        try {
+          await permissionService.checkAndRequestPermissions();
+          log.info('权限检查完成');
+        } catch (e) {
+          log.error('权限检查失败', {'error': e.toString()});
+        }
+      }
 
       // Initialize desktop features
       if (DesktopUtils.isDesktop) {

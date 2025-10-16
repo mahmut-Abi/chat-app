@@ -210,23 +210,18 @@ class OpenAIApiClient {
     _log.debug('获取可用模型列表');
     try {
       final response = await _dioClient.dio.get('/models');
-      final models = (response.data['data'] as List)
-          .map((model) => model['id'] as String)
-          .where((id) => id.contains('gpt'))
-          .toList();
+      final models =
+          (response.data['data'] as List)
+              .map((model) => model['id'] as String)
+              .toList()
+            ..sort(); // 按字母顺序排列
 
-      _log.info('成功获取模型列表', {'count': models.length});
       _log.info('成功获取模型列表', {'count': models.length});
       return models;
     } catch (e) {
       _log.warning('获取模型列表失败，使用默认列表', {'error': e.toString()});
-      // Return default models if API call fails
-      return [
-        'gpt-4',
-        'gpt-4-turbo-preview',
-        'gpt-3.5-turbo',
-        'gpt-3.5-turbo-16k',
-      ];
+      // API 调用失败时返回空列表，让用户手动输入
+      return [];
     }
   }
 }
