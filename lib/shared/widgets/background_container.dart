@@ -47,7 +47,7 @@ class BackgroundContainer extends ConsumerWidget {
                 ),
                 child: Container(
                   color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                    alpha: 1 - settings.backgroundOpacity,
+                    alpha: settings.backgroundOpacity,
                   ),
                 ),
               ),
@@ -59,7 +59,7 @@ class BackgroundContainer extends ConsumerWidget {
           Positioned.fill(
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                alpha: 1 - settings.backgroundOpacity,
+                alpha: settings.backgroundOpacity,
               ),
             ),
           ),

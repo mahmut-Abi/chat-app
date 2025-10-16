@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import '../../features/chat/domain/message.dart';
 import 'dio_client.dart';
 import '../services/log_service.dart';
-import '../../features/settings/domain/api_config.dart';
 
 class ApiTestResult {
   final bool success;
@@ -128,8 +127,8 @@ class OpenAIApiClient {
       var requestData = request.toJson();
 
       // 如果指定了 provider，过滤不支持的参数
-      if (_provider != null && _provider!.isNotEmpty) {
-        requestData = _filterRequestParams(requestData, _provider!);
+      if (_provider != null && _provider.isNotEmpty) {
+        requestData = _filterRequestParams(requestData, _provider);
       }
 
       final response = await _dioClient.dio.post(
@@ -161,8 +160,8 @@ class OpenAIApiClient {
       var requestData = request.copyWith(stream: true).toJson();
 
       // 如果指定了 provider，过滤不支持的参数
-      if (_provider != null && _provider!.isNotEmpty) {
-        requestData = _filterRequestParams(requestData, _provider!);
+      if (_provider != null && _provider.isNotEmpty) {
+        requestData = _filterRequestParams(requestData, _provider);
       }
 
       final response = await _dioClient.dio.post(
