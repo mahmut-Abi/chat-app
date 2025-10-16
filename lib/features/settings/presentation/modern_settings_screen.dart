@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io' show Platform;
 import '../../../core/providers/providers.dart';
 import '../../../core/services/log_service.dart';
 import '../domain/api_config.dart';
@@ -42,6 +43,8 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     _SettingsTab(icon: Icons.storage_outlined, label: '数据', title: '数据管理'),
     _SettingsTab(icon: Icons.info_outline, label: '关于', title: '关于应用'),
   ];
+
+  bool get _isMobile => Platform.isIOS || Platform.isAndroid;
 
   @override
   void initState() {
@@ -92,7 +95,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = '加载配置失败：\${e.toString()}';
+          _errorMessage = '加载配置失败：${e.toString()}';
         });
       }
     }
@@ -101,6 +104,35 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    if (_isMobile) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        appBar: AppBar(
+          title: Text(_tabs[_selectedIndex].title),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+          elevation: 0,
+          backgroundColor: colorScheme.surface,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildMobileTabBar(context),
+              Expanded(
+                child: _isLoading
+                    ? _buildLoadingWidget()
+                    : _errorMessage != null
+                    ? _buildErrorWidget()
+                    : _buildTabView(),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -115,6 +147,73 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                 : _buildContent(context),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMobileTabBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        itemCount: _tabs.length,
+        itemBuilder: (context, index) {
+          final tab = _tabs[index];
+          final isSelected = _selectedIndex == index;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Material(
+              color: isSelected
+                  ? colorScheme.primaryContainer
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: () {
+                  _tabController.animateTo(index);
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        tab.icon,
+                        size: 20,
+                        color: isSelected
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        tab.label,
+                        style: TextStyle(
+                          color: isSelected
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onSurfaceVariant,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -238,13 +337,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                _getTabDescription(_selectedIndex),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
             ],
           ),
         ],
@@ -264,23 +356,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         _buildAboutTab(),
       ],
     );
-  }
-
-  String _getTabDescription(int index) {
-    switch (index) {
-      case 0:
-        return '配置 API 端点和密钥';
-      case 1:
-        return '自定义应用外观和主题';
-      case 2:
-        return '高级功能和实验性特性';
-      case 3:
-        return '管理和备份应用数据';
-      case 4:
-        return '应用信息和版本';
-      default:
-        return '';
-    }
   }
 
   Widget _buildLoadingWidget() {
