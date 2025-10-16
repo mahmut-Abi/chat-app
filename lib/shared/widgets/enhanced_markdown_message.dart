@@ -36,7 +36,16 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
+
+    return settingsAsync.when(
+      data: (settings) => _buildMarkdown(context, settings),
+      loading: () => const SizedBox.shrink(),
+      error: (error, stack) => _buildMarkdown(context, const AppSettings()),
+    );
+  }
+
+  Widget _buildMarkdown(BuildContext context, AppSettings settings) {
     final enableLatex = settings.enableLatex;
     final enableCodeHighlight = settings.enableCodeHighlight;
 

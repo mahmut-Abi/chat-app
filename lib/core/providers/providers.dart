@@ -134,21 +134,20 @@ final modelsRepositoryProvider = Provider<ModelsRepository>((ref) {
 });
 
 // App Settings
-final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(
-  () {
-    return AppSettingsNotifier();
-  },
-);
+final appSettingsProvider =
+    AsyncNotifierProvider<AppSettingsNotifier, AppSettings>(() {
+      return AppSettingsNotifier();
+    });
 
-class AppSettingsNotifier extends Notifier<AppSettings> {
+class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
   @override
-  AppSettings build() {
+  Future<AppSettings> build() async {
     if (kDebugMode) {
       print('AppSettingsNotifier.build() called');
     }
     try {
       final settingsRepo = ref.watch(settingsRepositoryProvider);
-      final settings = settingsRepo.getSettings();
+      final settings = await settingsRepo.getSettings();
       if (kDebugMode) {
         print('Loaded settings: ${settings.toJson()}');
       }
@@ -157,7 +156,6 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
       if (kDebugMode) {
         print('Failed to load settings: $e');
       }
-      // 如果加载设置失败,返回默认设置
       return const AppSettings();
     }
   }
@@ -167,11 +165,9 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
       print('AppSettingsNotifier.updateSettings() called');
       print('New settings: ${settings.toJson()}');
     }
-    // 先持久化到存储
     final settingsRepo = ref.read(settingsRepositoryProvider);
     await settingsRepo.saveSettings(settings);
-    // 再更新内存状态
-    state = settings;
+    state = AsyncValue.data(settings);
     if (kDebugMode) {
       print('Settings saved and state updated');
     }

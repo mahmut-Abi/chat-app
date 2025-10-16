@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/api_config.dart';
 import '../../../../core/providers/providers.dart';
 
 /// 主题设置区域
@@ -25,8 +26,16 @@ class ThemeSettingsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
 
+    return settingsAsync.when(
+      data: (settings) => _buildSettings(context, settings),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildSettings(context, const AppSettings()),
+    );
+  }
+
+  Widget _buildSettings(BuildContext context, AppSettings settings) {
     return Column(
       children: [
         ListTile(

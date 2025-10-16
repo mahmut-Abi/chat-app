@@ -26,7 +26,16 @@ class ImprovedThemeSettingsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
+
+    return settingsAsync.when(
+      data: (settings) => _buildSettings(context, settings),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildSettings(context, const AppSettings()),
+    );
+  }
+
+  Widget _buildSettings(BuildContext context, AppSettings settings) {
     final colorScheme = Theme.of(context).colorScheme;
     final log = LogService();
 

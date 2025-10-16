@@ -184,23 +184,20 @@ class SettingsRepository {
       'fontSize': settings.fontSize,
     });
     if (kDebugMode) {
-      print('saveSettings: ${settings.toJson()}');
+      print('saveSettings: \${settings.toJson()}');
     }
-    // 保存到 SecureStorage（持久化）
     await _storage.saveAppSettings(settings.toJson());
   }
 
-  AppSettings getSettings() {
+  Future<AppSettings> getSettings() async {
     _log.debug('读取应用设置');
     if (kDebugMode) {
       print('getSettings: 读取 app_settings');
     }
     try {
-      // 同步方法，先尝试从内存缓存读取
-      // 实际的异步加载在 AppSettingsNotifier 初始化时完成
-      final data = _storage.getCachedAppSettings();
+      final data = await _storage.getAppSettings();
       if (kDebugMode) {
-        print('getSettings: data=$data');
+        print('getSettings: data=\$data');
       }
       if (data == null) {
         if (kDebugMode) {
@@ -211,8 +208,8 @@ class SettingsRepository {
       return AppSettings.fromJson(data);
     } catch (e, stack) {
       if (kDebugMode) {
-        print('getSettings 错误: $e');
-        print('Stack: $stack');
+        print('getSettings 错误: \$e');
+        print('Stack: \$stack');
       }
       _log.error('读取应用设置失败', e, stack);
       return const AppSettings();

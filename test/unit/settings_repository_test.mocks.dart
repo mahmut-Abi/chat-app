@@ -111,22 +111,17 @@ class MockStorageService extends _i1.Mock implements _i2.StorageService {
           as _i3.Future<void>);
 
   @override
-  _i3.Future<Map<String, dynamic>?> getPromptTemplate(String? id) =>
-      (super.noSuchMethod(
-            Invocation.method(#getPromptTemplate, [id]),
-            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
-          )
-          as _i3.Future<Map<String, dynamic>?>);
+  Map<String, dynamic>? getPromptTemplate(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getPromptTemplate, [id]))
+          as Map<String, dynamic>?);
 
   @override
-  _i3.Future<List<Map<String, dynamic>>> getAllPromptTemplates() =>
+  List<Map<String, dynamic>> getAllPromptTemplates() =>
       (super.noSuchMethod(
             Invocation.method(#getAllPromptTemplates, []),
-            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
+            returnValue: <Map<String, dynamic>>[],
           )
-          as _i3.Future<List<Map<String, dynamic>>>);
+          as List<Map<String, dynamic>>);
 
   @override
   _i3.Future<void> deletePromptTemplate(String? id) =>
@@ -147,16 +142,8 @@ class MockStorageService extends _i1.Mock implements _i2.StorageService {
           as _i3.Future<void>);
 
   @override
-  T? getSetting<T>(String? key) =>
-      (super.noSuchMethod(Invocation.method(#getSetting, [key])) as T?);
-
-  @override
-  _i3.Future<List<String>> getAllKeys() =>
-      (super.noSuchMethod(
-            Invocation.method(#getAllKeys, []),
-            returnValue: _i3.Future<List<String>>.value(<String>[]),
-          )
-          as _i3.Future<List<String>>);
+  dynamic getSetting(String? key) =>
+      super.noSuchMethod(Invocation.method(#getSetting, [key]));
 
   @override
   _i3.Future<void> deleteSetting(String? key) =>
@@ -168,9 +155,9 @@ class MockStorageService extends _i1.Mock implements _i2.StorageService {
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> saveApiConfig(String? id, Map<String, dynamic>? config) =>
+  _i3.Future<void> saveApiConfig(String? id, Map<String, dynamic>? data) =>
       (super.noSuchMethod(
-            Invocation.method(#saveApiConfig, [id, config]),
+            Invocation.method(#saveApiConfig, [id, data]),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
@@ -268,6 +255,14 @@ class MockStorageService extends _i1.Mock implements _i2.StorageService {
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
+
+  @override
+  _i3.Future<List<String>> getAllKeys() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllKeys, []),
+            returnValue: _i3.Future<List<String>>.value(<String>[]),
+          )
+          as _i3.Future<List<String>>);
 
   @override
   _i3.Future<void> clearAll() =>

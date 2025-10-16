@@ -75,7 +75,18 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
+
+    return settingsAsync.when(
+      data: (settings) => _buildApp(settings),
+      loading: () => const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      error: (error, stack) => _buildApp(const AppSettings()),
+    );
+  }
+
+  Widget _buildApp(AppSettings settings) {
     final themeColor = _getThemeColor(settings);
     final fontSize = settings.fontSize;
 

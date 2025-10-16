@@ -33,10 +33,17 @@ class _BackgroundSettingsScreenState
   @override
   void initState() {
     super.initState();
-    final settings = ref.read(appSettingsProvider);
-    _selectedBackground = settings.backgroundImage;
-    _opacity = settings.backgroundOpacity;
-    _enableBlur = settings.enableBackgroundBlur;
+    // 延迟加载设置到 build 完成后
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final settings = await ref.read(appSettingsProvider.future);
+      if (mounted) {
+        setState(() {
+          _selectedBackground = settings.backgroundImage;
+          _opacity = settings.backgroundOpacity;
+          _enableBlur = settings.enableBackgroundBlur;
+        });
+      }
+    });
   }
 
   Future<void> _pickCustomImage() async {
@@ -53,7 +60,7 @@ class _BackgroundSettingsScreenState
   }
 
   Future<void> _saveSettings() async {
-    final currentSettings = ref.read(appSettingsProvider);
+    final currentSettings = await ref.read(appSettingsProvider.future);
 
     final newSettings = currentSettings.copyWith(
       backgroundImage: _selectedBackground,

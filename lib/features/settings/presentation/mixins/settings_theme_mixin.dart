@@ -34,7 +34,7 @@ mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     );
 
     if (result != null) {
-      final currentSettings = ref.read(appSettingsProvider);
+      final currentSettings = await ref.read(appSettingsProvider.future);
       await ref
           .read(appSettingsProvider.notifier)
           .updateSettings(currentSettings.copyWith(themeMode: result));
@@ -51,7 +51,8 @@ mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   Future<void> showThemeColorDialog() async {
-    final settings = ref.read(appSettingsProvider);
+    final settings = await ref.read(appSettingsProvider.future);
+    if (!context.mounted) return;
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -108,41 +109,37 @@ mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   Future<void> updateThemeColor(String colorKey) async {
-    final currentSettings = ref.read(appSettingsProvider);
+    final currentSettings = await ref.read(appSettingsProvider.future);
     await ref
         .read(appSettingsProvider.notifier)
         .updateSettings(currentSettings.copyWith(themeColor: colorKey));
   }
 
   Future<void> updateFontSize(double fontSize) async {
+    final currentSettings = await ref.read(appSettingsProvider.future);
     await ref
         .read(appSettingsProvider.notifier)
-        .updateSettings(
-          ref.read(appSettingsProvider).copyWith(fontSize: fontSize),
-        );
+        .updateSettings(currentSettings.copyWith(fontSize: fontSize));
   }
 
   Future<void> updateMarkdownEnabled(bool enabled) async {
+    final currentSettings = await ref.read(appSettingsProvider.future);
     await ref
         .read(appSettingsProvider.notifier)
-        .updateSettings(
-          ref.read(appSettingsProvider).copyWith(enableMarkdown: enabled),
-        );
+        .updateSettings(currentSettings.copyWith(enableMarkdown: enabled));
   }
 
   Future<void> updateCodeHighlightEnabled(bool enabled) async {
+    final currentSettings = await ref.read(appSettingsProvider.future);
     await ref
         .read(appSettingsProvider.notifier)
-        .updateSettings(
-          ref.read(appSettingsProvider).copyWith(enableCodeHighlight: enabled),
-        );
+        .updateSettings(currentSettings.copyWith(enableCodeHighlight: enabled));
   }
 
   Future<void> updateLatexEnabled(bool enabled) async {
+    final currentSettings = await ref.read(appSettingsProvider.future);
     await ref
         .read(appSettingsProvider.notifier)
-        .updateSettings(
-          ref.read(appSettingsProvider).copyWith(enableLatex: enabled),
-        );
+        .updateSettings(currentSettings.copyWith(enableLatex: enabled));
   }
 }

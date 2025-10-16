@@ -38,10 +38,17 @@ class _ImprovedBackgroundSettingsScreenState
   void initState() {
     super.initState();
     _log.info('初始化背景设置页面');
-    final settings = ref.read(appSettingsProvider);
-    _selectedBackground = settings.backgroundImage;
-    _opacity = settings.backgroundOpacity;
-    _enableBlur = settings.enableBackgroundBlur;
+    // 延迟加载设置
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final settings = await ref.read(appSettingsProvider.future);
+      if (mounted) {
+        setState(() {
+          _selectedBackground = settings.backgroundImage;
+          _opacity = settings.backgroundOpacity;
+          _enableBlur = settings.enableBackgroundBlur;
+        });
+      }
+    });
     _log.debug('加载现有设置', {
       'hasBackground': _selectedBackground != null,
       'opacity': _opacity,
@@ -85,7 +92,7 @@ class _ImprovedBackgroundSettingsScreenState
     });
 
     try {
-      final currentSettings = ref.read(appSettingsProvider);
+      final currentSettings = await ref.read(appSettingsProvider.future);
       final newSettings = currentSettings.copyWith(
         backgroundImage: _selectedBackground,
         clearBackgroundImage: _selectedBackground == null,
