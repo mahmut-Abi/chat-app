@@ -455,59 +455,67 @@ class _ModernSidebarState extends State<ModernSidebar>
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.psychology_outlined,
-                  label: '模型',
-                  onTap: () => context.push('/models'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.lightbulb_outline,
-                  label: '提示词',
-                  onTap: () => context.push('/prompts'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.smart_toy_outlined,
-                  label: '智能体',
-                  onTap: () => context.push('/agent'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.extension_outlined,
-                  label: 'MCP',
-                  onTap: () => context.push('/mcp'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.access_time_outlined,
-                  label: 'Token',
-                  onTap: () => context.push('/token-usage'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.article_outlined,
-                  label: '日志',
-                  onTap: () => context.push('/logs'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.settings_outlined,
-                  label: '设置',
-                  onTap: () => context.push('/settings'),
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.folder_outlined,
-                  label: '分组',
-                  onTap: widget.onManageGroups,
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.psychology_outlined,
+                    label: '模型',
+                    onTap: () => context.push('/models'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.lightbulb_outline,
+                    label: '提示词',
+                    onTap: () => context.push('/prompts'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.smart_toy_outlined,
+                    label: '智能体',
+                    onTap: () => context.push('/agent'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.extension_outlined,
+                    label: 'MCP',
+                    onTap: () => context.push('/mcp'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.access_time_outlined,
+                    label: 'Token',
+                    onTap: () => context.push('/token-usage'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.article_outlined,
+                    label: '日志',
+                    onTap: () => context.push('/logs'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.settings_outlined,
+                    label: '设置',
+                    onTap: () => context.push('/settings'),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickAccessButton(
+                    context,
+                    icon: Icons.folder_outlined,
+                    label: '分组',
+                    onTap: widget.onManageGroups,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -531,8 +539,8 @@ class _ModernSidebarState extends State<ModernSidebar>
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          width: 68,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+          constraints: const BoxConstraints(minWidth: 72),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
           decoration: BoxDecoration(
             border: Border.all(color: colorScheme.outlineVariant),
             borderRadius: BorderRadius.circular(8),
@@ -540,13 +548,14 @@ class _ModernSidebarState extends State<ModernSidebar>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 20, color: colorScheme.primary),
+              Icon(icon, size: 22, color: colorScheme.primary),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 11,
                   color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
