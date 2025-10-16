@@ -50,7 +50,7 @@ void main() {
 
       when(
         mockStorage.getPromptTemplate('test-id'),
-      ).thenAnswer((_) async => testTemplate.toJson());
+      ).thenReturn(testTemplate.toJson());
 
       final template = await repository.getTemplate('test-id');
 

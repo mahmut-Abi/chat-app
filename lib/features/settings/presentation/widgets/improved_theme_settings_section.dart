@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/services/log_service.dart';
+import '../../../settings/domain/api_config.dart';
 
 /// 改进的主题设置区域
 class ImprovedThemeSettingsSection extends ConsumerWidget {

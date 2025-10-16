@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chat_app/features/settings/presentation/modern_settings_screen.dart';
+import 'package:chat_app/features/settings/domain/api_config.dart';
 import 'package:chat_app/core/providers/providers.dart';
 import 'package:chat_app/features/settings/data/settings_repository.dart';
 import 'package:mockito/annotations.dart';
@@ -18,6 +19,10 @@ void main() {
       mockSettingsRepo = MockSettingsRepository();
       // Mock getAllApiConfigs 返回空列表
       when(mockSettingsRepo.getAllApiConfigs()).thenAnswer((_) async => []);
+      // Mock getSettings 返回默认设置
+      when(
+        mockSettingsRepo.getSettings(),
+      ).thenAnswer((_) async => const AppSettings());
     });
 
     Widget createTestWidget() {

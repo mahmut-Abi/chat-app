@@ -46,10 +46,6 @@ class StorageService {
       }
     } catch (e, stack) {
       _log.error('存储初始化失败: \${e.toString()}', e, stack);
-      if (kDebugMode) {
-        print('存储初始化失败: \$e');
-        print('堆栈: \$stack');
-      }
       rethrow;
     }
   }
@@ -228,26 +224,13 @@ class StorageService {
   // Clear all data
   Future<void> clearAll() async {
     try {
-      if (kDebugMode) {
-        print('clearAll: 开始清除对话数据');
-        print('  对话数: \${_conversationsBoxInstance.length}');
-        print('  分组数: \${_groupsBoxInstance.length}');
-        print('  提示词模板数: \${_promptsBoxInstance.length}');
-      }
-
       // 只清除对话、分组和提示词模板数据，保留设置和 API 配置
       await _conversationsBoxInstance.clear();
       await _groupsBoxInstance.clear();
       await _promptsBoxInstance.clear();
-
-      if (kDebugMode) {
-        print('clearAll: 对话数据清除完成');
-        print('  对话数: \${_conversationsBoxInstance.length}');
-      }
     } catch (e, stack) {
       if (kDebugMode) {
         print('clearAll 错误: \$e');
-        print('Stack: \$stack');
       }
       rethrow;
     }

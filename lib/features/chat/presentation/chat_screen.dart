@@ -15,7 +15,6 @@ import 'widgets/chat_input_section.dart';
 import '../../../features/agent/domain/agent_tool.dart';
 import '../../../features/mcp/domain/mcp_config.dart';
 import '../../../features/models/domain/model.dart';
-import 'package:go_router/go_router.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -60,25 +59,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _loadConversation() {
     final chatRepo = ref.read(chatRepositoryProvider);
     final conversation = chatRepo.getConversation(widget.conversationId);
-    if (false) {
-      print('ChatScreen._loadConversation:');
-      print('  conversationId: ${widget.conversationId}');
-      print('  conversation: ${conversation?.title}');
-      print('  messages count: ${conversation?.messages.length ?? 0}');
-      print('  current _messages count: ${_messages.length}');
-    }
     if (conversation != null) {
       setState(() {
         _messages.clear(); // 清空旧消息避免累积
         _messages.addAll(conversation.messages);
       });
-      if (false) {
-        print('  loaded _messages count: ${_messages.length}');
-      }
-    } else {
-      if (false) {
-        print('  警告: 对话不存在!');
-      }
     }
   }
 
@@ -231,10 +216,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
-        // 如果对话不存在，说明这是一个临时对话，需要创建并保存
-        if (false) {
-          print('ChatScreen: 对话不存在，创建新对话');
-        }
         conversation = Conversation(
           id: widget.conversationId,
           title: '新建对话',

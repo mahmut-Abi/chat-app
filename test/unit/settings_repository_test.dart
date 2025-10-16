@@ -17,9 +17,9 @@ void main() {
     repository = SettingsRepository(mockStorage);
   });
 
-  group('SettingsRepository - 应用设置', () {
+  group('应用设置', () {
     test('应该正确保存设置', () async {
-      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async => {});
+      when(mockStorage.saveAppSettings(any)).thenAnswer((_) async => {});
 
       const settings = AppSettings(
         themeMode: 'dark',
@@ -32,10 +32,10 @@ void main() {
 
       await repository.saveSettings(settings);
 
-      verify(mockStorage.saveSetting('app_settings', any)).called(1);
+      verify(mockStorage.saveAppSettings(any)).called(1);
     });
 
-    test('应该正确读取设置', () {
+    test('应该正确读取设置', () async {
       final mockSettings = {
         'themeMode': 'dark',
         'language': 'zh',
@@ -48,11 +48,9 @@ void main() {
         'enableBackgroundBlur': true,
       };
 
-      when(
-        mockStorage.getSetting<Map<String, dynamic>>('app_settings'),
-      ).thenReturn(mockSettings);
+      when(mockStorage.getAppSettings()).thenAnswer((_) async => mockSettings);
 
-      final settings = repository.getSettings();
+      final settings = await repository.getSettings();
 
       expect(settings.themeMode, 'dark');
       expect(settings.language, 'zh');
@@ -62,12 +60,10 @@ void main() {
       expect(settings.enableBackgroundBlur, true);
     });
 
-    test('应该返回默认设置当无保存数据', () {
-      when(
-        mockStorage.getSetting<Map<String, dynamic>>('app_settings'),
-      ).thenReturn(null);
+    test('应该返回默认设置当无保存数据', () async {
+      when(mockStorage.getAppSettings()).thenAnswer((_) async => null);
 
-      final settings = repository.getSettings();
+      final settings = await repository.getSettings();
 
       expect(settings.themeMode, 'system');
       expect(settings.language, 'en');
@@ -75,8 +71,8 @@ void main() {
     });
   });
 
-  group('SettingsRepository - API 配置', () {
-    test('应该正确创建API配置', () async {
+  group('API 配置', () {
+    test('应该正确创建 API 配置', () async {
       when(mockStorage.saveApiConfig(any, any)).thenAnswer((_) async => {});
 
       final config = await repository.createApiConfig(
@@ -92,7 +88,7 @@ void main() {
       verify(mockStorage.saveApiConfig(any, any)).called(1);
     });
 
-    test('应该正确读取API配置', () async {
+    test('应该正确读取 API 配置', () async {
       final mockConfig = {
         'id': 'config-1',
         'name': 'Test API',
@@ -119,7 +115,7 @@ void main() {
       expect(config.provider, 'openai');
     });
 
-    test('应该正确设置活跋API配置', () async {
+    test('应该正确设置活动 API 配置', () async {
       final mockConfigs = [
         {
           'id': 'config-1',

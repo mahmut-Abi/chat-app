@@ -7,6 +7,7 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter/services.dart';
 import '../../core/providers/providers.dart';
+import '../../features/settings/domain/api_config.dart';
 
 // Markdown 渲染缓存
 class _MarkdownCache {

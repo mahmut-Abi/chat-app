@@ -45,7 +45,7 @@ class PromptsRepository {
 
   Future<PromptTemplate?> getTemplate(String id) async {
     _log.debug('获取提示词模板', {'templateId': id});
-    final data = await _storage.getPromptTemplate(id);
+    final data = _storage.getPromptTemplate(id);
     if (data == null) {
       _log.debug('提示词模板不存在', {'templateId': id});
       return null;
@@ -56,7 +56,7 @@ class PromptsRepository {
 
   Future<List<PromptTemplate>> getAllTemplates() async {
     _log.debug('获取所有提示词模板');
-    final templates = await _storage.getAllPromptTemplates();
+    final templates = _storage.getAllPromptTemplates();
     _log.info('获取到提示词模板列表', {'count': templates.length});
     return templates.map((data) => PromptTemplate.fromJson(data)).toList();
   }
