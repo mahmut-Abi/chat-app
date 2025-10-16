@@ -39,9 +39,23 @@ class OpenAIApiClient {
         filtered['temperature'] = temp.clamp(0.0, 2.0);
       }
 
+      // 确保 max_tokens 在合理范围内
+      if (filtered['max_tokens'] != null) {
+        final maxTokens = filtered['max_tokens'] as int;
+        // DeepSeek 的 max_tokens 范围通常是 1-8192
+        filtered['max_tokens'] = maxTokens.clamp(1, 8192);
+      }
+
+      // 确保 top_p 在 0-1 范围内
+      if (filtered['top_p'] != null) {
+        final topP = filtered['top_p'] as double;
+        filtered['top_p'] = topP.clamp(0.0, 1.0);
+      }
+
       _log.debug('DeepSeek 参数过滤', {
         'original': params.keys.toList(),
         'filtered': filtered.keys.toList(),
+        'values': filtered,
       });
     }
 
@@ -131,6 +145,11 @@ class OpenAIApiClient {
         requestData = _filterRequestParams(requestData, _provider);
       }
 
+      _log.debug('发送聊天完成请求', {
+        'provider': _provider,
+        'requestData': requestData,
+      });
+
       final response = await _dioClient.dio.post(
         '/chat/completions',
         data: requestData,
@@ -142,8 +161,16 @@ class OpenAIApiClient {
       });
 
       return ChatCompletionResponse.fromJson(response.data);
-    } catch (e) {
-      _log.error('聊天完成请求失败', {'error': e.toString()});
+    } catch (e, stackTrace) {
+      if (e is DioException && e.response != null) {
+        _log.error('聊天完成请求失败', {
+          'error': e.toString(),
+          'statusCode': e.response?.statusCode,
+          'responseData': e.response?.data,
+        });
+      } else {
+        _log.error('聊天完成请求失败', {'error': e.toString()}, stackTrace);
+      }
       rethrow;
     }
   }
