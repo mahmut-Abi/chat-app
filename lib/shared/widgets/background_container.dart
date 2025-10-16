@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 import '../../core/providers/providers.dart';
 import 'package:flutter/foundation.dart';
+import '../../features/settings/domain/api_config.dart';
 
 class BackgroundContainer extends ConsumerWidget {
   final Widget child;
@@ -12,7 +13,22 @@ class BackgroundContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
+
+    return settingsAsync.when(
+      data: (settings) => _buildWithBackground(context, settings),
+      loading: () => Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: child,
+      ),
+      error: (error, stack) => Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildWithBackground(BuildContext context, AppSettings settings) {
     final backgroundImage = settings.backgroundImage;
 
     if (kDebugMode) {
@@ -51,9 +67,10 @@ class BackgroundContainer extends ConsumerWidget {
                   tileMode: TileMode.clamp,
                 ),
                 child: Container(
-                  color: Theme.of(
-                    context,
-                  ).scaffoldBackgroundColor.withValues(alpha: maskOpacity),
+                  // 模糊时保证至少 15% 的不透明度，确保模糊效果可见
+                  color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                    alpha: maskOpacity < 0.15 ? 0.15 : maskOpacity,
+                  ),
                 ),
               ),
             ),
