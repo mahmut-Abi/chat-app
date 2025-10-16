@@ -63,9 +63,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    setState(() {
-      _selectedIndex = _tabController.index;
-    });
+    // 立即更新选中的索引，确保 Tab 标题和内容同步
+    if (_selectedIndex != _tabController.index) {
+      setState(() {
+        _selectedIndex = _tabController.index;
+      });
+    }
   }
 
   @override
