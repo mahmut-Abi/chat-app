@@ -463,49 +463,70 @@ class _ModernSidebarState extends State<ModernSidebar>
                     context,
                     icon: Icons.psychology_outlined,
                     label: '模型',
-                    onTap: () => context.push('/models'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/models');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.lightbulb_outline,
                     label: '提示词',
-                    onTap: () => context.push('/prompts'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/prompts');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.smart_toy_outlined,
                     label: '智能体',
-                    onTap: () => context.push('/agent'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/agent');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.extension_outlined,
                     label: 'MCP',
-                    onTap: () => context.push('/mcp'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/mcp');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.access_time_outlined,
                     label: 'Token',
-                    onTap: () => context.push('/token-usage'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/token-usage');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.article_outlined,
                     label: '日志',
-                    onTap: () => context.push('/logs'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/logs');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
                     context,
                     icon: Icons.settings_outlined,
                     label: '设置',
-                    onTap: () => context.push('/settings'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/settings');
+                    },
                   ),
                   const SizedBox(width: 8),
                   _buildQuickAccessButton(
