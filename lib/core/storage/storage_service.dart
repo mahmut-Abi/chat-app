@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import '../services/log_service.dart';
 
 class StorageService {
@@ -227,10 +228,26 @@ class StorageService {
 
   // API Configs (Secure)
   Future<void> saveApiConfig(String id, Map<String, dynamic> config) async {
-    await _secureStorage.write(
-      key: 'api_config_\$id',
-      value: jsonEncode(config),
-    );
+    try {
+      await _secureStorage.write(
+        key: 'api_config_\$id',
+        value: jsonEncode(config),
+      );
+    } on PlatformException catch (e) {
+      // iOS Keychain 错误 -25299: 项目已存在
+      // 先删除再重新写入
+      if (e.code == 'Unexpected security result code' &&
+          e.message?.contains('-25299') == true) {
+        _log.debug('Keychain 项目已存在，先删除再保存', {'id': id});
+        await _secureStorage.delete(key: 'api_config_\$id');
+        await _secureStorage.write(
+          key: 'api_config_\$id',
+          value: jsonEncode(config),
+        );
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future<Map<String, dynamic>?> getApiConfig(String id) async {
@@ -253,11 +270,27 @@ class StorageService {
 
   // App Settings (Secure - 持久化到 Keychain)
   Future<void> saveAppSettings(Map<String, dynamic> settings) async {
-    await _secureStorage.write(
-      key: 'app_settings',
-      value: jsonEncode(settings),
-    );
-    _cachedAppSettings = settings; // 更新缓存
+    try {
+      await _secureStorage.write(
+        key: 'app_settings',
+        value: jsonEncode(settings),
+      );
+      _cachedAppSettings = settings; // 更新缓存
+    } on PlatformException catch (e) {
+      // iOS Keychain 错误 -25299: 项目已存在
+      if (e.code == 'Unexpected security result code' &&
+          e.message?.contains('-25299') == true) {
+        _log.debug('Keychain 项目已存在，先删除再保存');
+        await _secureStorage.delete(key: 'app_settings');
+        await _secureStorage.write(
+          key: 'app_settings',
+          value: jsonEncode(settings),
+        );
+        _cachedAppSettings = settings;
+      } else {
+        rethrow;
+      }
+    }
   }
 
   Future<Map<String, dynamic>?> getAppSettings() async {
