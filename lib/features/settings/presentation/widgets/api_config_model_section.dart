@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ApiConfigModelSection extends StatelessWidget {
-  final TextEditingController modelController;
+  final String? selectedModel;
+  final List<String> availableModels;
+  final bool isLoadingModels;
   final double temperature;
   final int maxTokens;
   final double topP;
@@ -12,10 +14,14 @@ class ApiConfigModelSection extends StatelessWidget {
   final Function(double) onTopPChanged;
   final Function(double) onFrequencyPenaltyChanged;
   final Function(double) onPresencePenaltyChanged;
+  final Function(String?) onModelChanged;
+  final VoidCallback onFetchModels;
 
   const ApiConfigModelSection({
     super.key,
-    required this.modelController,
+    required this.selectedModel,
+    required this.availableModels,
+    required this.isLoadingModels,
     required this.temperature,
     required this.maxTokens,
     required this.topP,
@@ -26,6 +32,8 @@ class ApiConfigModelSection extends StatelessWidget {
     required this.onTopPChanged,
     required this.onFrequencyPenaltyChanged,
     required this.onPresencePenaltyChanged,
+    required this.onModelChanged,
+    required this.onFetchModels,
   });
 
   @override
@@ -38,14 +46,38 @@ class ApiConfigModelSection extends StatelessWidget {
           children: [
             Text('模型参数', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: modelController,
-              decoration: const InputDecoration(
-                labelText: '默认模型',
-                hintText: 'gpt-3.5-turbo',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.memory),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: availableModels.contains(selectedModel)
+                        ? selectedModel
+                        : null,
+                    decoration: const InputDecoration(
+                      labelText: '默认模型',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.memory),
+                    ),
+                    hint: const Text('选择模型'),
+                    items: availableModels.map((model) {
+                      return DropdownMenuItem(value: model, child: Text(model));
+                    }).toList(),
+                    onChanged: onModelChanged,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filled(
+                  onPressed: isLoadingModels ? null : onFetchModels,
+                  icon: isLoadingModels
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh),
+                  tooltip: '获取可用模型',
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             _buildSlider(

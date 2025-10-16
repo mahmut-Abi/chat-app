@@ -29,9 +29,11 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
   late TextEditingController _proxyUrlController;
   late TextEditingController _proxyUsernameController;
   late TextEditingController _proxyPasswordController;
-  late TextEditingController _modelController;
 
   late String _selectedProvider;
+  String? _selectedModel;
+  List<String> _availableModels = [];
+  bool _isLoadingModels = false;
   late double _temperature;
   late int _maxTokens;
   late double _topP;
@@ -60,11 +62,10 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
     _proxyPasswordController = TextEditingController(
       text: config?.proxyPassword ?? '',
     );
-    _modelController = TextEditingController(
-      text: config?.defaultModel ?? 'gpt-3.5-turbo',
-    );
 
     _selectedProvider = config?.provider ?? 'OpenAI';
+    _selectedModel = config?.defaultModel ?? 'gpt-3.5-turbo';
+    _availableModels = [_selectedModel!]; // 初始化至少包含当前模型
     _temperature = config?.temperature ?? 0.7;
     _maxTokens = config?.maxTokens ?? 2000;
     _topP = config?.topP ?? 1.0;
@@ -82,7 +83,6 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
     _proxyUrlController.dispose();
     _proxyUsernameController.dispose();
     _proxyPasswordController.dispose();
-    _modelController.dispose();
     super.dispose();
   }
 
@@ -138,12 +138,16 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
             ),
             const SizedBox(height: 24),
             ApiConfigModelSection(
-              modelController: _modelController,
+              selectedModel: _selectedModel,
+              availableModels: _availableModels,
+              isLoadingModels: _isLoadingModels,
               temperature: _temperature,
               maxTokens: _maxTokens,
               topP: _topP,
               frequencyPenalty: _frequencyPenalty,
               presencePenalty: _presencePenalty,
+              onModelChanged: (value) => setState(() => _selectedModel = value),
+              onFetchModels: _fetchAvailableModels,
               onTemperatureChanged: (value) {
                 setState(() => _temperature = value);
               },
@@ -259,6 +263,64 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
     }
   }
 
+  Future<void> _fetchAvailableModels() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请先填写必填项')));
+      return;
+    }
+
+    setState(() => _isLoadingModels = true);
+
+    try {
+      final dioClient = DioClient(
+        baseUrl: _baseUrlController.text,
+        apiKey: _apiKeyController.text,
+        proxyUrl: _enableProxy ? _proxyUrlController.text : null,
+        proxyUsername: _enableProxy ? _proxyUsernameController.text : null,
+        proxyPassword: _enableProxy ? _proxyPasswordController.text : null,
+      );
+      final apiClient = OpenAIApiClient(dioClient);
+      final models = await apiClient.getAvailableModels();
+
+      if (mounted) {
+        setState(() {
+          _availableModels = models;
+          // 如果当前选中的模型不在列表中，选择第一个
+          if (!models.contains(_selectedModel) && models.isNotEmpty) {
+            _selectedModel = models.first;
+          }
+        });
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('成功获取 ${models.length} 个模型')));
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('获取模型失败'),
+            content: Text('发生错误: ${e.toString()}'),
+            icon: const Icon(Icons.error, color: Colors.red, size: 48),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('确定'),
+              ),
+            ],
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingModels = false);
+      }
+    }
+  }
+
   Future<void> _saveConfig() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -282,7 +344,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       proxyPassword: _enableProxy && _proxyPasswordController.text.isNotEmpty
           ? _proxyPasswordController.text
           : null,
-      defaultModel: _modelController.text,
+      defaultModel: _selectedModel ?? 'gpt-3.5-turbo',
       temperature: _temperature,
       maxTokens: _maxTokens,
       topP: _topP,
