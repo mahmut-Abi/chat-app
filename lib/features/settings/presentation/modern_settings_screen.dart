@@ -75,10 +75,21 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
   void _onTabSelected(int index) {
     if (_selectedIndex != index) {
-      setState(() {
-        _selectedIndex = index;
+      // 在 iOS 上，立即同步更新索引可以避免延迟
+      // 先更新变量，再调用 setState，最后切换页面
+
+      _selectedIndex = index;
+
+      // 立即触发 UI 重建以更新标题
+      setState(() {});
+
+      // 使用 SchedulerBinding 确保在下一帧渲染后再切换页面
+      // 这样标题和页面内容会同时更新
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _tabController.index != index) {
+          _tabController.animateTo(index, duration: Duration.zero);
+        }
       });
-      _tabController.animateTo(index, duration: Duration.zero);
     }
   }
 

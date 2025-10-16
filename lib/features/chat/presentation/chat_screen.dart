@@ -32,7 +32,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final List<Message> _messages = [];
   bool _isLoading = false;
   final _uuid = const Uuid();
-  final ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
   List<File> _selectedImages = [];
   List<File> _selectedFiles = [];
   AgentConfig? _selectedAgent;
@@ -206,10 +205,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final chatRepo = ref.read(chatRepositoryProvider);
 
     try {
+      // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
+      final modelToUse = _selectedModel?.id ?? activeApiConfig.defaultModel;
+      if (kDebugMode) {
+        print('ChatScreen: 使用模型 = $modelToUse');
+        print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
+        print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
+      }
+      final config = ModelConfig(
+        model: modelToUse,
+        temperature: activeApiConfig.temperature,
+        maxTokens: activeApiConfig.maxTokens,
+        topP: activeApiConfig.topP,
+        frequencyPenalty: activeApiConfig.frequencyPenalty,
+        presencePenalty: activeApiConfig.presencePenalty,
+      );
+
       final stream = chatRepo.sendMessageStream(
         conversationId: widget.conversationId,
         content: userMessage.content,
-        config: _currentConfig,
+        config: config,
         conversationHistory: _messages.where((m) => !m.isStreaming).toList(),
       );
 
@@ -302,10 +317,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           .sublist(0, messageIndex)
           .where((m) => !m.isStreaming)
           .toList();
+      // 获取活动的 API 配置
+      final activeApiConfigForRegenerate = await ref.read(
+        activeApiConfigProvider.future,
+      );
+      if (activeApiConfigForRegenerate == null) return;
+
+      // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
+      final modelToUseForRegenerate =
+          _selectedModel?.id ?? activeApiConfigForRegenerate.defaultModel;
+      final configForRegenerate = ModelConfig(
+        model: modelToUseForRegenerate,
+        temperature: activeApiConfigForRegenerate.temperature,
+        maxTokens: activeApiConfigForRegenerate.maxTokens,
+        topP: activeApiConfigForRegenerate.topP,
+        frequencyPenalty: activeApiConfigForRegenerate.frequencyPenalty,
+        presencePenalty: activeApiConfigForRegenerate.presencePenalty,
+      );
+
       final stream = chatRepo.sendMessageStream(
         conversationId: widget.conversationId,
         content: userMessage.content,
-        config: _currentConfig,
+        config: configForRegenerate,
         conversationHistory: history,
       );
 
