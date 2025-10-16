@@ -461,30 +461,6 @@ class _ModernSidebarState extends State<ModernSidebar>
               children: [
                 _buildQuickAccessButton(
                   context,
-                  icon: Icons.psychology_outlined,
-                  label: '模型',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/models'),
-                    );
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.lightbulb_outline,
-                  label: '提示词',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/prompts'),
-                    );
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
                   icon: Icons.smart_toy_outlined,
                   label: '智能体',
                   onTap: () {
@@ -509,27 +485,9 @@ class _ModernSidebarState extends State<ModernSidebar>
                 ),
                 _buildQuickAccessButton(
                   context,
-                  icon: Icons.access_time_outlined,
-                  label: 'Token',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/token-usage'),
-                    );
-                  },
-                ),
-                _buildQuickAccessButton(
-                  context,
-                  icon: Icons.article_outlined,
-                  label: '日志',
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Future.delayed(
-                      const Duration(milliseconds: 300),
-                      () => context.push('/logs'),
-                    );
-                  },
+                  icon: Icons.folder_outlined,
+                  label: '分组',
+                  onTap: widget.onManageGroups,
                 ),
                 _buildQuickAccessButton(
                   context,
@@ -545,9 +503,12 @@ class _ModernSidebarState extends State<ModernSidebar>
                 ),
                 _buildQuickAccessButton(
                   context,
-                  icon: Icons.folder_outlined,
-                  label: '分组',
-                  onTap: widget.onManageGroups,
+                  icon: Icons.search_outlined,
+                  label: '搜索',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    if (widget.onSearch != null) widget.onSearch!();
+                  },
                 ),
               ],
             ),
