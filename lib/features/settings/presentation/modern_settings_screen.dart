@@ -319,7 +319,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                 : colorScheme.onSurface,
           ),
         ),
-        onTap: () => _tabController.animateTo(index),
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _tabController.animateTo(index);
+        },
       ),
     );
   }

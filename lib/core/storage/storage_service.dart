@@ -232,8 +232,32 @@ class StorageService {
   Future<void> saveApiConfig(String id, Map<String, dynamic> config) async {
     final key = 'api_config_\$id';
     try {
-      // 使用 FlutterSecureStorage 的默认配置（已在初始化时设置）
-      await _secureStorage.write(key: key, value: jsonEncode(config));
+      // 先尝试读取现有值
+      final existing = await _secureStorage.read(key: key);
+
+      if (existing != null) {
+        // 如果存在，先删除
+        try {
+          await _secureStorage.delete(key: key);
+          // 等待一小段时间确保删除完成
+          await Future.delayed(const Duration(milliseconds: 100));
+        } catch (deleteError) {
+          _log.warning('API 配置删除失败', {
+            'id': id,
+            'error': deleteError.toString(),
+          });
+        }
+      }
+
+      // 写入新值，显式指定 iOptions
+      await _secureStorage.write(
+        key: key,
+        value: jsonEncode(config),
+        iOptions: const IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock,
+          synchronizable: false,
+        ),
+      );
       _log.debug('API 配置保存成功', {'id': id});
     } catch (e) {
       _log.error('API 配置保存失败', {'id': id, 'error': e.toString()});
@@ -262,10 +286,28 @@ class StorageService {
   // App Settings (Secure - 持久化到 Keychain)
   Future<void> saveAppSettings(Map<String, dynamic> settings) async {
     try {
-      // 使用 FlutterSecureStorage 的默认配置（已在初始化时设置）
+      // 先尝试读取现有值
+      final existing = await _secureStorage.read(key: 'app_settings');
+
+      if (existing != null) {
+        // 如果存在，先删除
+        try {
+          await _secureStorage.delete(key: 'app_settings');
+          // 等待一小段时间确保删除完成
+          await Future.delayed(const Duration(milliseconds: 100));
+        } catch (deleteError) {
+          _log.warning('应用设置删除失败', {'error': deleteError.toString()});
+        }
+      }
+
+      // 写入新值，显式指定 iOptions
       await _secureStorage.write(
         key: 'app_settings',
         value: jsonEncode(settings),
+        iOptions: const IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock,
+          synchronizable: false,
+        ),
       );
       _cachedAppSettings = settings;
       _log.debug('应用设置保存成功');
