@@ -346,6 +346,12 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
         print('本地没有模型，从 API 获取...');
         models = await modelsRepo.getAvailableModels(apiConfigs);
         print('从 API 获取到 ${models.length} 个模型');
+
+        // 自动缓存获取到的模型
+        if (models.isNotEmpty) {
+          await modelsRepo.cacheModels(models);
+          print('已将 ${models.length} 个模型缓存到本地');
+        }
       }
     } catch (e) {
       print('获取模型失败: $e');

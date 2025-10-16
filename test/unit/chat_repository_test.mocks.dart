@@ -272,6 +272,23 @@ class MockStorageService extends _i1.Mock implements _i5.StorageService {
           as _i4.Future<void>);
 
   @override
+  _i4.Future<void> saveAppSettings(Map<String, dynamic>? settings) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveAppSettings, [settings]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<Map<String, dynamic>?> getAppSettings() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAppSettings, []),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i4.Future<Map<String, dynamic>?>);
+
+  @override
   _i4.Future<void> saveModel(String? id, Map<String, dynamic>? data) =>
       (super.noSuchMethod(
             Invocation.method(#saveModel, [id, data]),

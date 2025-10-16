@@ -119,10 +119,14 @@ class ChatCompletionRequest {
   final int maxTokens;
   @JsonKey(name: 'top_p')
   final double topP;
-  @JsonKey(name: 'frequency_penalty')
-  final double frequencyPenalty;
-  @JsonKey(name: 'presence_penalty')
-  final double presencePenalty;
+  @JsonKey(
+    name: 'frequency_penalty',
+    includeIfNull: false,
+    includeToJson: false,
+  )
+  final double? frequencyPenalty;
+  @JsonKey(name: 'presence_penalty', includeIfNull: false, includeToJson: false)
+  final double? presencePenalty;
   final bool stream;
 
   const ChatCompletionRequest({
@@ -131,8 +135,8 @@ class ChatCompletionRequest {
     this.temperature = 0.7,
     this.maxTokens = 2048,
     this.topP = 1.0,
-    this.frequencyPenalty = 0.0,
-    this.presencePenalty = 0.0,
+    this.frequencyPenalty,
+    this.presencePenalty,
     this.stream = false,
   });
 
