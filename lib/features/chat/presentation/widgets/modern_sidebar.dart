@@ -542,15 +542,6 @@ class _ModernSidebarState extends State<ModernSidebar>
                           });
                         },
                       ),
-                      _buildQuickAccessButton(
-                        context,
-                        icon: Icons.search_outlined,
-                        label: '搜索',
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          if (widget.onSearch != null) widget.onSearch!();
-                        },
-                      ),
                     ],
                   ),
                 ),
