@@ -95,6 +95,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (kDebugMode) {
       print('ChatScreen: 检查 API 配置...');
     }
+    // 打印调试信息
+    final storage = ref.read(storageServiceProvider);
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    if (kDebugMode) {
+      final allKeys = await storage.getAllKeys();
+      print('所有存储的 keys: $allKeys');
+      final allConfigs = await settingsRepo.getAllApiConfigs();
+      print('所有 API 配置数量: ${allConfigs.length}');
+      for (final config in allConfigs) {
+        print('  配置: ${config.name}, isActive: ${config.isActive}');
+      }
+    }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
     if (kDebugMode) {
       print('ChatScreen: activeApiConfig = $activeApiConfig');
