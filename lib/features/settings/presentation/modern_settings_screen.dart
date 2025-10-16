@@ -63,12 +63,14 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    // 立即响应 TabController 的变化，确保标题与页面内容同步
-    final newIndex = _tabController.index;
-    if (_selectedIndex != newIndex) {
-      setState(() {
-        _selectedIndex = newIndex;
-      });
+    // 仅在滑动时同步 _selectedIndex
+    if (_tabController.indexIsChanging) {
+      final newIndex = _tabController.index.round();
+      if (_selectedIndex != newIndex) {
+        setState(() {
+          _selectedIndex = newIndex;
+        });
+      }
     }
   }
 
@@ -189,7 +191,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               child: InkWell(
                 onTap: () {
                   if (_selectedIndex != index) {
-                    // 直接跳转，不使用动画，确保标题与内容完全同步
+                    // 立即更新状态并跳转，不等待监听器
+                    setState(() {
+                      _selectedIndex = index;
+                    });
                     _tabController.index = index;
                   }
                 },
@@ -319,7 +324,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         ),
         onTap: () {
           if (_selectedIndex != index) {
-            // 直接跳转，不使用动画，确保标题与内容完全同步
+            // 立即更新状态并跳转，不等待监听器
+            setState(() {
+              _selectedIndex = index;
+            });
             _tabController.index = index;
           }
         },
