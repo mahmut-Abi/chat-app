@@ -143,11 +143,11 @@ class StorageService {
 
   // API Configs
   Future<void> saveApiConfig(String id, Map<String, dynamic> data) async {
-    await _settingsBoxInstance.put('api_config_\$id', jsonEncode(data));
+    await _settingsBoxInstance.put('api_config_$id', jsonEncode(data));
   }
 
   Future<Map<String, dynamic>?> getApiConfig(String id) async {
-    final data = _settingsBoxInstance.get('api_config_\$id');
+    final data = _settingsBoxInstance.get('api_config_$id');
     if (data == null) return null;
     return jsonDecode(data as String) as Map<String, dynamic>;
   }
@@ -182,7 +182,7 @@ class StorageService {
   }
 
   Future<void> deleteApiConfig(String id) async {
-    await _settingsBoxInstance.delete('api_config_\$id');
+    await _settingsBoxInstance.delete('api_config_$id');
   }
 
   // App Settings (持久化到 Hive)
