@@ -21,7 +21,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: color,
         brightness: Brightness.light,
-      ),
+      ).copyWith(primary: color, secondary: color),
       scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -63,7 +63,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: color,
         brightness: Brightness.dark,
-      ),
+      ).copyWith(primary: color, secondary: color),
       scaffoldBackgroundColor: const Color(0xFF0F172A),
       cardTheme: CardThemeData(
         elevation: 0,
