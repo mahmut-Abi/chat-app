@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/platform_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
@@ -61,7 +60,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _loadConversation() {
     final chatRepo = ref.read(chatRepositoryProvider);
     final conversation = chatRepo.getConversation(widget.conversationId);
-    if (kDebugMode) {
+    if (false) {
       print('ChatScreen._loadConversation:');
       print('  conversationId: ${widget.conversationId}');
       print('  conversation: ${conversation?.title}');
@@ -73,11 +72,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _messages.clear(); // 清空旧消息避免累积
         _messages.addAll(conversation.messages);
       });
-      if (kDebugMode) {
+      if (false) {
         print('  loaded _messages count: ${_messages.length}');
       }
     } else {
-      if (kDebugMode) {
+      if (false) {
         print('  警告: 对话不存在!');
       }
     }
@@ -233,7 +232,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
         // 如果对话不存在，说明这是一个临时对话，需要创建并保存
-        if (kDebugMode) {
+        if (false) {
           print('ChatScreen: 对话不存在，创建新对话');
         }
         conversation = Conversation(
