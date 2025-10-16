@@ -66,13 +66,19 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     if (mounted) {
       final newIndex = _tabController.index.round();
       if (_selectedIndex != newIndex) {
-        // 先同步更新状态变量
-        _selectedIndex = newIndex;
-        // 再触发 rebuild
         setState(() {
-          // 状态已更新，只需触发 rebuild
+          _selectedIndex = newIndex;
         });
       }
+    }
+  }
+
+  void _onTabSelected(int index) {
+    if (_selectedIndex != index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+      _tabController.animateTo(index, duration: Duration.zero);
     }
   }
 
@@ -191,12 +197,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
-                onTap: () {
-                  if (_selectedIndex != index) {
-                    // 直接设置 TabController，由监听器触发 UI 更新
-                    _tabController.animateTo(index, duration: Duration.zero);
-                  }
-                },
+                onTap: () => _onTabSelected(index),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -321,12 +322,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                 : colorScheme.onSurface,
           ),
         ),
-        onTap: () {
-          if (_selectedIndex != index) {
-            // 直接设置 TabController，由监听器触发 UI 更新
-            _tabController.animateTo(index, duration: Duration.zero);
-          }
-        },
+        onTap: () => _onTabSelected(index),
       ),
     );
   }

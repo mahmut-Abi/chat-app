@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
 import 'core/routing/app_router.dart';
@@ -18,7 +19,7 @@ void main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // 检查和请求权限（仅移动端）
-      if (Platform.isIOS || Platform.isAndroid) {
+      if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
         final permissionService = PermissionService();
         final log = LogService();
         try {
@@ -47,7 +48,7 @@ void main() async {
       }
 
       // Initialize desktop features
-      if (DesktopUtils.isDesktop) {
+      if (!kIsWeb && DesktopUtils.isDesktop) {
         await DesktopUtils.initWindowManager();
         await DesktopUtils.initSystemTray();
       }
