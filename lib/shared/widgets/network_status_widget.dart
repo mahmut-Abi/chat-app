@@ -108,10 +108,7 @@ class _NetworkStatusWidgetState extends State<NetworkStatusWidget> {
                       const Expanded(
                         child: Text(
                           '无网络连接',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
                       TextButton(
