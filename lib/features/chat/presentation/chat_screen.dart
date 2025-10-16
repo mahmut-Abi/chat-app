@@ -13,6 +13,9 @@ import 'widgets/enhanced_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_input_section.dart';
+import '../../../features/agent/domain/agent_tool.dart';
+import '../../../features/mcp/domain/mcp_config.dart';
+import '../../../features/models/domain/model.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -31,6 +34,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _uuid = const Uuid();
   final ModelConfig _currentConfig = const ModelConfig(model: 'gpt-3.5-turbo');
   List<File> _selectedImages = [];
+  List<File> _selectedFiles = [];
+  AgentConfig? _selectedAgent;
+  McpConfig? _selectedMcp;
+  AiModel? _selectedModel;
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
 
@@ -494,11 +501,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ChatInputSection(
                       messageController: _messageController,
                       selectedImages: _selectedImages,
+                      selectedFiles: _selectedFiles,
                       isLoading: _isLoading,
                       onSend: _sendMessage,
                       onImagesSelected: (images) {
                         setState(() {
                           _selectedImages = images;
+                        });
+                      },
+                      onFilesSelected: (files) {
+                        setState(() {
+                          _selectedFiles = files;
+                        });
+                      },
+                      selectedAgent: _selectedAgent,
+                      selectedMcp: _selectedMcp,
+                      selectedModel: _selectedModel,
+                      onAgentSelected: (agent) {
+                        setState(() {
+                          _selectedAgent = agent;
+                        });
+                      },
+                      onMcpSelected: (mcp) {
+                        setState(() {
+                          _selectedMcp = mcp;
+                        });
+                      },
+                      onModelSelected: (model) {
+                        setState(() {
+                          _selectedModel = model;
                         });
                       },
                     ),
