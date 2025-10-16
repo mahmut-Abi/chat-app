@@ -307,15 +307,18 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       if (mounted) {
         setState(() {
           _availableModels = models;
-          // 如果当前选中的模型不在列表中，选择第一个
-          if (!models.contains(_selectedModel) && models.isNotEmpty) {
+          // 自动选择模型: 如果当前没有选中模型或不在列表中，选择第一个
+          if (models.isNotEmpty &&
+              (_selectedModel == null || !models.contains(_selectedModel))) {
             _selectedModel = models.first;
           }
         });
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('成功获取 ${models.length} 个模型')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('成功获取 ${models.length} 个模型，已自动选择: $_selectedModel'),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

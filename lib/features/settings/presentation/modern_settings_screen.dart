@@ -12,6 +12,7 @@ import 'mixins/settings_theme_mixin.dart';
 import 'mixins/settings_api_config_mixin.dart';
 import 'mixins/settings_data_mixin.dart';
 import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/background_container.dart';
 
 /// 现代化设置页面
 class ModernSettingsScreen extends ConsumerStatefulWidget {
@@ -55,11 +56,9 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   void _handleTabChange() {
-    if (!_tabController.indexIsChanging) {
-      setState(() {
-        _selectedIndex = _tabController.index;
-      });
-    }
+    setState(() {
+      _selectedIndex = _tabController.index;
+    });
   }
 
   @override
@@ -106,7 +105,6 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
     if (_isMobile) {
       return Scaffold(
-        backgroundColor: colorScheme.surface,
         appBar: AppBar(
           title: Text(_tabs[_selectedIndex].title),
           leading: IconButton(
@@ -116,36 +114,39 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
           elevation: 0,
           backgroundColor: colorScheme.surface,
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildMobileTabBar(context),
-              Expanded(
-                child: _isLoading
-                    ? _buildLoadingWidget()
-                    : _errorMessage != null
-                    ? _buildErrorWidget()
-                    : _buildTabView(),
-              ),
-            ],
+        body: BackgroundContainer(
+          child: SafeArea(
+            child: Column(
+              children: [
+                _buildMobileTabBar(context),
+                Expanded(
+                  child: _isLoading
+                      ? _buildLoadingWidget()
+                      : _errorMessage != null
+                      ? _buildErrorWidget()
+                      : _buildTabView(),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: Row(
-        children: [
-          _buildSideNav(context),
-          Expanded(
-            child: _isLoading
-                ? _buildLoadingWidget()
-                : _errorMessage != null
-                ? _buildErrorWidget()
-                : _buildContent(context),
-          ),
-        ],
+      body: BackgroundContainer(
+        child: Row(
+          children: [
+            _buildSideNav(context),
+            Expanded(
+              child: _isLoading
+                  ? _buildLoadingWidget()
+                  : _errorMessage != null
+                  ? _buildErrorWidget()
+                  : _buildContent(context),
+            ),
+          ],
+        ),
       ),
     );
   }
