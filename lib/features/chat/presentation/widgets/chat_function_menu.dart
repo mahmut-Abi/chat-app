@@ -330,15 +330,29 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
     final settingsRepo = ref.read(settingsRepositoryProvider);
     final apiConfigs = await settingsRepo.getAllApiConfigs();
     final modelsRepo = ref.read(modelsRepositoryProvider);
+
+    print('开始获取模型列表...');
+    print('API 配置数量: ${apiConfigs.length}');
+
     List<AiModel> models;
 
     try {
-      models = await modelsRepo.getAvailableModels(apiConfigs);
+      // 先尝试从本地存储加载模型
+      models = await modelsRepo.getCachedModels();
+      print('从本地存储加载模型: ${models.length} 个');
+
+      // 如果本地没有模型，尝试从 API 获取
+      if (models.isEmpty && apiConfigs.isNotEmpty) {
+        print('本地没有模型，从 API 获取...');
+        models = await modelsRepo.getAvailableModels(apiConfigs);
+        print('从 API 获取到 ${models.length} 个模型');
+      }
     } catch (e) {
+      print('获取模型失败: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('获取模型列表失败')));
+        ).showSnackBar(SnackBar(content: Text('获取模型列表失败: $e')));
       }
       return;
     }

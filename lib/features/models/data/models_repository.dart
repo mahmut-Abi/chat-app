@@ -40,8 +40,11 @@ class ModelsRepository {
   /// 刷新所有 API 配置的模型列表，并持久化
   Future<List<AiModel>> refreshModels(List<ApiConfig> apiConfigs) async {
     _log.info('开始刷新模型列表', {'apiCount': apiConfigs.length});
+    print('=== refreshModels: 开始刷新 ${apiConfigs.length} 个 API 配置 ===');
     final allModels = await getAvailableModels(apiConfigs);
+    print('=== refreshModels: 获取到 ${allModels.length} 个模型 ===');
     await cacheModels(allModels);
+    print('=== refreshModels: 模型已缓存 ===');
     return allModels;
   }
 
@@ -81,18 +84,23 @@ class ModelsRepository {
   /// 获取所有 API 配置的模型列表
   Future<List<AiModel>> getAvailableModels(List<ApiConfig> apiConfigs) async {
     final allModels = <AiModel>[];
+    print('=== getAvailableModels: 开始处理 ${apiConfigs.length} 个 API ===');
 
     for (final config in apiConfigs) {
       // 跳过未配置完整的 API
       if (config.baseUrl.isEmpty || config.apiKey.isEmpty) {
         _log.debug('跳过未配置完整的 API', {'apiName': config.name});
+        print('跳过未配置完整的 API: ${config.name}');
         continue;
       }
 
       try {
+        print('正在获取 ${config.name} 的模型...');
         final models = await getModelsForApiConfig(config);
+        print('成功获取 ${config.name} 的 ${models.length} 个模型');
         allModels.addAll(models);
       } catch (e) {
+        print('获取 ${config.name} 模型失败: $e');
         _log.warning('获取 API 模型失败，继续处理', {
           'apiName': config.name,
           'error': e.toString(),
