@@ -94,11 +94,6 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
             onPressed: _isLoading ? null : _loadModels,
             tooltip: '刷新',
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.push('/settings'),
-            tooltip: 'API 设置',
-          ),
         ],
       ),
       body: BackgroundContainer(child: _buildBody(colorScheme)),
