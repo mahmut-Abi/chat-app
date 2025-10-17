@@ -426,6 +426,9 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
     final settingsRepo = ref.read(settingsRepositoryProvider);
     await settingsRepo.saveApiConfig(config);
 
+    // 刷新 activeApiConfigProvider 以确保聊天页面能获取最新配置
+    ref.invalidate(activeApiConfigProvider);
+
     if (mounted) {
       Navigator.of(context).pop(true);
     }

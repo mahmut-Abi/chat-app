@@ -16,6 +16,8 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
     ).push(MaterialPageRoute(builder: (context) => const ApiConfigScreen()));
 
     if (result == true) {
+      // 刷新 activeApiConfigProvider
+      ref.invalidate(activeApiConfigProvider);
       onSuccess();
     }
   }
@@ -29,6 +31,8 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
     );
 
     if (result == true) {
+      // 刷新 activeApiConfigProvider
+      ref.invalidate(activeApiConfigProvider);
       onSuccess();
     }
   }
@@ -38,6 +42,8 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
     if (confirm == true) {
       final settingsRepo = ref.read(settingsRepositoryProvider);
       await settingsRepo.deleteApiConfig(config.id);
+      // 刷新 activeApiConfigProvider
+      ref.invalidate(activeApiConfigProvider);
       onSuccess();
     }
   }
