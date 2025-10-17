@@ -46,7 +46,6 @@ class BackgroundContainer extends ConsumerWidget {
 
     // 计算内容层的透明度
     // backgroundOpacity 表示内容的不透明度 (0.8 = 80% 不透明, 20% 透明)
-    final maskOpacity = 1.0 - settings.backgroundOpacity;
 
     return Stack(
       fit: StackFit.expand,

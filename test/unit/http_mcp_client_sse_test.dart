@@ -1,6 +1,5 @@
 /// Bug #1: SSE (Server-Sent Events) 支持测试
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:dio/dio.dart';
 import 'package:chat_app/features/mcp/data/http_mcp_client.dart';
@@ -171,7 +170,6 @@ void main() {
   group('SSE Error Handling Tests', () {
     test('should handle connection timeout', () {
       // Given: 超时设置
-      final timeout = Duration(seconds: 30);
       var hasTimedOut = false;
 
       // When: 模拟超时

@@ -11,7 +11,6 @@ void main() {
   group('Auto Scroll Logic Tests', () {
     test('should scroll automatically when user is at bottom', () {
       // Given: 用户在底部
-      final isAtBottom = true;
       final userScrolledUp = false;
 
       // When: 新消息到来
@@ -23,7 +22,6 @@ void main() {
 
     test('should not scroll automatically when user is viewing history', () {
       // Given: 用户滚动到历史消息
-      final isAtBottom = false;
       final userScrolledUp = true;
 
       // When: 新消息到来

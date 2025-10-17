@@ -124,7 +124,6 @@ void main() {
     test('should include model name only for assistant messages', () {
       // Given: 用户消息
       final isUserMessage = true;
-      final modelName = 'GPT-4';
 
       // When: 决定是否显示模型名
       final shouldShowModelName = !isUserMessage;
@@ -136,7 +135,6 @@ void main() {
     test('should include model name for assistant messages', () {
       // Given: AI 消息
       final isUserMessage = false;
-      final modelName = 'GPT-4';
 
       // When: 决定是否显示模型名
       final shouldShowModelName = !isUserMessage;
