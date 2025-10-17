@@ -293,6 +293,22 @@ class OpenAIApiClient {
         'error': e.toString(),
         'type': e.runtimeType.toString(),
       });
+
+      // 如果是DioException,尝试提取更多信息
+      if (e is DioException) {
+        try {
+          final statusCode = e.response?.statusCode;
+          if (statusCode == 400) {
+            _log.error('流式请求400错误', {
+              'url': e.requestOptions.uri.toString(),
+              'method': e.requestOptions.method,
+              'statusCode': statusCode,
+            });
+          }
+        } catch (parseError) {
+          // 忽略解析错误
+        }
+      }
       rethrow;
     }
   }

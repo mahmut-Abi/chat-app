@@ -128,17 +128,28 @@ class DioClient {
         final statusCode = error.response?.statusCode;
         _log.error('服务器响应错误: 状态码 $statusCode', {
           'statusCode': statusCode,
-          'response': error.response?.data,
+          'responseType': error.response?.data.runtimeType.toString(),
         });
 
         // 详细记录400错误
         if (statusCode == 400) {
+          // 尝试解析响应数据
+          dynamic responseData;
+          try {
+            responseData = error.response?.data;
+            if (responseData is ResponseBody) {
+              // ResponseBody 需要先转换
+              responseData = 'ResponseBody (无法直接解析)';
+            }
+          } catch (e) {
+            responseData = '解析响应失败: $e';
+          }
+
           _log.error('400 Bad Request 详细信息', {
             'requestUrl': error.requestOptions.uri.toString(),
             'requestMethod': error.requestOptions.method,
             'requestHeaders': error.requestOptions.headers,
-            'responseData': error.response?.data,
-            'errorMessage': error.response?.data?['error']?['message'],
+            'responseData': responseData,
           });
         }
 
@@ -147,13 +158,22 @@ class DioClient {
         } else if (statusCode == 429) {
           return RateLimitException();
         }
-        return ApiException(
-          message:
-              error.response?.data?['error']?['message'] ??
-              error.response?.data?['message'] ??
-              'Server error occurred',
-          statusCode: statusCode,
-        );
+
+        // 安全地提取错误消息
+        String errorMessage = 'Server error occurred';
+        try {
+          final data = error.response?.data;
+          if (data is Map) {
+            errorMessage =
+                data['error']?['message'] ??
+                data['message'] ??
+                'Server error occurred';
+          }
+        } catch (e) {
+          // 忽略解析错误,使用默认消息
+        }
+
+        return ApiException(message: errorMessage, statusCode: statusCode);
 
       default:
         _log.error('未知错误', {'message': error.message});
