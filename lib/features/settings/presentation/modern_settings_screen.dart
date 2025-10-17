@@ -559,6 +559,13 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               ),
               const SizedBox(height: 16),
               _buildToolCard(
+                icon: Icons.smart_toy_outlined,
+                title: 'Agent 管理',
+                description: '配置和管理 AI Agent 代理',
+                onTap: () => context.push('/agent'),
+              ),
+              const SizedBox(height: 16),
+              _buildToolCard(
                 icon: Icons.bar_chart,
                 title: 'Token 统计',
                 description: '查看 Token 使用情况',
