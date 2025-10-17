@@ -78,7 +78,7 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
   @override
   _i4.Future<_i2.AgentTool> createTool({
     required String? name,
-    required String? description,
+    String? description,
     required _i2.AgentToolType? type,
     Map<String, dynamic>? parameters,
   }) =>

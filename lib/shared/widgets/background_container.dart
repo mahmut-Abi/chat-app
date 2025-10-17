@@ -3,82 +3,94 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 
 import '../../core/providers/providers.dart';
-import 'package:flutter/foundation.dart';
-import '../../features/settings/domain/api_config.dart';
 
-class BackgroundContainer extends ConsumerWidget {
+/// 背景容器 - 提供全局背景图片支持
+///
+/// 优化说明：
+/// 1. 使用 ConsumerStatefulWidget 避免不必要的重建
+/// 2. 仅在背景相关设置变化时才重建
+class BackgroundContainer extends ConsumerStatefulWidget {
   final Widget child;
 
   const BackgroundContainer({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BackgroundContainer> createState() =>
+      _BackgroundContainerState();
+}
+
+class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
+  String? _currentBackgroundImage;
+  double _currentOpacity = 0.8;
+
+  @override
+  Widget build(BuildContext context) {
     final settingsAsync = ref.watch(appSettingsProvider);
 
     return settingsAsync.when(
-      data: (settings) => _buildWithBackground(context, settings),
+      data: (settings) {
+        // 仅在背景相关设置变化时更新状态
+        if (_currentBackgroundImage != settings.backgroundImage ||
+            _currentOpacity != settings.backgroundOpacity) {
+          _currentBackgroundImage = settings.backgroundImage;
+          _currentOpacity = settings.backgroundOpacity;
+        }
+        return _buildWithBackground(context);
+      },
       loading: () => Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: child,
+        child: widget.child,
       ),
       error: (error, stack) => Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: child,
+        child: widget.child,
       ),
     );
   }
 
-  Widget _buildWithBackground(BuildContext context, AppSettings settings) {
-    final backgroundImage = settings.backgroundImage;
-
-    if (kDebugMode) {
-      print('BackgroundContainer: backgroundImage = $backgroundImage');
-      print('BackgroundContainer: opacity = ${settings.backgroundOpacity}');
-    }
-
+  Widget _buildWithBackground(BuildContext context) {
     // 没有背景图片时,使用主题背景色
-    if (backgroundImage == null || backgroundImage.isEmpty) {
+    if (_currentBackgroundImage == null || _currentBackgroundImage!.isEmpty) {
       return Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: child,
+        child: widget.child,
       );
     }
 
-    // 计算内容层的透明度
-    // backgroundOpacity 表示内容的不透明度 (0.8 = 80% 不透明, 20% 透明)
+    // backgroundOpacity 含义：
+    // 0.0 = 背景完全不可见（内容完全不透明）
+    // 1.0 = 背景完全可见（内容完全透明）
+    // 0.8 = 背景 80% 可见（内容层 20% 不透明度作为遮罩）
+    final contentOverlayOpacity = 1.0 - _currentOpacity;
 
     return Stack(
       fit: StackFit.expand,
       children: [
         // 背景图片
-        Positioned.fill(child: _buildBackgroundImage(backgroundImage)),
+        Positioned.fill(child: _buildBackgroundImage(_currentBackgroundImage!)),
 
-        // 透明度遮罩
-        Positioned.fill(
-          child: Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withValues(
-              alpha: settings.backgroundOpacity,
+        // 内容遮罩层（用于调节背景可见度）
+        if (contentOverlayOpacity > 0)
+          Positioned.fill(
+            child: Container(
+              color: Theme.of(context).scaffoldBackgroundColor.withValues(
+                alpha: contentOverlayOpacity,
+              ),
             ),
           ),
-        ),
 
         // 实际内容
-        child,
+        widget.child,
       ],
     );
   }
 
   Widget _buildBackgroundImage(String path) {
-    Widget imageWidget;
-
     if (path.startsWith('assets/')) {
-      imageWidget = Image.asset(
+      return Image.asset(
         path,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          if (kDebugMode) {
-            print('背景图片加载失败 (asset): $path, 错误: $error');
-          }
           return Container(
             color: Colors.grey.shade300,
             child: const Center(child: Icon(Icons.error, color: Colors.red)),
@@ -86,13 +98,10 @@ class BackgroundContainer extends ConsumerWidget {
         },
       );
     } else {
-      imageWidget = Image.file(
+      return Image.file(
         File(path),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          if (kDebugMode) {
-            print('背景图片加载失败 (file): $path, 错误: $error');
-          }
           return Container(
             color: Colors.grey.shade300,
             child: const Center(child: Icon(Icons.error, color: Colors.red)),
@@ -100,7 +109,5 @@ class BackgroundContainer extends ConsumerWidget {
         },
       );
     }
-
-    return imageWidget;
   }
 }

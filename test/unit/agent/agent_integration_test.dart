@@ -536,12 +536,11 @@ void main() {
         final message = Message(
           id: 'msg_1',
           content: '普通消息',
-          role: MessageRole.user,
-          timestamp: testTime,
-          conversationId: 'conv_1',
-        );
-
-        final agent = AgentConfig(
+           role: MessageRole.user,
+           timestamp: testTime,
+         );
+ 
+         final agent = AgentConfig(
           id: 'agent_1',
           name: '测试Agent',
           toolIds: [],
@@ -558,9 +557,8 @@ void main() {
         // Assert
         expect(result.id, message.id);
         expect(result.role, message.role);
-        expect(result.timestamp, message.timestamp);
-        expect(result.conversationId, message.conversationId);
-      });
-    });
-  });
+         expect(result.timestamp, message.timestamp);
+       });
+     });
+   });
 }
