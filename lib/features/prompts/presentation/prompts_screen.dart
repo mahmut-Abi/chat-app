@@ -132,6 +132,8 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       itemBuilder: (context, index) {
         final template = templates[index];
         return Card(
+          color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+          elevation: 2,
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(
             onTap: () => _showTemplateDialog(template),

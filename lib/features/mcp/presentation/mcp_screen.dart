@@ -76,6 +76,8 @@ class McpScreen extends ConsumerWidget {
         );
 
         return Card(
+          color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+          elevation: 2,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ListTile(
             leading: Icon(

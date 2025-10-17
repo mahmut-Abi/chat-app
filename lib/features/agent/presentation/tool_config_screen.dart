@@ -62,6 +62,8 @@ class _ToolConfigScreenState extends ConsumerState<ToolConfigScreen> {
 
   Widget _buildBasicSection() {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -84,6 +84,8 @@ class _McpConfigScreenState extends ConsumerState<McpConfigScreen> {
 
   Widget _buildBasicSection() {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -203,6 +205,8 @@ class _McpConfigScreenState extends ConsumerState<McpConfigScreen> {
 
   Widget _buildStdioSection() {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

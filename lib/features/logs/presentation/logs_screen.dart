@@ -162,6 +162,8 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     final dateFormat = DateFormat('HH:mm:ss');
 
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ExpansionTile(
         leading: Icon(

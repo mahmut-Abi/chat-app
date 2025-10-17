@@ -77,6 +77,8 @@ class _AgentConfigScreenState extends ConsumerState<AgentConfigScreen> {
 
   Widget _buildBasicSection() {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -129,6 +131,8 @@ class _AgentConfigScreenState extends ConsumerState<AgentConfigScreen> {
 
   Widget _buildToolsSection(AsyncValue<List<AgentTool>> toolsAsync) {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -188,6 +192,8 @@ class _AgentConfigScreenState extends ConsumerState<AgentConfigScreen> {
 
   Widget _buildSystemPromptSection() {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

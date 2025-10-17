@@ -72,6 +72,8 @@ class TokenUsageScreen extends ConsumerWidget {
     int recordCount,
   ) {
     return Card(
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      elevation: 2,
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
