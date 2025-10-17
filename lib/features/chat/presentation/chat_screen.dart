@@ -31,6 +31,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _inputFocusNode = FocusNode();
   final List<Message> _messages = [];
   bool _isLoading = false;
   bool _userScrolledUp = false;
@@ -556,12 +557,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: GestureDetector(
         onTap: () {
           // 点击空白区域隐藏键盘
-          FocusScope.of(context).unfocus();
+          _inputFocusNode.unfocus();
         },
         child: BackgroundContainer(
           child: Scaffold(
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: false,
+            // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
+            onDrawerChanged: Platform.isIOS
+                ? (isOpened) {
+                    // 抽屉打开或关闭时，移除输入框焦点
+                    _inputFocusNode.unfocus();
+                  }
+                : null,
             appBar: isMobile
                 ? null
                 : AppBar(
@@ -579,14 +587,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           .where((c) => c.id == widget.conversationId)
                           .firstOrNull,
                       onConversationSelected: (conversation) {
-                        // 移动端：关闭 Drawer 后隐藏键盘避免异常弹出
-                        FocusManager.instance.primaryFocus?.unfocus();
+                        // 移动端：关闭 Drawer 时移除输入框焦点
+                        _inputFocusNode.unfocus();
                         Navigator.of(context).pop();
                         context.go('/chat/${conversation.id}');
                       },
                       onCreateConversation: () async {
-                        // 移动端：关闭 Drawer 后隐藏键盘避免异常弹出
-                        FocusManager.instance.primaryFocus?.unfocus();
+                        // 移动端：关闭 Drawer 时移除输入框焦点
+                        _inputFocusNode.unfocus();
                         Navigator.of(context).pop();
                         final chatRepo = ref.read(chatRepositoryProvider);
                         final conversation = await chatRepo.createConversation(
@@ -702,6 +710,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                     ChatInputSection(
                       messageController: _messageController,
+                      focusNode: _inputFocusNode,
                       selectedImages: _selectedImages,
                       selectedFiles: _selectedFiles,
                       isLoading: _isLoading,
@@ -761,6 +770,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
+    _inputFocusNode.dispose();
     super.dispose();
   }
 }

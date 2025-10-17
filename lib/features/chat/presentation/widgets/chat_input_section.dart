@@ -10,6 +10,7 @@ import '../../../models/domain/model.dart';
 /// 聊天输入区域组件
 class ChatInputSection extends StatefulWidget {
   final TextEditingController messageController;
+  final FocusNode? focusNode;
   final List<File> selectedImages;
   final List<File> selectedFiles;
   final bool isLoading;
@@ -26,6 +27,7 @@ class ChatInputSection extends StatefulWidget {
   const ChatInputSection({
     super.key,
     required this.messageController,
+    this.focusNode,
     required this.selectedImages,
     this.selectedFiles = const [],
     required this.isLoading,
@@ -92,6 +94,7 @@ class _ChatInputSectionState extends State<ChatInputSection> {
               Expanded(
                 child: TextField(
                   controller: widget.messageController,
+                  focusNode: widget.focusNode,
                   maxLines: null,
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
