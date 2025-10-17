@@ -357,7 +357,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       // 使用 TokenCounter 估算 token 数量
       final estimatedTokens = TokenCounter.estimate(fullContent);
-      final estimatedPromptTokens = TokenCounter.estimate(userMessage.content);
+      int estimatedPromptTokens = TokenCounter.estimate(userMessage.content);
+
+      // 如果有图片附件，加上图片的 token
+      if (imageAttachments != null && imageAttachments.isNotEmpty) {
+        final imagePaths = imageAttachments.map((img) => img.path).toList();
+        final imageTokens = TokenCounter.estimateImages(imagePaths);
+        estimatedPromptTokens += imageTokens;
+      }
+
       if (estimatedTokens > 0) {
         setState(() {
           final index = _messages.indexWhere(

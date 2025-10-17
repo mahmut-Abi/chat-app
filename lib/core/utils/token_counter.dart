@@ -1,5 +1,8 @@
 // 简单的 token 计数器
 // 注意: 这是一个近似计数,实际 token 数量可能会有所不同
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
 /// Token 计数器
 ///
 /// 提供 Token 数量的估算功能。
@@ -59,6 +62,88 @@ class TokenCounter {
       total += estimate(role);
     }
     total += 3; // 回复的固定开销
+    return total;
+  }
+
+  /// 估算图片的 Token 数量
+  ///
+  /// 根据 OpenAI 的规则:
+  /// - detail=low: 固定 85 tokens
+  /// - detail=high: 85 + (tiles * 170) tokens
+  ///   其中 tiles = ceil(width/512) * ceil(height/512)
+  ///
+  /// [imagePath] 图片文件路径
+  /// [detail] 详细程度，默认 'auto'
+  /// 返回估算的 Token 数量
+  static int estimateImage(String imagePath, {String detail = 'auto'}) {
+    try {
+      final file = File(imagePath);
+      if (!file.existsSync()) {
+        if (kDebugMode) {
+          print('[TokenCounter] 图片不存在: $imagePath，使用默认 85 tokens');
+        }
+        return 85; // 默认使用 low detail
+      }
+
+      // 如果是 low detail，直接返回 85
+      if (detail == 'low') {
+        if (kDebugMode) {
+          print('[TokenCounter] 图片 (low detail): 85 tokens');
+        }
+        return 85;
+      }
+
+      // 对于 auto 和 high，需要计算图片尺寸
+      // 注意: 这里我们使用一个简化的估算
+      // 实际应该读取图片的真实尺寸
+      final fileSize = file.lengthSync();
+
+      // 根据文件大小估算：
+      // < 100KB: 假设是小图，1 tile
+      // < 500KB: 中等，2-4 tiles
+      // >= 500KB: 大图，4-6 tiles
+      int tiles;
+      if (fileSize < 100 * 1024) {
+        tiles = 1;
+      } else if (fileSize < 500 * 1024) {
+        tiles = 3;
+      } else {
+        tiles = 5;
+      }
+
+      final totalTokens = 85 + (tiles * 170);
+      if (kDebugMode) {
+        print('[TokenCounter] 图片估算:');
+        print('  文件大小: ${(fileSize / 1024).toStringAsFixed(2)} KB');
+        print('  估算 tiles: $tiles');
+        print('  总 tokens: $totalTokens');
+      }
+      return totalTokens;
+    } catch (e) {
+      // 如果出错，返回默认值
+      if (kDebugMode) {
+        print('[TokenCounter] 估算图片 token 失败: $e，使用默认 85 tokens');
+      }
+      return 85;
+    }
+  }
+
+  /// 估算多个图片的总 Token 数量
+  ///
+  /// [imagePaths] 图片文件路径列表
+  /// [detail] 详细程度，默认 'auto'
+  /// 返回总 Token 数量
+  static int estimateImages(List<String> imagePaths, {String detail = 'auto'}) {
+    if (kDebugMode) {
+      print('[TokenCounter] 开始估算 ${imagePaths.length} 张图片的 tokens');
+    }
+    int total = 0;
+    for (final path in imagePaths) {
+      total += estimateImage(path, detail: detail);
+    }
+    if (kDebugMode) {
+      print('[TokenCounter] 图片总 tokens: $total');
+    }
     return total;
   }
 }
