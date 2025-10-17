@@ -130,6 +130,18 @@ class DioClient {
           'statusCode': statusCode,
           'response': error.response?.data,
         });
+
+        // 详细记录400错误
+        if (statusCode == 400) {
+          _log.error('400 Bad Request 详细信息', {
+            'requestUrl': error.requestOptions.uri.toString(),
+            'requestMethod': error.requestOptions.method,
+            'requestHeaders': error.requestOptions.headers,
+            'responseData': error.response?.data,
+            'errorMessage': error.response?.data?['error']?['message'],
+          });
+        }
+
         if (statusCode == 401) {
           return UnauthorizedException();
         } else if (statusCode == 429) {
@@ -138,6 +150,7 @@ class DioClient {
         return ApiException(
           message:
               error.response?.data?['error']?['message'] ??
+              error.response?.data?['message'] ??
               'Server error occurred',
           statusCode: statusCode,
         );

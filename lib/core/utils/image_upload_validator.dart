@@ -42,9 +42,7 @@ class ImageUploadValidator {
           '文件较大 (${(sizeKB / 1024).toStringAsFixed(2)} MB), 可能导致请求超时',
         );
       } else if (sizeKB > 5 * 1024) {
-        warnings.add(
-          '文件偏大 (${(sizeKB / 1024).toStringAsFixed(2)} MB), 建议压缩',
-        );
+        warnings.add('文件偏大 (${(sizeKB / 1024).toStringAsFixed(2)} MB), 建议压缩');
       }
 
       // 4. 检查 MIME 类型

@@ -123,6 +123,7 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   return ChatRepository(
     ref.watch(openAIApiClientProvider),
     ref.watch(storageServiceProvider),
+    ref.watch(tokenUsageRepositoryProvider),
   );
 });
 

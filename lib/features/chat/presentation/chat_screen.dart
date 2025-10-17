@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/utils/token_counter.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
+import '../../../core/utils/image_upload_validator.dart';
 import '../../../core/utils/platform_utils.dart';
 import '../../../shared/widgets/background_container.dart';
 import 'widgets/modern_sidebar.dart';
@@ -224,8 +225,38 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       imageAttachments = [];
       for (final imageFile in _selectedImages) {
         try {
+          // 验证图片
+          final validation = await ImageUploadValidator.validateImage(
+            imageFile,
+          );
+          ImageUploadValidator.printReport(validation);
+
+          if (!validation.isValid) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '图片验证失败: ${validation.messages.where((m) => m.contains("❌") || m.contains("失败")).join(", ")}',
+                  ),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+            }
+            continue; // 跳过不合格的图片
+          }
+
           final base64Data = await ImageUtils.imageToBase64(imageFile);
           final mimeType = ImageUtils.getImageMimeType(imageFile.path);
+
+          // 记录图片信息
+          print('图片信息: ${imageFile.path}');
+          print('  MIME: $mimeType');
+          print('  Base64 长度: ${base64Data.length}');
+          print(
+            '  Base64 大小: ${(base64Data.length / 1024 / 1024).toStringAsFixed(2)} MB',
+          );
+
           imageAttachments.add(
             ImageAttachment(
               path: imageFile.path,
@@ -326,6 +357,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       // 使用 TokenCounter 估算 token 数量
       final estimatedTokens = TokenCounter.estimate(fullContent);
+      final estimatedPromptTokens = TokenCounter.estimate(userMessage.content);
       if (estimatedTokens > 0) {
         setState(() {
           final index = _messages.indexWhere(
@@ -334,11 +366,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           if (index != -1) {
             _messages[index] = _messages[index].copyWith(
               tokenCount: estimatedTokens,
+              promptTokens: estimatedPromptTokens,
               completionTokens: estimatedTokens,
               model: modelToUse,
             );
           }
         });
+
+        // 记录 token 使用
+        await chatRepo.recordTokenUsage(
+          conversationId: widget.conversationId,
+          messageId: assistantMessage.id,
+          model: modelToUse,
+          promptTokens: estimatedPromptTokens,
+          completionTokens: estimatedTokens,
+          totalTokens: estimatedPromptTokens + estimatedTokens,
+          messageContent: userMessage.content,
+        );
       }
 
       // 获取对话并保存

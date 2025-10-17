@@ -8,14 +8,19 @@ import '../../../core/utils/token_counter.dart';
 import '../../../core/utils/markdown_export.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/services/log_service.dart';
+import '../../../core/utils/image_upload_validator.dart';
+import '../../token_usage/data/token_usage_repository.dart';
+import '../../token_usage/domain/token_record.dart';
+import '../../../core/utils/model_capabilities.dart';
 
 class ChatRepository {
   final OpenAIApiClient _apiClient;
   final StorageService _storage;
+  final TokenUsageRepository? _tokenUsageRepo;
   final _uuid = const Uuid();
   final _log = LogService();
 
-  ChatRepository(this._apiClient, this._storage);
+  ChatRepository(this._apiClient, this._storage, [this._tokenUsageRepo]);
 
   // Send message and get response
   Future<Message> sendMessage({
@@ -37,6 +42,27 @@ class ChatRepository {
         'temperature': config.temperature,
         'maxTokens': config.maxTokens,
       });
+
+      // 检查模型是否支持图片
+      if (images != null && images.isNotEmpty) {
+        if (!ModelCapabilities.supportsImages(config.model)) {
+          _log.error('模型不支持图片输入', {
+            'model': config.model,
+            'imagesCount': images.length,
+          });
+          return Message(
+            id: _uuid.v4(),
+            role: MessageRole.assistant,
+            content: '',
+            timestamp: DateTime.now(),
+            hasError: true,
+            errorMessage:
+                '模型 ${config.model} 不支持图片输入，'
+                '请使用支持多模态的模型（如 gpt-4o、gpt-4-turbo 等）',
+          );
+        }
+      }
+
       final messages = _buildMessageList(
         conversationHistory,
         content,
@@ -76,21 +102,42 @@ class ChatRepository {
       );
 
       final response = await _apiClient.createChatCompletion(request);
-      final tokenCount = response.usage?.completionTokens;
+      final usage = response.usage;
+      final tokenCount = usage?.completionTokens;
 
       _log.info('收到响应', {
         'conversationId': conversationId,
         'tokenCount': tokenCount,
+        'promptTokens': usage?.promptTokens,
+        'totalTokens': usage?.totalTokens,
         'responseLength': response.choices.first.message.content.length,
       });
 
-      return Message(
+      final message = Message(
         id: _uuid.v4(),
         role: MessageRole.assistant,
         content: response.choices.first.message.content,
         timestamp: DateTime.now(),
         tokenCount: tokenCount,
+        promptTokens: usage?.promptTokens,
+        completionTokens: usage?.completionTokens,
+        model: config.model,
       );
+
+      // 记录 token 使用
+      if (_tokenUsageRepo != null && usage != null) {
+        await _recordTokenUsage(
+          conversationId: conversationId,
+          messageId: message.id,
+          model: config.model,
+          promptTokens: usage.promptTokens,
+          completionTokens: usage.completionTokens,
+          totalTokens: usage.totalTokens,
+          messageContent: content,
+        );
+      }
+
+      return message;
     } catch (e) {
       _log.error('发送消息失败', {
         'conversationId': conversationId,
@@ -124,6 +171,19 @@ class ChatRepository {
       'imagesCount': images?.length ?? 0,
       'filesCount': files?.length ?? 0,
     });
+
+    // 检查模型是否支持图片
+    if (images != null && images.isNotEmpty) {
+      if (!ModelCapabilities.supportsImages(config.model)) {
+        _log.error('模型不支持图片输入', {
+          'model': config.model,
+          'imagesCount': images.length,
+        });
+        yield '[Error: 模型 ${config.model} 不支持图片输入，'
+            '请使用支持多模态的模型（如 gpt-4o、gpt-4-turbo 等）]';
+        return;
+      }
+    }
 
     try {
       final messages = _buildMessageList(
@@ -214,6 +274,16 @@ class ChatRepository {
               'base64Length': image.base64Data!.length,
               'path': image.path,
             });
+
+            // 验证 base64 数据大小
+            final base64SizeMB = (image.base64Data!.length / 1024 / 1024);
+            if (base64SizeMB > 20) {
+              _log.error('图片 base64 数据过大', {
+                'size': '${base64SizeMB.toStringAsFixed(2)} MB',
+                'path': image.path,
+              });
+            }
+
             content.add({
               'type': 'image_url',
               'image_url': {
@@ -230,6 +300,16 @@ class ChatRepository {
         _log.info('文件附件', {'filesCount': files.length});
         // 这里可以添加文件处理逻辑，例如读取文本文件内容
         // 目前暂不实现，因为标准 OpenAI API 不支持直接文件上传
+      }
+
+      // 验证消息内容结构
+      final validation = ImageUploadValidator.validateMessageContent(content);
+      _log.info('消息内容验证结果', {
+        'isValid': validation.isValid,
+        'summary': validation.summary,
+      });
+      if (kDebugMode) {
+        ImageUploadValidator.printReport(validation);
       }
 
       messages.add({'role': 'user', 'content': content});
@@ -551,5 +631,69 @@ class ChatRepository {
       return b.updatedAt.compareTo(a.updatedAt);
     });
     return conversations;
+  }
+
+  /// 记录 token 使用
+  Future<void> _recordTokenUsage({
+    required String conversationId,
+    required String messageId,
+    required String model,
+    required int promptTokens,
+    required int completionTokens,
+    required int totalTokens,
+    required String messageContent,
+  }) async {
+    if (_tokenUsageRepo == null) return;
+
+    try {
+      final conversation = getConversation(conversationId);
+      final conversationTitle = conversation?.title ?? 'Unknown';
+      final messagePreview = messageContent.length > 50
+          ? '${messageContent.substring(0, 50)}...'
+          : messageContent;
+
+      final record = TokenRecord(
+        id: _uuid.v4(),
+        conversationId: conversationId,
+        conversationTitle: conversationTitle,
+        messageId: messageId,
+        model: model,
+        promptTokens: promptTokens,
+        completionTokens: completionTokens,
+        totalTokens: totalTokens,
+        timestamp: DateTime.now(),
+        messagePreview: messagePreview,
+      );
+
+      await _tokenUsageRepo!.addRecord(record);
+      _log.info('Token 使用记录已保存', {
+        'conversationId': conversationId,
+        'totalTokens': totalTokens,
+        'model': model,
+      });
+    } catch (e) {
+      _log.error('Token 使用记录失败', e);
+    }
+  }
+
+  /// 公开方法:记录 token 使用 (供 UI层调用)
+  Future<void> recordTokenUsage({
+    required String conversationId,
+    required String messageId,
+    required String model,
+    required int promptTokens,
+    required int completionTokens,
+    required int totalTokens,
+    required String messageContent,
+  }) async {
+    await _recordTokenUsage(
+      conversationId: conversationId,
+      messageId: messageId,
+      model: model,
+      promptTokens: promptTokens,
+      completionTokens: completionTokens,
+      totalTokens: totalTokens,
+      messageContent: messageContent,
+    );
   }
 }

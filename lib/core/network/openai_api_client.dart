@@ -177,6 +177,39 @@ class OpenAIApiClient {
               ? jsonEncode(e.requestOptions.data)
               : 'null',
         });
+
+        // 如果是400错误,提供更详细的诊断
+        if (e.response?.statusCode == 400) {
+          _log.error('400错误诊断', {
+            'errorType': e.response?.data?['error']?['type'],
+            'errorMessage': e.response?.data?['error']?['message'],
+            'errorCode': e.response?.data?['error']?['code'],
+            'requestModel': (e.requestOptions.data as Map?)?['model'],
+            'messagesCount':
+                ((e.requestOptions.data as Map?)?['messages'] as List?)?.length,
+          });
+
+          // 检查是否有图片消息
+          final messages =
+              (e.requestOptions.data as Map?)?['messages'] as List?;
+          if (messages != null) {
+            for (var i = 0; i < messages.length; i++) {
+              final msg = messages[i];
+              final content = msg['content'];
+              if (content is List) {
+                final hasImage = content.any(
+                  (part) => part['type'] == 'image_url',
+                );
+                if (hasImage) {
+                  _log.error('消息$i包含图片', {
+                    'partsCount': content.length,
+                    'contentPreview': content.map((p) => p['type']).toList(),
+                  });
+                }
+              }
+            }
+          }
+        }
       } else {
         _log.error('聊天完成请求失败', {'error': e.toString()}, stackTrace);
       }
