@@ -47,9 +47,12 @@ class ChatInputSection extends StatefulWidget {
 class _ChatInputSectionState extends State<ChatInputSection> {
   @override
   Widget build(BuildContext context) {
+    // 检测移动端平台
+    final isMobile = Platform.isIOS || Platform.isAndroid;
+
     return GlassContainer(
       blur: 15.0,
-      opacity: 0.15,
+      opacity: isMobile ? 0.1 : 0.15,
       padding: const EdgeInsets.all(16),
       border: Border(
         top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
