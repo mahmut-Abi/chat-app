@@ -262,13 +262,9 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
     // 强制刷新 MCP 列表,确保获取最新数据
     ref.invalidate(mcpConfigsProvider);
 
-    final mcpsAsync = ref.read(mcpConfigsProvider);
-
-    final mcps = mcpsAsync.when(
-      data: (mcps) => mcps,
-      loading: () => <McpConfig>[],
-      error: (error, stackTrace) => <McpConfig>[],
-    );
+    // 等待 MCP 列表加载完成
+    final mcpsAsync = await ref.read(mcpConfigsProvider.future);
+    final mcps = mcpsAsync;
 
     if (!mounted) return;
 

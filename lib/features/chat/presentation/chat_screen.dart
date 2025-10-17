@@ -6,6 +6,7 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/utils/token_counter.dart';
 import 'dart:io';
 import '../../../core/utils/image_utils.dart';
 import '../../../core/utils/platform_utils.dart';
@@ -323,6 +324,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
+      // 使用 TokenCounter 估算 token 数量
+      final estimatedTokens = TokenCounter.estimate(fullContent);
+      if (estimatedTokens > 0) {
+        setState(() {
+          final index = _messages.indexWhere(
+            (m) => m.id == assistantMessage.id,
+          );
+          if (index != -1) {
+            _messages[index] = _messages[index].copyWith(
+              tokenCount: estimatedTokens,
+              completionTokens: estimatedTokens,
+              model: modelToUse,
+            );
+          }
+        });
+      }
+
       // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
       if (conversation == null) {
@@ -443,6 +461,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         }
         _isLoading = false;
       });
+
+      // 使用 TokenCounter 估算 token 数量
+      final estimatedTokensForRegenerate = TokenCounter.estimate(fullContent);
+      if (estimatedTokensForRegenerate > 0) {
+        setState(() {
+          final index = _messages.indexWhere(
+            (m) => m.id == assistantMessage.id,
+          );
+          if (index != -1) {
+            _messages[index] = _messages[index].copyWith(
+              tokenCount: estimatedTokensForRegenerate,
+              completionTokens: estimatedTokensForRegenerate,
+              model: modelToUseForRegenerate,
+            );
+          }
+        });
+      }
 
       // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
