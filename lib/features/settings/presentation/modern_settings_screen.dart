@@ -58,13 +58,15 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       }
     });
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(_handleTabChange);
+    // 监听 animation 而不是 index，这样可以在滑动过程中实时响应
+    _tabController.animation?.addListener(_handleTabAnimation);
     _loadApiConfigs();
   }
 
-  void _handleTabChange() {
-    if (mounted) {
-      final newIndex = _tabController.index.round();
+  void _handleTabAnimation() {
+    // 在滑动过程中，当滑动超过 50% 时立即更新 tab 选中状态
+    if (mounted && _tabController.animation != null) {
+      final newIndex = _tabController.animation!.value.round();
       if (_selectedIndex != newIndex) {
         setState(() {
           _selectedIndex = newIndex;
@@ -75,19 +77,17 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
   void _onTabSelected(int index) {
     if (_selectedIndex != index) {
-      // 在 iOS 上，需要同时更新状态和控制器以避免延迟
-      // 使用 setState 立即更新 UI（标题），同时调用 animateTo 切换页面
+      // 点击 tab 时，立即更新状态并切换页面
       setState(() {
         _selectedIndex = index;
       });
-      // 立即切换页面，不延迟
-      _tabController.animateTo(index, duration: Duration.zero);
+      _tabController.animateTo(index);
     }
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChange);
+    _tabController.animation?.removeListener(_handleTabAnimation);
     _tabController.dispose();
     super.dispose();
   }
