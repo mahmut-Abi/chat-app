@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
+ import 'dart:io';
+ import '../../../../core/utils/platform_utils.dart';
+ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -66,9 +67,9 @@ class ImageViewerScreen extends StatelessWidget {
       }
 
       Directory? directory;
-      if (Platform.isIOS) {
+      if (PlatformUtils.isIOS) {
         directory = await getApplicationDocumentsDirectory();
-      } else if (Platform.isAndroid) {
+      } else if (PlatformUtils.isAndroid) {
         directory = await getExternalStorageDirectory();
       }
 

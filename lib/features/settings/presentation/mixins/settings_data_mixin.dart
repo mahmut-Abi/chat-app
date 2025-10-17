@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import '../../../../core/utils/platform_utils.dart';
+ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/utils/data_export_import.dart';
@@ -27,7 +28,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final fileName =
           'chat_app_export_${DateTime.now().toIso8601String().split('T')[0]}.json';
 
-      if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+      if (PlatformUtils.isMacOS || PlatformUtils.isLinux || PlatformUtils.isWindows) {
         final path = await FilePicker.platform.saveFile(
           dialogTitle: '保存导出文件',
           fileName: fileName,

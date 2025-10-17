@@ -18,6 +18,7 @@ class Conversation extends Equatable {
   final int? totalTokens;
   final bool isPinned;
   final bool isTemporary;
+  final String? agentId;
 
   const Conversation({
     required this.id,
@@ -30,9 +31,10 @@ class Conversation extends Equatable {
     this.tags = const [],
     this.groupId,
     this.totalTokens,
-    this.isPinned = false,
-    this.isTemporary = false,
-  });
+  this.isPinned = false,
+  this.isTemporary = false,
+  this.agentId,
+});
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>
       _$ConversationFromJson(json);
@@ -50,10 +52,11 @@ class Conversation extends Equatable {
     List<String>? tags,
     String? groupId,
     int? totalTokens,
-    bool? isPinned,
-    bool? isTemporary,
-  }) {
-    return Conversation(
+  bool? isPinned,
+  bool? isTemporary,
+  String? agentId,
+}) {
+  return Conversation(
       id: id ?? this.id,
       title: title ?? this.title,
       messages: messages ?? this.messages,
@@ -64,10 +67,11 @@ class Conversation extends Equatable {
       tags: tags ?? this.tags,
       groupId: groupId ?? this.groupId,
       totalTokens: totalTokens ?? this.totalTokens,
-      isPinned: isPinned ?? this.isPinned,
-      isTemporary: isTemporary ?? this.isTemporary,
-    );
-  }
+  isPinned: isPinned ?? this.isPinned,
+  isTemporary: isTemporary ?? this.isTemporary,
+  agentId: agentId ?? this.agentId,
+);
+}
 
   @override
   List<Object?> get props => [
@@ -81,9 +85,10 @@ class Conversation extends Equatable {
     tags,
     groupId,
     totalTokens,
-    isPinned,
-    isTemporary,
-  ];
+  isPinned,
+  isTemporary,
+  agentId,
+];
 }
 
 @JsonSerializable()

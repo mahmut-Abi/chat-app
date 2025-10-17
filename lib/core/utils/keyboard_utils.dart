@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+ import 'platform_utils.dart';
+ import 'package:flutter/material.dart';
 
 /// 键盘管理工具类
 class KeyboardUtils {
@@ -9,7 +10,7 @@ class KeyboardUtils {
     FocusScope.of(context).unfocus();
 
     // iOS 特定处理，确保键盘完全关闭
-    if (Platform.isIOS) {
+    if (PlatformUtils.isIOS) {
       FocusManager.instance.primaryFocus?.unfocus();
     }
   }

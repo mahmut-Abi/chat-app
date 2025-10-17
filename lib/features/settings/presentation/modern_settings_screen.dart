@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import '../../../core/utils/platform_utils.dart';
+ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
 import '../../../core/providers/providers.dart';
 import '../../../core/services/log_service.dart';
@@ -45,7 +46,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     _SettingsTab(icon: Icons.info_outline, label: '关于', title: '关于应用'),
   ];
 
-  bool get _isMobile => Platform.isIOS || Platform.isAndroid;
+  bool get _isMobile => PlatformUtils.isIOS || PlatformUtils.isAndroid;
 
   @override
   void initState() {

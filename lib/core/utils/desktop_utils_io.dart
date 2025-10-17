@@ -1,7 +1,8 @@
 // Desktop implementation using window_manager and tray_manager
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
+ import 'platform_utils.dart';
+ import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 /// 初始化原生菜单栏
@@ -37,7 +38,7 @@ Future<void> initWindowManagerImpl() async {
 Future<void> initSystemTrayImpl() async {
   try {
     await trayManager.setIcon(
-      Platform.isWindows
+      PlatformUtils.isWindows
           ? 'assets/icons/tray_icon.ico'
           : 'assets/icons/tray_icon.png',
     );

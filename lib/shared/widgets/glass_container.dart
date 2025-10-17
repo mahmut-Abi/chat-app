@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+ import '../../core/utils/platform_utils.dart';
 
 /// iOS 玻璃质感容器 - 支持 iOS 26+ 的毛玻璃效果
 class GlassContainer extends StatelessWidget {
@@ -26,7 +26,7 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Platform.isIOS;
+    final isIOS = PlatformUtils.isIOS;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (!isIOS) {

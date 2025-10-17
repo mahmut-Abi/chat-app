@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:async';
-import 'dart:io';
-import 'core/routing/app_router.dart';
-import 'shared/themes/app_theme.dart';
+ import 'dart:async';
+ import 'core/routing/app_router.dart';
+ import 'core/utils/platform_utils.dart';
+ import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
 import 'core/providers/providers.dart';
 import 'features/settings/domain/api_config.dart';
@@ -19,7 +19,7 @@ void main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // 检查和请求权限（仅移动端）
-      if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
+      if (!kIsWeb && (PlatformUtils.isIOS || PlatformUtils.isAndroid)) {
         final permissionService = PermissionService();
         final log = LogService();
         try {

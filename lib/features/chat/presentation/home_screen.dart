@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import '../../../core/utils/platform_utils.dart';
+ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:io' show Platform;
 import '../../../shared/widgets/platform_dialog.dart';
@@ -305,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,
         // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
-        onDrawerChanged: Platform.isIOS
+        onDrawerChanged: PlatformUtils.isIOS
             ? (isOpened) {
                 // 抽屉打开或关闭时，移除所有焦点防止键盘弹出
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -341,7 +342,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ? BackgroundContainer(child: _buildWelcomeScreen())
                 : ChatScreen(conversationId: _selectedConversation!.id),
             // 左上角透明菜单按钮 (仅非 iOS 平台显示)
-            if (!Platform.isIOS)
+            if (!PlatformUtils.isIOS)
               Positioned(
                 top: 60,
                 left: 16,

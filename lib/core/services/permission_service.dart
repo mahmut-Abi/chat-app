@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-import 'log_service.dart';
+ import '../utils/platform_utils.dart';
+ import 'log_service.dart';
 
 class PermissionService {
   final _log = LogService();
 
   // 检查并请求所有必要的权限
   Future<Map<Permission, PermissionStatus>> checkAndRequestPermissions() async {
-    if (!Platform.isIOS && !Platform.isAndroid) {
+    if (!PlatformUtils.isIOS && !PlatformUtils.isAndroid) {
       _log.info('非移动平台，跳过权限检查');
       return {};
     }
@@ -39,7 +40,7 @@ class PermissionService {
 
   // 获取需要的权限列表
   List<Permission> _getRequiredPermissions() {
-    if (Platform.isIOS) {
+    if (PlatformUtils.isIOS) {
       return [
         // iOS 不需要网络权限（网络是默认的）
         // 但需要本地网络权限（iOS 14+）
@@ -47,7 +48,7 @@ class PermissionService {
         Permission.camera, // 相机权限（可选）
         Permission.notification, // 通知权限（可选）
       ];
-    } else if (Platform.isAndroid) {
+    } else if (PlatformUtils.isAndroid) {
       return [
         Permission.storage, // 存储权限
         Permission.photos, // 相册权限
@@ -105,11 +106,11 @@ class PermissionService {
 
   // 检查网络权限（仅 Android）
   Future<bool> checkNetworkPermission() async {
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       // Android 的网络权限是在 AndroidManifest.xml 中声明的
       // 不需要运行时请求
       return true;
-    } else if (Platform.isIOS) {
+    } else if (PlatformUtils.isIOS) {
       // iOS 的网络权限是默认的，不需要请求
       return true;
     }

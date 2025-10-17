@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
+ import 'platform_utils.dart';
 
 /// 原生菜单栏工具类
 class NativeMenu {
   static const MethodChannel _channel = MethodChannel('native_menu');
 
   static bool get isSupported =>
-      !kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux);
+      !kIsWeb && (PlatformUtils.isMacOS || PlatformUtils.isWindows || PlatformUtils.isLinux);
 
   /// 初始化原生菜单
   static Future<void> initialize() async {

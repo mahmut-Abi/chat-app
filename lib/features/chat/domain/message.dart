@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:equatable/equatable.dart';
+import 'function_call.dart';
 
 part 'message.g.dart';
 
@@ -38,6 +39,7 @@ class Message extends Equatable {
   final String? model; // 消息使用的模型
   final int? promptTokens; // Prompt token 数量
   final int? completionTokens; // Completion token 数量
+  final List<ToolCall>? toolCalls; // 工具调用
 
   const Message({
     required this.id,
@@ -50,10 +52,11 @@ class Message extends Equatable {
     this.metadata,
     this.tokenCount,
     this.images,
-    this.model,
-    this.promptTokens,
-    this.completionTokens,
-  });
+  this.model,
+  this.promptTokens,
+  this.completionTokens,
+  this.toolCalls,
+});
 
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
@@ -71,11 +74,12 @@ class Message extends Equatable {
     Map<String, dynamic>? metadata,
     int? tokenCount,
     List<ImageAttachment>? images,
-    String? model,
-    int? promptTokens,
-    int? completionTokens,
-  }) {
-    return Message(
+  String? model,
+  int? promptTokens,
+  int? completionTokens,
+  List<ToolCall>? toolCalls,
+}) {
+  return Message(
       id: id ?? this.id,
       role: role ?? this.role,
       content: content ?? this.content,
@@ -86,11 +90,12 @@ class Message extends Equatable {
       metadata: metadata ?? this.metadata,
       tokenCount: tokenCount ?? this.tokenCount,
       images: images ?? this.images,
-      model: model ?? this.model,
-      promptTokens: promptTokens ?? this.promptTokens,
-      completionTokens: completionTokens ?? this.completionTokens,
-    );
-  }
+  model: model ?? this.model,
+  promptTokens: promptTokens ?? this.promptTokens,
+  completionTokens: completionTokens ?? this.completionTokens,
+  toolCalls: toolCalls ?? this.toolCalls,
+);
+}
 
   @override
   List<Object?> get props => [
@@ -104,16 +109,17 @@ class Message extends Equatable {
     metadata,
     tokenCount,
     images,
-    model,
-    promptTokens,
-    completionTokens,
-  ];
+  model,
+  promptTokens,
+  completionTokens,
+  toolCalls,
+];
 }
 
 @JsonSerializable()
 class ChatCompletionRequest {
   final String model;
-  final List<Map<String, String>> messages;
+  final List<Map<String, dynamic>> messages;
   final double temperature;
   @JsonKey(name: 'max_tokens')
   final int maxTokens;
@@ -124,6 +130,8 @@ class ChatCompletionRequest {
   @JsonKey(name: 'presence_penalty', includeIfNull: false)
   final double? presencePenalty;
   final bool stream;
+  @JsonKey(includeIfNull: false)
+  final List<ToolDefinition>? tools;
 
   const ChatCompletionRequest({
     required this.model,
@@ -134,6 +142,7 @@ class ChatCompletionRequest {
     this.frequencyPenalty,
     this.presencePenalty,
     this.stream = false,
+    this.tools,
   });
 
   factory ChatCompletionRequest.fromJson(Map<String, dynamic> json) =>
@@ -143,25 +152,27 @@ class ChatCompletionRequest {
 
   ChatCompletionRequest copyWith({
     String? model,
-    List<Map<String, String>>? messages,
+    List<Map<String, dynamic>>? messages,
     double? temperature,
     int? maxTokens,
     double? topP,
-    double? frequencyPenalty,
-    double? presencePenalty,
-    bool? stream,
-  }) {
-    return ChatCompletionRequest(
-      model: model ?? this.model,
-      messages: messages ?? this.messages,
-      temperature: temperature ?? this.temperature,
-      maxTokens: maxTokens ?? this.maxTokens,
-      topP: topP ?? this.topP,
-      frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
-      presencePenalty: presencePenalty ?? this.presencePenalty,
-      stream: stream ?? this.stream,
-    );
-  }
+  double? frequencyPenalty,
+  double? presencePenalty,
+  bool? stream,
+  List<ToolDefinition>? tools,
+}) {
+  return ChatCompletionRequest(
+    model: model ?? this.model,
+    messages: messages ?? this.messages,
+    temperature: temperature ?? this.temperature,
+    maxTokens: maxTokens ?? this.maxTokens,
+    topP: topP ?? this.topP,
+    frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
+    presencePenalty: presencePenalty ?? this.presencePenalty,
+    stream: stream ?? this.stream,
+    tools: tools ?? this.tools,
+  );
+}
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -202,8 +213,14 @@ class Choice {
 class MessageData {
   final String role;
   final String content;
+  @JsonKey(name: 'tool_calls', includeIfNull: false)
+  final List<ToolCall>? toolCalls;
 
-  const MessageData({required this.role, required this.content});
+  const MessageData({
+    required this.role,
+    required this.content,
+    this.toolCalls,
+  });
 
   factory MessageData.fromJson(Map<String, dynamic> json) =>
       _$MessageDataFromJson(json);

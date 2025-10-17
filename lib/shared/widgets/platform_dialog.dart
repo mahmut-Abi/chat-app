@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+ import '../../core/utils/platform_utils.dart';
+ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// 根据平台自动选择 Material 或 Cupertino 风格的 Dialog
@@ -30,7 +31,7 @@ class PlatformDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isIOS || Platform.isMacOS) {
+   if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
       return _buildCupertinoDialog(context);
     }
     return _buildMaterialDialog(context);
@@ -104,7 +105,7 @@ Future<T?> showPlatformDialog<T>({
   required Widget dialog,
   bool barrierDismissible = true,
 }) {
-  if (Platform.isIOS || Platform.isMacOS) {
+  if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
     return showCupertinoDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -163,7 +164,7 @@ Future<String?> showPlatformInputDialog({
 }) async {
   final controller = TextEditingController(text: initialValue);
 
-  if (Platform.isIOS || Platform.isMacOS) {
+  if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
     return showCupertinoDialog<String>(
       context: context,
       builder: (context) => CupertinoAlertDialog(
@@ -236,7 +237,7 @@ Future<T?> showPlatformActionSheet<T>({
   required List<PlatformSheetAction<T>> actions,
   String cancelText = '取消',
 }) async {
-  if (Platform.isIOS || Platform.isMacOS) {
+  if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
     return showCupertinoModalPopup<T>(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -348,7 +349,7 @@ Future<void> showPlatformLoadingDialog({
   required BuildContext context,
   String message = '加载中...',
 }) {
-  if (Platform.isIOS || Platform.isMacOS) {
+  if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
     return showCupertinoDialog(
       context: context,
       barrierDismissible: false,

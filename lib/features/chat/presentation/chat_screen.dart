@@ -6,9 +6,9 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:io';
-import '../../../core/utils/image_utils.dart';
-import '../../../shared/widgets/background_container.dart';
+ import '../../../core/utils/image_utils.dart';
+ import '../../../core/utils/platform_utils.dart';
+ import '../../../shared/widgets/background_container.dart';
 import 'widgets/modern_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
@@ -294,6 +294,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         content: userMessage.content,
         config: config,
         conversationHistory: _messages.where((m) => !m.isStreaming).toList(),
+        images: userMessage.images,
       );
 
       String fullContent = '';
@@ -414,6 +415,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         content: userMessage.content,
         config: configForRegenerate,
         conversationHistory: history,
+        images: userMessage.images,
       );
 
       String fullContent = '';
@@ -564,7 +566,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: false,
             // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
-            onDrawerChanged: Platform.isIOS
+            onDrawerChanged: PlatformUtils.isIOS
                 ? (isOpened) {
                     // 抽屉打开或关闭时，移除输入框焦点
                     _inputFocusNode.unfocus();
