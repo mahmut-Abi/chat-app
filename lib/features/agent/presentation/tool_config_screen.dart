@@ -118,19 +118,13 @@ class _ToolConfigScreenState extends ConsumerState<ToolConfigScreen> {
             TextFormField(
               controller: _descriptionController,
               decoration: const InputDecoration(
-                labelText: '描述 *',
+                labelText: '描述',
                 hintText: '描述该工具的功能和用途',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.description),
                 alignLabelWithHint: true,
               ),
               maxLines: 5,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '请输入工具描述';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 16),
             SwitchListTile(

@@ -1,50 +1,50 @@
- import 'dart:async';
- import 'package:uuid/uuid.dart';
- import '../domain/message.dart';
- import '../domain/conversation.dart';
- import '../../../core/network/openai_api_client.dart';
- import '../../../core/storage/storage_service.dart';
- import '../../../core/utils/token_counter.dart';
- import '../../../core/utils/markdown_export.dart';
- import 'package:flutter/foundation.dart';
- import '../../../core/services/log_service.dart';
- 
- class ChatRepository {
-   final OpenAIApiClient _apiClient;
+import 'dart:async';
+import 'package:uuid/uuid.dart';
+import '../domain/message.dart';
+import '../domain/conversation.dart';
+import '../../../core/network/openai_api_client.dart';
+import '../../../core/storage/storage_service.dart';
+import '../../../core/utils/token_counter.dart';
+import '../../../core/utils/markdown_export.dart';
+import 'package:flutter/foundation.dart';
+import '../../../core/services/log_service.dart';
+
+class ChatRepository {
+  final OpenAIApiClient _apiClient;
   final StorageService _storage;
   final _uuid = const Uuid();
   final _log = LogService();
 
   ChatRepository(this._apiClient, this._storage);
 
-   // Send message and get response
-   Future<Message> sendMessage({
-     required String conversationId,
-     required String content,
-     required ModelConfig config,
-     List<Message>? conversationHistory,
-     List<ImageAttachment>? images,
-     List<String>? files,
-   }) async {
-     try {
-       _log.info('发送消息', {
-         'conversationId': conversationId,
-         'model': config.model,
-         'contentLength': content.length,
-         'historyCount': conversationHistory?.length ?? 0,
-         'imagesCount': images?.length ?? 0,
-         'filesCount': files?.length ?? 0,
-         'temperature': config.temperature,
-         'maxTokens': config.maxTokens,
-       });
-       final messages = _buildMessageList(
-         conversationHistory,
-         content,
-         images: images,
-         files: files,
-       );
- 
-       final request = ChatCompletionRequest(
+  // Send message and get response
+  Future<Message> sendMessage({
+    required String conversationId,
+    required String content,
+    required ModelConfig config,
+    List<Message>? conversationHistory,
+    List<ImageAttachment>? images,
+    List<String>? files,
+  }) async {
+    try {
+      _log.info('发送消息', {
+        'conversationId': conversationId,
+        'model': config.model,
+        'contentLength': content.length,
+        'historyCount': conversationHistory?.length ?? 0,
+        'imagesCount': images?.length ?? 0,
+        'filesCount': files?.length ?? 0,
+        'temperature': config.temperature,
+        'maxTokens': config.maxTokens,
+      });
+      final messages = _buildMessageList(
+        conversationHistory,
+        content,
+        images: images,
+        files: files,
+      );
+
+      final request = ChatCompletionRequest(
         model: config.model,
         messages: messages,
         temperature: config.temperature,
@@ -87,33 +87,33 @@
     }
   }
 
-   // Send message with streaming response
-   Stream<String> sendMessageStream({
-     required String conversationId,
-     required String content,
-     required ModelConfig config,
-     List<Message>? conversationHistory,
-     List<ImageAttachment>? images,
-     List<String>? files,
-   }) async* {
-     _log.info('发送流式消息', {
-       'conversationId': conversationId,
-       'model': config.model,
-       'contentLength': content.length,
-       'historyCount': conversationHistory?.length ?? 0,
-       'imagesCount': images?.length ?? 0,
-       'filesCount': files?.length ?? 0,
-     });
- 
-     try {
-       final messages = _buildMessageList(
-         conversationHistory,
-         content,
-         images: images,
-         files: files,
-       );
- 
-       final request = ChatCompletionRequest(
+  // Send message with streaming response
+  Stream<String> sendMessageStream({
+    required String conversationId,
+    required String content,
+    required ModelConfig config,
+    List<Message>? conversationHistory,
+    List<ImageAttachment>? images,
+    List<String>? files,
+  }) async* {
+    _log.info('发送流式消息', {
+      'conversationId': conversationId,
+      'model': config.model,
+      'contentLength': content.length,
+      'historyCount': conversationHistory?.length ?? 0,
+      'imagesCount': images?.length ?? 0,
+      'filesCount': files?.length ?? 0,
+    });
+
+    try {
+      final messages = _buildMessageList(
+        conversationHistory,
+        content,
+        images: images,
+        files: files,
+      );
+
+      final request = ChatCompletionRequest(
         model: config.model,
         messages: messages,
         temperature: config.temperature,
@@ -141,78 +141,76 @@
     }
   }
 
-   List<Map<String, dynamic>> _buildMessageList(
-     List<Message>? history,
-     String newContent,
-     {
-     List<ImageAttachment>? images,
-     List<String>? files,
-     }
-   ) {
-     final messages = <Map<String, dynamic>>[];
- 
-     if (history != null) {
-       for (final msg in history) {
-         // 如果历史消息包含图片，需要构建多模态内容
-         if (msg.images != null && msg.images!.isNotEmpty) {
-           final content = <Map<String, dynamic>>[
-             {'type': 'text', 'text': msg.content},
-           ];
-           
-           for (final image in msg.images!) {
-             if (image.base64Data != null && image.mimeType != null) {
-               content.add({
-                 'type': 'image_url',
-                 'image_url': {
-                   'url': 'data:${image.mimeType};base64,${image.base64Data}',
-                 },
-               });
-             }
-           }
-           
-           messages.add({'role': msg.role.name, 'content': content});
-         } else {
-           messages.add({'role': msg.role.name, 'content': msg.content});
-         }
-       }
-     }
- 
-     // 构建新消息（包含图片和文件）
-     if ((images != null && images.isNotEmpty) ||
-         (files != null && files.isNotEmpty)) {
-       final content = <Map<String, dynamic>>[
-         {'type': 'text', 'text': newContent},
-       ];
-       
-       // 添加图片
-       if (images != null) {
-         for (final image in images) {
-           if (image.base64Data != null && image.mimeType != null) {
-             content.add({
-               'type': 'image_url',
-               'image_url': {
-                 'url': 'data:${image.mimeType};base64,${image.base64Data}',
-               },
-             });
-           }
-         }
-       }
-       
-       // 添加文件内容（如果是文本文件）
-       // 注意：OpenAI API 标准不直接支持文件上传，需要将文件内容转换为文本
-       if (files != null && files.isNotEmpty) {
-         _log.info('文件附件', {'filesCount': files.length});
-         // 这里可以添加文件处理逻辑，例如读取文本文件内容
-         // 目前暂不实现，因为标准 OpenAI API 不支持直接文件上传
-       }
-       
-       messages.add({'role': 'user', 'content': content});
-     } else {
-       messages.add({'role': 'user', 'content': newContent});
-     }
- 
-     return messages;
-   }
+  List<Map<String, dynamic>> _buildMessageList(
+    List<Message>? history,
+    String newContent, {
+    List<ImageAttachment>? images,
+    List<String>? files,
+  }) {
+    final messages = <Map<String, dynamic>>[];
+
+    if (history != null) {
+      for (final msg in history) {
+        // 如果历史消息包含图片，需要构建多模态内容
+        if (msg.images != null && msg.images!.isNotEmpty) {
+          final content = <Map<String, dynamic>>[
+            {'type': 'text', 'text': msg.content},
+          ];
+
+          for (final image in msg.images!) {
+            if (image.base64Data != null && image.mimeType != null) {
+              content.add({
+                'type': 'image_url',
+                'image_url': {
+                  'url': 'data:${image.mimeType};base64,${image.base64Data}',
+                },
+              });
+            }
+          }
+
+          messages.add({'role': msg.role.name, 'content': content});
+        } else {
+          messages.add({'role': msg.role.name, 'content': msg.content});
+        }
+      }
+    }
+
+    // 构建新消息（包含图片和文件）
+    if ((images != null && images.isNotEmpty) ||
+        (files != null && files.isNotEmpty)) {
+      final content = <Map<String, dynamic>>[
+        {'type': 'text', 'text': newContent},
+      ];
+
+      // 添加图片
+      if (images != null) {
+        for (final image in images) {
+          if (image.base64Data != null && image.mimeType != null) {
+            content.add({
+              'type': 'image_url',
+              'image_url': {
+                'url': 'data:${image.mimeType};base64,${image.base64Data}',
+              },
+            });
+          }
+        }
+      }
+
+      // 添加文件内容（如果是文本文件）
+      // 注意：OpenAI API 标准不直接支持文件上传，需要将文件内容转换为文本
+      if (files != null && files.isNotEmpty) {
+        _log.info('文件附件', {'filesCount': files.length});
+        // 这里可以添加文件处理逻辑，例如读取文本文件内容
+        // 目前暂不实现，因为标准 OpenAI API 不支持直接文件上传
+      }
+
+      messages.add({'role': 'user', 'content': content});
+    } else {
+      messages.add({'role': 'user', 'content': newContent});
+    }
+
+    return messages;
+  }
 
   // Conversation management
   Future<Conversation> createConversation({

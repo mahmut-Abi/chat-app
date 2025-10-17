@@ -6,10 +6,10 @@ import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import '../domain/message.dart';
 import 'package:uuid/uuid.dart';
- import 'dart:io';
- import '../../../core/utils/image_utils.dart';
- import '../../../core/utils/platform_utils.dart';
- import '../../../shared/widgets/background_container.dart';
+import 'dart:io';
+import '../../../core/utils/image_utils.dart';
+import '../../../core/utils/platform_utils.dart';
+import '../../../shared/widgets/background_container.dart';
 import 'widgets/modern_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
@@ -250,14 +250,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       images: imageAttachments,
     );
 
-     setState(() {
-       _messages.add(userMessage);
-       _isLoading = true;
-       _selectedImages = []; // 清空已选择的图片
-       _selectedFiles = []; // 清空已选择的文件
-     });
- 
-     _messageController.clear();
+    setState(() {
+      _messages.add(userMessage);
+      _isLoading = true;
+      _selectedImages = []; // 清空已选择的图片
+      _selectedFiles = []; // 清空已选择的文件
+    });
+
+    _messageController.clear();
     _scrollToBottom();
 
     final assistantMessage = Message(
@@ -293,14 +293,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       final stream = chatRepo.sendMessageStream(
         conversationId: widget.conversationId,
-       content: userMessage.content,
-       config: config,
-       conversationHistory: _messages.where((m) => !m.isStreaming).toList(),
-       images: imageAttachments,
-       files: _selectedFiles.map((f) => f.path).toList(),
-     );
- 
-     String fullContent = '';
+        content: userMessage.content,
+        config: config,
+        conversationHistory: _messages.where((m) => !m.isStreaming).toList(),
+        images: imageAttachments,
+        files: _selectedFiles.map((f) => f.path).toList(),
+      );
+
+      String fullContent = '';
       await for (final chunk in stream) {
         fullContent += chunk;
         setState(() {

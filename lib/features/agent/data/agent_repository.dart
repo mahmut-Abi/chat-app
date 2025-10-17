@@ -44,7 +44,7 @@ class AgentRepository {
   /// 创建工具
   Future<AgentTool> createTool({
     required String name,
-    required String description,
+    String? description,
     required AgentToolType type,
     Map<String, dynamic>? parameters,
   }) async {
@@ -57,7 +57,7 @@ class AgentRepository {
     final tool = AgentTool(
       id: const Uuid().v4(),
       name: name,
-      description: description,
+      description: description ?? '',
       type: type,
       parameters: parameters ?? {},
     );
