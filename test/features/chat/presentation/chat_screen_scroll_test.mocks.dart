@@ -276,6 +276,15 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
           as _i5.Future<void>);
 
   @override
+  _i5.Future<void> saveGroup(_i3.ConversationGroup? group) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveGroup, [group]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
   _i5.Future<void> deleteGroup(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#deleteGroup, [id]),
