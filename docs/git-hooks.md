@@ -1,6 +1,6 @@
 # Git Hooks 使用指南
 
-本项目配置了 Git pre-commit hook，用于在每次提交前自动运行代码格式和质量检查。
+本项目配置了 Git pre-commit hook，用于在每次提交前自动运行代码格式、质量检查和测试。
 
 ## Pre-commit Hook
 
@@ -26,6 +26,12 @@ dart format path/to/file.dart
 - ✅ **允许提交**: 如果只有 warning 和 info 级别的问题
 - ❌ **阻止提交**: 如果存在 error 级别的问题
 
+#### 3. Flutter Test 测试和覆盖率
+
+- ✅ **允许提交**: 如果所有测试通过
+- ❌ **阻止提交**: 如果有测试失败
+- 自动生成代码覆盖率报告到 `coverage/lcov.info`
+
 ### 输出示例
 
 **正常情况（所有检查通过）：**
@@ -47,19 +53,27 @@ warning • The value of the field '_trayListener' isn't used
 ✅ Flutter analyze passed!
    Found 3 warning(s) and 35 info message(s)
    (These won't block the commit)
+
+🧪 Running Flutter tests with coverage...
+
+00:02 +125: All tests passed!
+
+✅ All tests passed!
+
+📊 Coverage report generated at: coverage/lcov.info
+
+✅ All checks passed! Ready to commit.
 ```
 
-**异常情况（格式检查失败）：**
+**异常情况（测试失败）：**
 
 ```bash
-🎨 Checking Dart formatting...
+🧪 Running Flutter tests with coverage...
 
-❌ Some Dart files are not formatted!
+00:05 +98 -2: Some tests failed.
 
-Please run: flutter format .
-Or format specific files:
-  dart format lib/main.dart
-  dart format lib/features/chat/presentation/chat_page.dart
+❌ Tests failed!
+Please fix failing tests before committing.
 ```
 
 ### Hook 安装位置
@@ -88,8 +102,11 @@ Hook 会执行以下步骤：
 4. 运行 `flutter analyze --no-pub` 检查代码质量
 5. 捕获输出并检查是否有 error 级别的问题
 6. 统计 error、warning、info 的数量
-7. 如果有 error，则阻止提交并返回错误码 1
-8. 如果所有检查通过，允许提交并显示摘要信息
+7. 如果有 error，则阻止提交
+8. 运行 `flutter test --coverage` 执行所有测试
+9. 如果测试失败，阻止提交
+10. 生成代码覆盖率报告
+11. 如果所有检查通过，允许提交
 
 ### 修改 Hook
 
@@ -98,13 +115,23 @@ Hook 会执行以下步骤：
 **示例 1**: 如果也想阻止 warning：
 
 ```bash
-if echo "$ANALYZE_OUTPUT" | grep -q '^  error •\|^warning •'; then
+if echo "$ANALYZE_OUTPUT" | grep -q '^ error •\|^warning •'; then
     echo "❌ Flutter analyze found errors or warnings!"
     exit 1
 fi
 ```
 
-**示例 2**: 如果想自动修复格式问题而不是阻止提交：
+**示例 2**: 如果只想运行特定测试：
+
+```bash
+# 只运行单元测试
+flutter test test/unit/ --coverage
+
+# 跳过集成测试
+flutter test --exclude-tags=integration --coverage
+```
+
+**示例 3**: 如果想自动修复格式问题而不是阻止提交：
 
 ```bash
 if [ -n "$STAGED_DART_FILES" ]; then
@@ -118,7 +145,7 @@ fi
 
 ### Pre-push Hook（可选）
 
-在推送前运行测试：
+在推送前运行额外的检查：
 
 ```bash
 #!/bin/sh
@@ -172,14 +199,69 @@ echo "✅ Git hooks installed!"
 ./scripts/setup-hooks.sh
 ```
 
+## 性能优化建议
+
+### 跳过测试（开发阶段）
+
+如果测试运行时间较长，影响开发体验，可以临时注释掉测试部分：
+
+编辑 `.git/hooks/pre-commit`，注释掉测试相关代码：
+
+```bash
+# echo "🧪 Running Flutter tests with coverage..."
+# echo ""
+# TEST_OUTPUT=$(flutter test --coverage 2>&1)
+# ...
+```
+
+### 只运行受影响的测试（高级）
+
+可以根据修改的文件智能运行相关测试：
+
+```bash
+# 获取修改的文件
+CHANGED_FILES=$(git diff --cached --name-only | grep 'lib/.*\.dart$')
+
+# 根据修改的文件找到对应的测试
+for file in $CHANGED_FILES; do
+    TEST_FILE=$(echo $file | sed 's|lib/|test/|; s|\.dart$|_test.dart|)')
+    if [ -f "$TEST_FILE" ]; then
+        flutter test $TEST_FILE
+    fi
+done
+```
+
 ## CI/CD 集成
 
 GitHub Actions 也已配置了相同的检查逻辑：
 
 - ✅ 只有 error 会导致 CI 失败
 - ✅ warning 和 info 不会阻止构建
+- ✅ 运行所有测试并生成覆盖率报告
 - ✅ 显示详细的问题统计
 
 查看 `.github/workflows/flutter_test.yml` 了解详细配置。
 
 这确保了本地和 CI 环境的代码质量检查标准保持一致。
+
+## 故障排查
+
+### Hook 不执行
+
+1. 检查文件权限：`ls -la .git/hooks/pre-commit`
+2. 确保有可执行权限：`chmod +x .git/hooks/pre-commit`
+3. 检查文件第一行是否为 `#!/bin/sh`
+
+### 测试运行时间过长
+
+1. 考虑只运行单元测试：`flutter test test/unit/ --coverage`
+2. 或者在开发阶段临时禁用测试检查
+3. 使用 `--no-verify` 跳过检查（不推荐频繁使用）
+
+### Flutter 命令找不到
+
+确保 Flutter 已添加到 PATH：
+
+```bash
+export PATH="$PATH:`pwd`/flutter/bin"
+```
