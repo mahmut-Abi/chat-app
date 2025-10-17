@@ -62,8 +62,8 @@
 
 **缺失测试**:
 - [x] `calculator_tool.dart` - 计算器工具测试 ✅ 已完成
-- [ ] `file_operation_tool.dart` - 文件操作工具测试
-- [ ] `search_tool.dart` - 搜索工具测试
+- [x] `file_operation_tool.dart` - 文件操作工具测试 ✅ 已完成
+- [x] `search_tool.dart` - 搜索工具测试 ✅ 已完成
 
 #### 3. Agent Integration 测试
 

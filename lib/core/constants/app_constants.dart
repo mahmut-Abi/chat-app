@@ -26,6 +26,11 @@ class AppConstants {
     'OpenAI',
     'Azure OpenAI',
     'DeepSeek',
+    '智谱 AI (GLM)',
+    '月之暗面 (Moonshot)',
+    '百川智能 (Baichuan)',
+    '阿里云 (Qwen)',
+    '讯飞星火 (Spark)',
     'Ollama',
     'Custom',
   ];
@@ -35,9 +40,20 @@ class ApiProviders {
   static const String openai = 'OpenAI';
   static const String azure = 'Azure OpenAI';
   static const String deepseek = 'DeepSeek';
+  static const String zhipu = '智谱 AI (GLM)';
+  static const String moonshot = '月之暗面 (Moonshot)';
+  static const String baichuan = '百川智能 (Baichuan)';
+  static const String qwen = '阿里云 (Qwen)';
+  static const String spark = '讯飞星火 (Spark)';
   static const String ollama = 'Ollama';
   static const String custom = 'Custom';
 
   // API Base URLs
   static const String deepseekBaseUrl = 'https://api.deepseek.com/v1';
+  static const String zhipuBaseUrl = 'https://open.bigmodel.cn/api/paas/v4';
+  static const String moonshotBaseUrl = 'https://api.moonshot.cn/v1';
+  static const String baichuanBaseUrl = 'https://api.baichuan-ai.com/v1';
+  static const String qwenBaseUrl =
+      'https://dashscope.aliyuncs.com/compatible-mode/v1';
+  static const String sparkBaseUrl = 'https://spark-api.xf-yun.com/v1';
 }

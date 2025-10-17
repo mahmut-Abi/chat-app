@@ -201,6 +201,22 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       case 'DeepSeek':
         _baseUrlController.text = 'https://api.deepseek.com/v1';
         break;
+      case '智谱 AI (GLM)':
+        _baseUrlController.text = 'https://open.bigmodel.cn/api/paas/v4';
+        break;
+      case '月之暗面 (Moonshot)':
+        _baseUrlController.text = 'https://api.moonshot.cn/v1';
+        break;
+      case '百川智能 (Baichuan)':
+        _baseUrlController.text = 'https://api.baichuan-ai.com/v1';
+        break;
+      case '阿里云 (Qwen)':
+        _baseUrlController.text =
+            'https://dashscope.aliyuncs.com/compatible-mode/v1';
+        break;
+      case '讯飞星火 (Spark)':
+        _baseUrlController.text = 'https://spark-api.xf-yun.com/v1';
+        break;
       case 'Ollama':
         _baseUrlController.text = 'http://localhost:11434/v1';
         break;

@@ -58,6 +58,26 @@ class ApiConfigBasicSection extends StatelessWidget {
                   child: Text('Azure OpenAI'),
                 ),
                 DropdownMenuItem(value: 'DeepSeek', child: Text('DeepSeek')),
+                DropdownMenuItem(
+                  value: '智谱 AI (GLM)',
+                  child: Text('智谱 AI (GLM)'),
+                ),
+                DropdownMenuItem(
+                  value: '月之暗面 (Moonshot)',
+                  child: Text('月之暗面 (Moonshot)'),
+                ),
+                DropdownMenuItem(
+                  value: '百川智能 (Baichuan)',
+                  child: Text('百川智能 (Baichuan)'),
+                ),
+                DropdownMenuItem(
+                  value: '阿里云 (Qwen)',
+                  child: Text('阿里云 (Qwen)'),
+                ),
+                DropdownMenuItem(
+                  value: '讯飞星火 (Spark)',
+                  child: Text('讯飞星火 (Spark)'),
+                ),
                 DropdownMenuItem(value: 'Ollama', child: Text('Ollama')),
                 DropdownMenuItem(value: 'Custom', child: Text('自定义')),
               ],

@@ -8,6 +8,7 @@ import '../../features/settings/domain/api_config.dart';
 import '../../features/models/data/models_repository.dart';
 import '../../features/prompts/data/prompts_repository.dart';
 import '../../features/prompts/domain/prompt_template.dart';
+import '../../features/token_usage/data/token_usage_repository.dart';
 import '../constants/app_constants.dart';
 import '../utils/token_counter.dart';
 import 'package:flutter/foundation.dart';
@@ -191,3 +192,9 @@ final promptTemplatesProvider =
       final promptsRepo = ref.watch(promptsRepositoryProvider);
       return await promptsRepo.getAllTemplates();
     });
+
+// Token Usage Repository Provider
+final tokenUsageRepositoryProvider = Provider<TokenUsageRepository>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return TokenUsageRepository(storage);
+});
