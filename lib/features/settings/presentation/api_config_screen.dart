@@ -198,6 +198,9 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
       case 'Azure OpenAI':
         _baseUrlController.text = 'https://YOUR_RESOURCE.openai.azure.com/';
         break;
+      case 'DeepSeek':
+        _baseUrlController.text = 'https://api.deepseek.com/v1';
+        break;
       case 'Ollama':
         _baseUrlController.text = 'http://localhost:11434/v1';
         break;

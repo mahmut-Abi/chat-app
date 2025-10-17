@@ -31,7 +31,7 @@ class _ImprovedBackgroundSettingsScreenState
 
   String? _selectedBackground;
   double _opacity = 0.3;
-  bool _enableBlur = false;
+  // 移除 _enableBlur 变量，因为背景模糊功能已被移除
   bool _isSaving = false;
 
   @override
@@ -236,11 +236,7 @@ class _ImprovedBackgroundSettingsScreenState
       children: [
         imageWidget,
         Container(color: Colors.white.withValues(alpha: 1 - _opacity)),
-        if (_enableBlur)
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(color: Colors.transparent),
-          ),
+        // 移除模糊效果功能
         Center(
           child: Container(
             padding: const EdgeInsets.all(16),
@@ -568,37 +564,7 @@ class _ImprovedBackgroundSettingsScreenState
                 });
               },
             ),
-            const SizedBox(height: 16),
-
-            // 模糊效果
-            Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: SwitchListTile(
-                secondary: CircleAvatar(
-                  backgroundColor: colorScheme.secondaryContainer,
-                  child: Icon(
-                    Icons.blur_on,
-                    color: colorScheme.secondary,
-                    size: 22,
-                  ),
-                ),
-                title: const Text('启用模糊效果'),
-                subtitle: const Text('为背景添加模糊效果,提高文字可读性'),
-                value: _enableBlur,
-                onChanged: (value) {
-                  _log.debug('切换模糊效果', {'enabled': value});
-                  setState(() {
-                    _enableBlur = value;
-                  });
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
+            // 移除模糊效果开关
           ],
         ),
       ),

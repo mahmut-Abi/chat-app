@@ -152,46 +152,93 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        color: const Color(0xFF1E1E1E), // 深色背景
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 代码块头部
+          // 代码块头部 - 美化设计
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(8),
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Color(0xFF2D2D2D),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Row(
               children: [
-                Text(
-                  language.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                // 语言标签
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF007ACC),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    language.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.copy, size: 18),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: code));
-                  },
-                  tooltip: '复制代码',
+                // 复制按钮 - 改进样式
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: code));
+                    },
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.content_copy,
+                            size: 16,
+                            color: Color(0xFFCCCCCC),
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            '复制',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFFCCCCCC),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          // 代码内容
+          // 代码内容 - 改进样式
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+            ),
             child: enableHighlight
                 ? HighlightView(
                     code,
@@ -200,14 +247,18 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
                     padding: EdgeInsets.zero,
                     textStyle: const TextStyle(
                       fontFamily: 'monospace',
-                      fontSize: 14,
+                      fontSize: 13,
+                      height: 1.5,
+                      color: Color(0xFFD4D4D4),
                     ),
                   )
                 : SelectableText(
                     code,
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      fontSize: 14,
+                      fontSize: 13,
+                      height: 1.5,
+                      color: Color(0xFFD4D4D4),
                     ),
                   ),
           ),

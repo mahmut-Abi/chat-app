@@ -57,6 +57,7 @@ class ApiConfigBasicSection extends StatelessWidget {
                   value: 'Azure OpenAI',
                   child: Text('Azure OpenAI'),
                 ),
+                DropdownMenuItem(value: 'DeepSeek', child: Text('DeepSeek')),
                 DropdownMenuItem(value: 'Ollama', child: Text('Ollama')),
                 DropdownMenuItem(value: 'Custom', child: Text('自定义')),
               ],

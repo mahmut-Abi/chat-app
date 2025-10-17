@@ -25,6 +25,7 @@ class AppConstants {
   static const List<String> supportedProviders = [
     'OpenAI',
     'Azure OpenAI',
+    'DeepSeek',
     'Ollama',
     'Custom',
   ];
@@ -33,6 +34,10 @@ class AppConstants {
 class ApiProviders {
   static const String openai = 'OpenAI';
   static const String azure = 'Azure OpenAI';
+  static const String deepseek = 'DeepSeek';
   static const String ollama = 'Ollama';
   static const String custom = 'Custom';
+
+  // API Base URLs
+  static const String deepseekBaseUrl = 'https://api.deepseek.com/v1';
 }
