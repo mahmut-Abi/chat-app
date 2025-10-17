@@ -77,7 +77,61 @@ final providers = [
 ```
 
 ## 状态
-⏳ 待实现
+✅ 已完成
+
+## 修复内容
+
+### 问题原因
+
+DeepSeek API 的 base URL 配置为 `https://api.deepseek.com/v1`，当代码中使用 `/v1/models` 进行调用时，
+实际请求的 URL 变成了 `https://api.deepseek.com/v1/v1/models`，导致 404 错误。
+
+### 解决方案
+
+1. 将 `models_repository.dart` 中的 API 调用路径从 `/v1/models` 改为 `/models`
+2. 添加 DeepSeek 模型的上下文长度和描述信息
+3. 测试确认 API 调用成功
+
+### 修复的文件
+
+- `lib/features/models/data/models_repository.dart`
+  - 修改 API 路径从 `/v1/models` 到 `/models`
+  - 添加 DeepSeek 模型的识别和描述
+  - 添加 DeepSeek 模型的上下文长度（64K）
+
+### 测试验证
+
+使用 curl 测试验证：
+```bash
+# 成功的调用
+curl -X GET 'https://api.deepseek.com/v1/models' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+  
+# 返回：
+{
+  "object": "list",
+  "data": [
+    {"id": "deepseek-chat", "object": "model", "owned_by": "deepseek"},
+    {"id": "deepseek-reasoner", "object": "model", "owned_by": "deepseek"}
+  ]
+}
+```
+
+### 支持的 DeepSeek 模型
+
+修复后支持以下模型：
+
+1. **deepseek-chat**
+   - 通用对话模型
+   - 上下文长度：64K
+   
+2. **deepseek-reasoner**
+   - 复杂推理任务模型
+   - 上下文长度：64K
+   
+3. **deepseek-coder**
+   - 代码生成优化模型
+   - 上下文长度：64K
 
 ## 相关文件
 - `lib/features/settings/presentation/api_config_screen.dart` (需要创建或修改)

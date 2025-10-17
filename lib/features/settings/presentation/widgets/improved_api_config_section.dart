@@ -118,7 +118,7 @@ class ImprovedApiConfigSection extends StatelessWidget {
       ),
       child: Icon(
         _getProviderIcon(provider),
-        color: isActive ? colorScheme.onPrimary : colorScheme.primary,
+        color: colorScheme.primary,
         size: 24,
       ),
     );
