@@ -334,6 +334,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
 
+      // 如果是第一次对话（只有2条消息：用户+AI），自动生成标题
+      if (_messages.length == 2) {
+        await chatRepo.generateConversationTitle(widget.conversationId);
+      }
+
       // 刷新侧边栏对话列表（如果这是第一条消息，现在会显示在侧边栏）
       _loadAllConversations();
 

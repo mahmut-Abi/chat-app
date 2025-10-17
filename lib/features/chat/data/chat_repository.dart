@@ -373,6 +373,56 @@ class ChatRepository {
     return tags.toList()..sort();
   }
 
+  /// 自动生成会话标题
+  /// 基于第一条用户消息和AI回复生成简短的标题
+  Future<void> generateConversationTitle(String conversationId) async {
+    final conversation = getConversation(conversationId);
+    if (conversation == null || conversation.messages.length < 2) {
+      return;
+    }
+
+    // 如果标题不是默认值，不自动生成
+    if (conversation.title != 'New Conversation' &&
+        !conversation.title.startsWith('新会话')) {
+      return;
+    }
+
+    try {
+      // 获取第一条用户消息
+      final userMessage = conversation.messages.firstWhere(
+        (m) => m.role == MessageRole.user,
+        orElse: () => conversation.messages.first,
+      );
+
+      // 使用第一条用户消息生成标题（取前30个字符）
+      String title = userMessage.content.trim();
+
+      // 移除多余的空白字符
+      title = title.replaceAll(RegExp(r'\s+'), ' ');
+
+      // 限制长度
+      if (title.length > 30) {
+        title = '${title.substring(0, 30)}...';
+      }
+
+      // 如果标题为空，使用默认值
+      if (title.isEmpty) {
+        title = '对话 ${DateTime.now().toString().substring(5, 16)}';
+      }
+
+      _log.info('自动生成会话标题', {'conversationId': conversationId, 'title': title});
+
+      // 更新会话标题
+      final updated = conversation.copyWith(title: title);
+      await saveConversation(updated);
+    } catch (e) {
+      _log.error('生成会话标题失败', {
+        'conversationId': conversationId,
+        'error': e.toString(),
+      });
+    }
+  }
+
   // 置顶/取消置顶功能
   Future<void> togglePinConversation(String id) async {
     final conversation = getConversation(id);
