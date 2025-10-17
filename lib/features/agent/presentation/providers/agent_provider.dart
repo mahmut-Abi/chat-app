@@ -8,6 +8,7 @@ import '../../data/agent_chat_service.dart';
 import '../../../../core/providers/providers.dart';
 import '../../domain/agent_tool.dart' as agent_domain;
 import '../../../chat/domain/function_call.dart';
+import '../../../mcp/data/mcp_tool_integration.dart';
 
 /// Agent 仓库 Provider
 final agentRepositoryProvider = Provider<AgentRepository>((ref) {
@@ -16,12 +17,19 @@ final agentRepositoryProvider = Provider<AgentRepository>((ref) {
   return AgentRepository(storage, executorManager);
 });
 
+/// MCP 工具集成 Provider
+final mcpToolIntegrationProvider = Provider<McpToolIntegration>((ref) {
+  final mcpRepository = ref.watch(mcpRepositoryProvider);
+  return McpToolIntegration(mcpRepository);
+});
+
 /// 增强 Agent 集成 Provider
 final enhancedAgentIntegrationProvider = Provider<EnhancedAgentIntegration>((
   ref,
 ) {
   final repository = ref.watch(agentRepositoryProvider);
-  return EnhancedAgentIntegration(repository);
+  final mcpIntegration = ref.watch(mcpToolIntegrationProvider);
+  return EnhancedAgentIntegration(repository, mcpIntegration: mcpIntegration);
 });
 
 /// Agent 聊天服务 Provider

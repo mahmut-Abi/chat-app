@@ -4,18 +4,24 @@ import 'agent_repository.dart';
 import '../../chat/domain/message.dart';
 import '../../chat/domain/function_call.dart';
 import '../../../core/services/log_service.dart';
+import '../../mcp/data/mcp_tool_integration.dart';
 
 /// 增强的 Agent 集成服务
 /// 支持 Function Calling 和工具执行
 class EnhancedAgentIntegration {
   final AgentRepository _repository;
   final _log = LogService();
+  final McpToolIntegration? _mcpIntegration;
 
-  EnhancedAgentIntegration(this._repository);
+  EnhancedAgentIntegration(
+    this._repository, {
+    McpToolIntegration? mcpIntegration,
+  }) : _mcpIntegration = mcpIntegration;
 
   /// 获取 Agent 的工具定义（用于 API 调用）
   Future<List<ToolDefinition>> getAgentToolDefinitions(
     AgentConfig agent,
+    {bool includeMcpTools = true}
   ) async {
     _log.info('获取 Agent 工具定义', {'agentId': agent.id, 'agentName': agent.name});
 
@@ -35,6 +41,17 @@ class EnhancedAgentIntegration {
               : _getDefaultParameters(tool.type),
         ),
       ));
+    }
+
+    // 添加 MCP 工具
+    if (includeMcpTools && _mcpIntegration != null) {
+      try {
+        final mcpTools = await _mcpIntegration!.getAllMcpToolDefinitions();
+        definitions.addAll(mcpTools);
+        _log.debug('MCP 工具已添加', {'count': mcpTools.length});
+      } catch (e) {
+        _log.error('添加 MCP 工具失败', e);
+      }
     }
 
     _log.debug('工具定义已构建', {'count': definitions.length});
@@ -111,11 +128,19 @@ class EnhancedAgentIntegration {
         'function': toolCall.function.name,
       });
 
-      // 查找对应的工具
-      final tool = availableTools.firstWhere(
+      // 先尝试查找 Agent 工具
+      final tool = availableTools.where(
         (t) => t.name == toolCall.function.name,
-        orElse: () => throw Exception('未找到工具: ${toolCall.function.name}'),
-      );
+      ).firstOrNull;
+
+      // 如果不是 Agent 工具，尝试使用 MCP 工具
+      if (tool == null && _mcpIntegration != null) {
+        return await _executeMcpTool(toolCall);
+      }
+
+      if (tool == null) {
+        throw Exception('未找到工具: ${toolCall.function.name}');
+      }
 
       // 解析参数
       final Map<String, dynamic> arguments;
@@ -144,6 +169,50 @@ class EnhancedAgentIntegration {
         success: false,
         error: '执行失败: ${e.toString()}',
         metadata: {'stackTrace': stackTrace.toString()},
+      );
+    }
+  }
+
+  /// 执行 MCP 工具
+  Future<ToolExecutionResult> _executeMcpTool(ToolCall toolCall) async {
+    if (_mcpIntegration == null) {
+      return ToolExecutionResult(
+        success: false,
+        error: 'MCP 集成未启用',
+      );
+    }
+
+    try {
+      // 解析参数
+      final Map<String, dynamic> arguments;
+      try {
+        arguments = jsonDecode(toolCall.function.arguments);
+      } catch (e) {
+        throw Exception('无效的工具参数: ${e.toString()}');
+      }
+
+      // 查找对应的 MCP 配置
+      final mcpConfigId =
+          await _mcpIntegration!.findMcpConfigForTool(toolCall.function.name);
+
+      if (mcpConfigId == null) {
+        return ToolExecutionResult(
+          success: false,
+          error: '未找到 MCP 工具: ${toolCall.function.name}',
+        );
+      }
+
+      // 执行 MCP 工具
+      return await _mcpIntegration!.executeMcpTool(
+        mcpConfigId,
+        toolCall.function.name,
+        arguments,
+      );
+    } catch (e) {
+      _log.error('MCP 工具执行失败', e);
+      return ToolExecutionResult(
+        success: false,
+        error: '执行失败: ${e.toString()}',
       );
     }
   }
