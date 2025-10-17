@@ -4,6 +4,7 @@ import 'tool_executor.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/services/log_service.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 /// Agent 仓库
 class AgentRepository {
@@ -37,7 +38,15 @@ class AgentRepository {
     );
 
     await _storage.saveSetting('agent_${agent.id}', jsonEncode(agent.toJson()));
-    _log.debug('Agent 配置已保存', {'agentId': agent.id});
+    _log.info('Agent 配置已保存', {'agentId': agent.id});
+    if (kDebugMode) {
+      print('[AgentRepository] Agent 配置已保存');
+      print('[AgentRepository]   ID: ${agent.id}');
+      print('[AgentRepository]   存储键: agent_${agent.id}');
+      // 验证保存
+      final saved = _storage.getSetting('agent_${agent.id}');
+      print('[AgentRepository] 验证保存: ${saved != null ? '成功' : '失败'}');
+    }
     return agent;
   }
 
@@ -94,12 +103,23 @@ class AgentRepository {
 
   /// 获取所有 Agent
   Future<List<AgentConfig>> getAllAgents() async {
-    _log.debug('获取所有 Agent 配置');
+    _log.info('开始获取所有 Agent 配置');
+    if (kDebugMode) {
+      print('[AgentRepository] 开始获取所有 Agent 配置');
+    }
     try {
       final keys = await _storage.getAllKeys();
+      _log.info('获取到所有存储键', {'总数': keys.length});
+      if (kDebugMode) {
+        print('[AgentRepository] 存储中的所有键: $keys');
+      }
       final agentKeys = keys
           .where((k) => k.startsWith('agent_') && !k.contains('tool'))
           .toList();
+      _log.info('过滤出 Agent 配置键', {'数量': agentKeys.length});
+      if (kDebugMode) {
+        print('[AgentRepository] Agent 配置键: $agentKeys');
+      }
 
       final agents = <AgentConfig>[];
       for (final key in agentKeys) {
@@ -115,15 +135,30 @@ class AgentRepository {
             } else {
               continue;
             }
+            if (kDebugMode) {
+              print('[AgentRepository] 成功解析配置: ${json['name']}');
+            }
             agents.add(AgentConfig.fromJson(json));
           } catch (e) {
-            // 跳过无效的配置
+            _log.warning('解析 Agent 配置失败', {'key': key, 'error': e.toString()});
+            if (kDebugMode) {
+              print('[AgentRepository] 解析配置失败: key=$key, error=$e');
+            }
           }
         }
       }
 
+      _log.info('成功获取 Agent 配置', {'数量': agents.length});
+      if (kDebugMode) {
+        print('[AgentRepository] 返回 ${agents.length} 个配置');
+      }
+
       return agents;
     } catch (e) {
+      _log.error('获取 Agent 配置异常: ${e.toString()}', e, StackTrace.current);
+      if (kDebugMode) {
+        print('[AgentRepository] 获取配置异常: $e');
+      }
       return [];
     }
   }

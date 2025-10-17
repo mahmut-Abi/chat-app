@@ -186,11 +186,25 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   }
 
   Future<void> _showAgentSelector() async {
-    // 强制刷新 Agent 列表,确保获取最新数据
+    // 强制刷新 Agent 列表，确保获取最新数据
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] 开始显示 Agent 选择器');
+    }
     ref.invalidate(agentConfigsProvider);
 
     // 等待 Agent 列表加载完成
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] 等待 Agent 列表加载...');
+    }
     final agents = await ref.read(agentConfigsProvider.future);
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] Agent 列表加载完成: ${agents.length} 个配置');
+      for (final agent in agents) {
+        print(
+          '[ChatFunctionMenu]   - ${agent.name} (enabled: ${agent.enabled})',
+        );
+      }
+    }
 
     if (!mounted) return;
 
