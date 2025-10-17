@@ -222,6 +222,7 @@ class HttpMcpClient extends McpClientBase {
 
       if (response.statusCode == 200 && response.data != null) {
         response.data!.stream
+            .cast<List<int>>()
             .transform(utf8.decoder)
             .transform(const LineSplitter())
             .listen(

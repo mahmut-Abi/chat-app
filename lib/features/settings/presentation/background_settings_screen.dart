@@ -40,7 +40,6 @@ class _BackgroundSettingsScreenState
         setState(() {
           _selectedBackground = settings.backgroundImage;
           _opacity = settings.backgroundOpacity;
-          _enableBlur = settings.enableBackgroundBlur;
         });
       }
     });
@@ -66,14 +65,12 @@ class _BackgroundSettingsScreenState
       backgroundImage: _selectedBackground,
       clearBackgroundImage: _selectedBackground == null,
       backgroundOpacity: _opacity,
-      enableBackgroundBlur: _enableBlur,
     );
 
     if (kDebugMode) {
       print('Saving settings:');
       print('  backgroundImage: $_selectedBackground');
       print('  backgroundOpacity: $_opacity');
-      print('  enableBackgroundBlur: $_enableBlur');
       print('  newSettings: ${newSettings.toJson()}');
     }
 

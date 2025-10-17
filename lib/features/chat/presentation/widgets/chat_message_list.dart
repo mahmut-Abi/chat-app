@@ -10,6 +10,7 @@ class ChatMessageList extends StatelessWidget {
   final Function(int) onDeleteMessage;
   final Function(int) onRegenerateMessage;
   final Function(int, String) onEditMessage;
+  final String? currentModelName;
 
   const ChatMessageList({
     super.key,
@@ -19,6 +20,7 @@ class ChatMessageList extends StatelessWidget {
     required this.onDeleteMessage,
     required this.onRegenerateMessage,
     required this.onEditMessage,
+    this.currentModelName,
   });
 
   @override
@@ -60,6 +62,9 @@ class ChatMessageList extends StatelessWidget {
         return RepaintBoundary(
           child: MessageBubble(
             message: message,
+            modelName: message.role == MessageRole.assistant
+                ? currentModelName
+                : null,
             onDelete: () => onDeleteMessage(index),
             onRegenerate: message.role == MessageRole.assistant
                 ? () => onRegenerateMessage(index)

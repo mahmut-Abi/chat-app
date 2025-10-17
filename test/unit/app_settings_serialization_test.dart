@@ -16,7 +16,6 @@ void main() {
         customThemeColor: 0xFF0000FF,
         backgroundImage: 'assets/bg.jpg',
         backgroundOpacity: 0.5,
-        enableBackgroundBlur: true,
       );
 
       // 转换为 JSON
@@ -33,7 +32,6 @@ void main() {
       expect(json['customThemeColor'], 0xFF0000FF);
       expect(json['backgroundImage'], 'assets/bg.jpg');
       expect(json['backgroundOpacity'], 0.5);
-      expect(json['enableBackgroundBlur'], true);
 
       // 从 JSON 反序列化
       final deserializedSettings = AppSettings.fromJson(json);
@@ -54,10 +52,6 @@ void main() {
       expect(
         deserializedSettings.backgroundOpacity,
         settings.backgroundOpacity,
-      );
-      expect(
-        deserializedSettings.enableBackgroundBlur,
-        settings.enableBackgroundBlur,
       );
     });
 
@@ -104,8 +98,7 @@ void main() {
       expect(defaultSettings.themeColor, null);
       expect(defaultSettings.customThemeColor, null);
       expect(defaultSettings.backgroundImage, null);
-      expect(defaultSettings.backgroundOpacity, 0.3);
-      expect(defaultSettings.enableBackgroundBlur, false);
+      expect(defaultSettings.backgroundOpacity, 0.8);
     });
   });
 }

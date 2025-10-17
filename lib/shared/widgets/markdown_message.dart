@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
+import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:markdown/markdown.dart' as md;
 
 // 自定义代码块构建器
@@ -46,11 +47,18 @@ class CodeBlock extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        color: isDarkMode ? const Color(0xFF272822) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
+          color: isDarkMode ? const Color(0xFF3E3D32) : Colors.grey.shade300,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDarkMode ? Colors.black26 : Colors.grey.shade200,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,7 +66,9 @@ class CodeBlock extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
+              color: isDarkMode
+                  ? const Color(0xFF3E3D32)
+                  : Colors.grey.shade100,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
@@ -69,10 +79,19 @@ class CodeBlock extends StatelessWidget {
               children: [
                 Text(
                   language.isEmpty ? 'code' : language,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDarkMode
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy, size: 16),
+                  color: isDarkMode
+                      ? Colors.grey.shade400
+                      : Colors.grey.shade600,
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: code));
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -84,6 +103,7 @@ class CodeBlock extends StatelessWidget {
                   },
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  tooltip: '复制代码',
                 ),
               ],
             ),
@@ -94,9 +114,14 @@ class CodeBlock extends StatelessWidget {
             child: HighlightView(
               code,
               language: language.isEmpty ? 'plaintext' : language,
-              theme: githubTheme,
+              theme: isDarkMode ? monokaiSublimeTheme : githubTheme,
               padding: EdgeInsets.zero,
-              textStyle: const TextStyle(fontFamily: 'monospace', fontSize: 14),
+              textStyle: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 14,
+                height: 1.5,
+                color: isDarkMode ? const Color(0xFFF8F8F2) : Colors.black87,
+              ),
             ),
           ),
         ],
@@ -130,13 +155,14 @@ class MarkdownMessage extends StatelessWidget {
         ),
         code: TextStyle(
           backgroundColor: isDarkMode
-              ? const Color(0xFF1E293B)
+              ? const Color(0xFF272822)
               : const Color(0xFFF1F5F9),
           fontFamily: 'monospace',
           fontSize: 13,
+          color: isDarkMode ? const Color(0xFFF8F8F2) : const Color(0xFF1E293B),
         ),
         codeblockDecoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+          color: isDarkMode ? const Color(0xFF272822) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(8),
         ),
         blockquote: TextStyle(
@@ -153,11 +179,34 @@ class MarkdownMessage extends StatelessWidget {
             ),
           ),
         ),
-        h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        h3: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        h1: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black87,
+        ),
+        h2: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black87,
+        ),
+        h3: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black87,
+        ),
         listBullet: TextStyle(
           color: isDarkMode ? Colors.white70 : Colors.black87,
+        ),
+        a: TextStyle(
+          color: isDarkMode ? const Color(0xFF66D9EF) : Colors.blue.shade700,
+          decoration: TextDecoration.underline,
+        ),
+        tableBorder: TableBorder.all(
+          color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+        ),
+        tableHead: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black87,
         ),
       ),
     );

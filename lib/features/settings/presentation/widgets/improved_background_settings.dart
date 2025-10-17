@@ -45,7 +45,6 @@ class _ImprovedBackgroundSettingsScreenState
         setState(() {
           _selectedBackground = settings.backgroundImage;
           _opacity = settings.backgroundOpacity;
-          _enableBlur = settings.enableBackgroundBlur;
         });
       }
     });
@@ -97,7 +96,6 @@ class _ImprovedBackgroundSettingsScreenState
         backgroundImage: _selectedBackground,
         clearBackgroundImage: _selectedBackground == null,
         backgroundOpacity: _opacity,
-        enableBackgroundBlur: _enableBlur,
       );
 
       await ref.read(appSettingsProvider.notifier).updateSettings(newSettings);

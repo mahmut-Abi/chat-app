@@ -598,6 +598,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         messages: _messages,
                         scrollController: _scrollController,
                         isMobile: isMobile,
+                        currentModelName: _selectedModel?.name,
                         onDeleteMessage: _deleteMessage,
                         onRegenerateMessage: _regenerateMessage,
                         onEditMessage: _editMessage,

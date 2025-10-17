@@ -244,7 +244,7 @@ class StorageService {
       await _conversationsBoxInstance.clear();
       await _groupsBoxInstance.clear();
       await _promptsBoxInstance.clear();
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         print('clearAll 错误: \$e');
       }
