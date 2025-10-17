@@ -154,17 +154,20 @@ void main() {
 
       when(mockRepository.getAllConfigs())
           .thenAnswer((_) async => [config1, config2]);
-      when(mockRepository.getClient('mcp-1')).thenReturn(mockClient);
-      when(mockRepository.getClient('mcp-2')).thenReturn(mockClient);
-      when(mockClient.listTools())
-          .thenAnswer((_) async => tools1)
-          .thenAnswer((_) async => tools2);
+
+      final mockClient1 = MockMcpClientBase();
+      final mockClient2 = MockMcpClientBase();
+
+      when(mockRepository.getClient('mcp-1')).thenReturn(mockClient1);
+      when(mockRepository.getClient('mcp-2')).thenReturn(mockClient2);
+      when(mockClient1.listTools()).thenAnswer((_) async => tools1);
+      when(mockClient2.listTools()).thenAnswer((_) async => tools2);
 
       // Act
       final definitions = await integration.getAllMcpToolDefinitions();
 
       // Assert
-      expect(definitions.length, greaterThanOrEqualTo(1));
+      expect(definitions.length, equals(2));
     });
 
     test('should find MCP config for specific tool', () async {
