@@ -47,32 +47,40 @@ class ChatMessageList extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      controller: scrollController,
-      addRepaintBoundaries: true,
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: isMobile ? 60 : 16,
-        bottom: 16,
+    // 添加20%透明度的背景容器
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(
+          context,
+        ).scaffoldBackgroundColor.withValues(alpha: 0.8), // 80%不透明 = 20%透明
       ),
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        final message = messages[index];
-        return RepaintBoundary(
-          child: MessageBubble(
-            message: message,
-            modelName: message.role == MessageRole.assistant
-                ? currentModelName
-                : null,
-            onDelete: () => onDeleteMessage(index),
-            onRegenerate: message.role == MessageRole.assistant
-                ? () => onRegenerateMessage(index)
-                : null,
-            onEdit: (newContent) => onEditMessage(index, newContent),
-          ),
-        );
-      },
+      child: ListView.builder(
+        controller: scrollController,
+        addRepaintBoundaries: true,
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: isMobile ? 60 : 16,
+          bottom: 16,
+        ),
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final message = messages[index];
+          return RepaintBoundary(
+            child: MessageBubble(
+              message: message,
+              modelName: message.role == MessageRole.assistant
+                  ? currentModelName
+                  : null,
+              onDelete: () => onDeleteMessage(index),
+              onRegenerate: message.role == MessageRole.assistant
+                  ? () => onRegenerateMessage(index)
+                  : null,
+              onEdit: (newContent) => onEditMessage(index, newContent),
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -304,7 +304,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             _messages[index] = assistantMessage.copyWith(content: fullContent);
           }
         });
-        _scrollToBottom();
+        // 移除自动滚动，让用户可以查看之前的对话
+        // _scrollToBottom();
       }
 
       setState(() {
@@ -418,7 +419,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             _messages[index] = assistantMessage.copyWith(content: fullContent);
           }
         });
-        _scrollToBottom();
+        // 移除自动滚动，让用户可以查看之前的对话
+        // _scrollToBottom();
       }
 
       setState(() {

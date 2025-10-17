@@ -604,13 +604,19 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   Widget _buildCard({required Widget child}) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 900), // 增加宽度限制
+      child: Card(
+        elevation: 0,
+        color: Theme.of(
+          context,
+        ).colorScheme.surface.withValues(alpha: 0.8), // 添加20%透明度
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+        child: Padding(padding: const EdgeInsets.all(24), child: child),
       ),
-      child: Padding(padding: const EdgeInsets.all(24), child: child),
     );
   }
 }
