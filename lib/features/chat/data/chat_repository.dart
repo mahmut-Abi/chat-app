@@ -354,6 +354,10 @@ class ChatRepository {
     await _storage.saveGroup(group.id, group.toJson());
   }
 
+  Future<void> saveGroup(ConversationGroup group) async {
+    await _storage.saveGroup(group.id, group.toJson());
+  }
+
   Future<void> deleteGroup(String id) async {
     // 将分组中的对话移到未分组
     final conversations = getConversationsByGroup(id);

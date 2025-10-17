@@ -11,12 +11,18 @@ class StorageService {
   static const String _groupsBox = 'conversation_groups';
   static const String _promptsBox = 'prompt_templates';
   static const String _modelsBox = 'models';
+  static const String _mcpBox = 'mcp_configs';
+  static const String _agentBox = 'agent_configs';
+  static const String _tokenBox = 'token_usage';
 
   late Box _conversationsBoxInstance;
   late Box _settingsBoxInstance;
   late Box _groupsBoxInstance;
   late Box _promptsBoxInstance;
   late Box _modelsBoxInstance;
+  late Box _mcpBoxInstance;
+  late Box _agentBoxInstance;
+  late Box _tokenBoxInstance;
 
   Future<void> init() async {
     _log.info('开始初始化存储服务');
@@ -27,6 +33,9 @@ class StorageService {
       _groupsBoxInstance = await Hive.openBox(_groupsBox);
       _promptsBoxInstance = await Hive.openBox(_promptsBox);
       _modelsBoxInstance = await Hive.openBox(_modelsBox);
+      _mcpBoxInstance = await Hive.openBox(_mcpBox);
+      _agentBoxInstance = await Hive.openBox(_agentBox);
+      _tokenBoxInstance = await Hive.openBox(_tokenBox);
 
       _log.info('存储初始化成功', {
         'conversationsCount': _conversationsBoxInstance.length,
@@ -34,6 +43,9 @@ class StorageService {
         'groupsCount': _groupsBoxInstance.length,
         'promptsCount': _promptsBoxInstance.length,
         'modelsCount': _modelsBoxInstance.length,
+        'mcpConfigsCount': _mcpBoxInstance.length,
+        'agentConfigsCount': _agentBoxInstance.length,
+        'tokenRecordsCount': _tokenBoxInstance.length,
       });
 
       if (kDebugMode) {

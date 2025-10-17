@@ -77,7 +77,7 @@
 **位置**: `lib/features/mcp/data/`
 
 **缺失测试**:
-- [ ] `mcp_integration.dart` - MCP 集成测试
+- [x] `mcp_integration.dart` - MCP 集成测试 ✅ 已完成
 - [x] `mcp_client_factory.dart` - 工厂测试 ✅ 已完成
 
 ---
@@ -90,7 +90,7 @@
 
 **缺失测试**:
 - [ ] `desktop_service.dart` - 桌面服务测试
-- [ ] `log_service.dart` - 日志服务测试
+- [x] `log_service.dart` - 日志服务测试 ✅ 已完成
 - [ ] `menu_service.dart` - 菜单服务测试
 - [ ] `pwa_service.dart` - PWA 服务测试
 
@@ -99,9 +99,9 @@
 **位置**: `lib/core/utils/`
 
 **缺失测试**:
-- [ ] `data_export_import.dart` - 数据导入导出测试
+- [x] `data_export_import.dart` - 数据导入导出测试 ✅ 已完成
 - [ ] `desktop_utils.dart` - 桌面工具测试
-- [ ] `performance_utils.dart` - 性能工具测试
+- [x] `performance_utils.dart` - 性能工具测试 ✅ 已完成
 - [ ] `share_utils.dart` - 分享工具测试
 - [ ] `shortcuts.dart` - 快捷键测试
 - [ ] `debug_helper.dart` - 调试工具测试

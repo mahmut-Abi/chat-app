@@ -68,25 +68,19 @@ class ImprovedApiConfigSection extends StatelessWidget {
 
   Widget _buildApiConfigCard(BuildContext context, ApiConfig config) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isActive = config.isActive;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isActive
-              ? colorScheme.primary
-              : colorScheme.outline.withValues(alpha: 0.3),
-          width: isActive ? 2 : 1,
+          color: colorScheme.outline.withValues(alpha: 0.3),
+          width: 1,
         ),
-        color: isActive
-            ? colorScheme.primaryContainer.withValues(alpha: 0.1)
-            : null,
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: _buildProviderAvatar(context, config.provider, isActive),
+        leading: _buildProviderAvatar(context, config.provider),
         title: Row(
           children: [
             Expanded(
@@ -97,21 +91,6 @@ class ImprovedApiConfigSection extends StatelessWidget {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
-            if (isActive)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '活动',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
           ],
         ),
         subtitle: Padding(
@@ -128,17 +107,13 @@ class ImprovedApiConfigSection extends StatelessWidget {
     );
   }
 
-  Widget _buildProviderAvatar(
-    BuildContext context,
-    String provider,
-    bool isActive,
-  ) {
+  Widget _buildProviderAvatar(BuildContext context, String provider) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isActive ? colorScheme.primary : colorScheme.primaryContainer,
+        color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(

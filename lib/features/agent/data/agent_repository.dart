@@ -148,7 +148,7 @@ class AgentRepository {
   /// 保存 Agent 配置
   Future<void> saveConfig(AgentConfig agent) async {
     final updated = agent.copyWith(updatedAt: DateTime.now());
-    await _storage.saveSetting('agent_\${agent.id}', updated.toJson());
+    await _storage.saveSetting('agent_${agent.id}', updated.toJson());
   }
 
   /// 删除 Agent

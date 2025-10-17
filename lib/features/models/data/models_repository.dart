@@ -65,8 +65,8 @@ class ModelsRepository {
         ),
       );
 
-      // 调用 /v1/models 接口
-      final response = await dio.get('/v1/models');
+      // 调用 /models 接口
+      final response = await dio.get('/models');
       final data = response.data as Map<String, dynamic>;
       final modelsList = data['data'] as List;
 
@@ -132,6 +132,12 @@ class ModelsRepository {
   }
 
   int _getContextLength(String modelId) {
+    // DeepSeek models
+    if (modelId.contains('deepseek-chat')) return 64000;
+    if (modelId.contains('deepseek-reasoner')) return 64000;
+    if (modelId.contains('deepseek-coder')) return 64000;
+
+    // GPT models
     if (modelId.contains('16k')) return 16384;
     if (modelId.contains('32k')) return 32768;
     if (modelId.contains('gpt-4-turbo')) return 128000;
@@ -142,6 +148,18 @@ class ModelsRepository {
   }
 
   String _getModelDescription(String modelId) {
+    // DeepSeek models
+    if (modelId.contains('deepseek-chat')) {
+      return 'DeepSeek Chat model with 64K context';
+    }
+    if (modelId.contains('deepseek-reasoner')) {
+      return 'DeepSeek Reasoner model for complex reasoning tasks';
+    }
+    if (modelId.contains('deepseek-coder')) {
+      return 'DeepSeek Coder model optimized for programming';
+    }
+
+    // GPT models
     if (modelId.contains('gpt-4-turbo')) {
       return 'GPT-4 Turbo with improved performance and 128K context';
     }

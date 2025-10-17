@@ -13,6 +13,8 @@ import 'widgets/modern_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
 import 'widgets/chat_input_section.dart';
+import 'widgets/conversation_search_screen.dart';
+import 'widgets/group_management_dialog.dart';
 import '../../../features/agent/domain/agent_tool.dart';
 import '../../../features/mcp/domain/mcp_config.dart';
 import '../../../features/models/domain/model.dart';
@@ -620,11 +622,61 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         await chatRepo.saveConversation(updated);
                         _loadAllConversations();
                       },
-                      onManageGroups: () {
-                        // 暂不处理
+                      onManageGroups: () async {
+                        // 打开分组管理对话框
+                        await showDialog(
+                          context: context,
+                          builder: (context) => GroupManagementDialog(
+                            groups: _groups,
+                            onCreateGroup: (name, color) async {
+                              final chatRepo = ref.read(chatRepositoryProvider);
+                              final group = await chatRepo.createGroup(
+                                name: name,
+                                color: color,
+                              );
+                              setState(() {
+                                _groups.add(group);
+                              });
+                            },
+                            onUpdateGroup: (group) async {
+                              final chatRepo = ref.read(chatRepositoryProvider);
+                              await chatRepo.saveGroup(group);
+                              setState(() {
+                                final index = _groups.indexWhere(
+                                  (g) => g.id == group.id,
+                                );
+                                if (index != -1) {
+                                  _groups[index] = group;
+                                }
+                              });
+                            },
+                            onDeleteGroup: (id) async {
+                              final chatRepo = ref.read(chatRepositoryProvider);
+                              await chatRepo.deleteGroup(id);
+                              setState(() {
+                                _groups.removeWhere((g) => g.id == id);
+                              });
+                            },
+                          ),
+                        );
                       },
-                      onSearch: () {
-                        // 暂不处理
+                      onSearch: () async {
+                        // 弹出对话搜索界面
+                        final selectedConv = await Navigator.of(context)
+                            .push<Conversation>(
+                              MaterialPageRoute(
+                                builder: (context) => ConversationSearchScreen(
+                                  conversations: _conversations,
+                                  onConversationSelected: (conv) =>
+                                      Navigator.of(context).pop(conv),
+                                ),
+                              ),
+                            );
+                        if (selectedConv != null &&
+                            mounted &&
+                            context.mounted) {
+                          context.go('/chat/${selectedConv.id}');
+                        }
                       },
                     ),
                   )
