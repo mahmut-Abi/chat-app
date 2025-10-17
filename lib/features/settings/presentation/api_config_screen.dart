@@ -10,6 +10,7 @@ import 'widgets/api_config_proxy_section.dart';
 import 'widgets/api_config_model_section.dart';
 import '../../models/domain/model.dart';
 import '../../../shared/widgets/background_container.dart';
+import '../../../core/utils/message_utils.dart';
 
 class ApiConfigScreen extends ConsumerStatefulWidget {
   final ApiConfig? config;
@@ -311,9 +312,7 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
 
   Future<void> _fetchAvailableModels() async {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请先填写必填项')));
+      MessageUtils.showWarning(context, '请先填写必填项');
       return;
     }
 
@@ -365,10 +364,9 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
           }
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('成功获取 ${models.length} 个模型，已自动选择: $_selectedModel'),
-          ),
+        MessageUtils.showSuccess(
+          context,
+          '已获取 ${models.length} 个模型，当前选中: $_selectedModel',
         );
       }
     } catch (e) {
