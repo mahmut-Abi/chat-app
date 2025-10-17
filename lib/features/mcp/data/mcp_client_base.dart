@@ -4,6 +4,8 @@ import '../domain/mcp_config.dart';
 abstract class McpClientBase {
   final McpConfig config;
   McpConnectionStatus status = McpConnectionStatus.disconnected;
+  DateTime? lastHealthCheck;
+  String? lastError;
 
   McpClientBase({required this.config});
 
@@ -12,6 +14,9 @@ abstract class McpClientBase {
 
   /// 断开连接
   Future<void> disconnect();
+
+  /// 健康检查
+  Future<bool> healthCheck();
 
   /// 获取上下文
   Future<Map<String, dynamic>?> getContext(String contextId);

@@ -31,6 +31,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<Message> _messages = [];
   bool _isLoading = false;
+  bool _userScrolledUp = false;
+  bool _showScrollToBottomButton = false;
   final _uuid = const Uuid();
   List<File> _selectedImages = [];
   List<File> _selectedFiles = [];
@@ -45,7 +47,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.initState();
     _loadConversation();
     _loadAllConversations();
+    _initScrollListener();
     Future.microtask(() => _calculateTokens());
+  }
+
+  void _initScrollListener() {
+    _scrollController.addListener(() {
+      if (!_scrollController.hasClients) return;
+
+      final isAtBottom =
+          _scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100;
+
+      if (_userScrolledUp != !isAtBottom ||
+          _showScrollToBottomButton != !isAtBottom) {
+        setState(() {
+          _userScrolledUp = !isAtBottom;
+          _showScrollToBottomButton = !isAtBottom && _messages.isNotEmpty;
+        });
+      }
+    });
   }
 
   void _loadAllConversations() {
@@ -71,7 +92,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     // Token 统计已移至 token_usage 功能模块
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({bool force = false}) {
+    // 如果用户手动滚动到历史消息，不自动滚动
+    if (!force && _userScrolledUp) {
+      return;
+    }
+
     if (_scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
@@ -80,6 +106,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
+          if (mounted) {
+            setState(() {
+              _userScrolledUp = false;
+              _showScrollToBottomButton = false;
+            });
+          }
         }
       });
     }
@@ -608,6 +640,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                   ],
                 ),
+                // 滚动到底部按钮
+                if (_showScrollToBottomButton)
+                  Positioned(
+                    right: 16,
+                    bottom: 80,
+                    child: FloatingActionButton.small(
+                      onPressed: () => _scrollToBottom(force: true),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: const Icon(Icons.arrow_downward),
+                      tooltip: '滚动到底部',
+                    ),
+                  ),
               ],
             ),
           ),

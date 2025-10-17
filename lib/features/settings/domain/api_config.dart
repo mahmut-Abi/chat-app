@@ -124,7 +124,6 @@ class AppSettings extends Equatable {
   final int? customThemeColor;
   final String? backgroundImage; // 背景图片路径 (assets 或自定义路径)
   final double backgroundOpacity; // 背景透明度 0.0-1.0
-  final bool enableBackgroundBlur; // 是否启用背景模糊
 
   const AppSettings({
     this.themeMode = 'system',
@@ -136,8 +135,7 @@ class AppSettings extends Equatable {
     this.themeColor,
     this.customThemeColor,
     this.backgroundImage,
-    this.backgroundOpacity = 0.3,
-    this.enableBackgroundBlur = false,
+    this.backgroundOpacity = 0.8, // 20% 透明
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) =>
@@ -157,7 +155,6 @@ class AppSettings extends Equatable {
     String? backgroundImage,
     bool clearBackgroundImage = false,
     double? backgroundOpacity,
-    bool? enableBackgroundBlur,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -172,7 +169,6 @@ class AppSettings extends Equatable {
           ? null
           : (backgroundImage ?? this.backgroundImage),
       backgroundOpacity: backgroundOpacity ?? this.backgroundOpacity,
-      enableBackgroundBlur: enableBackgroundBlur ?? this.enableBackgroundBlur,
     );
   }
 
@@ -188,6 +184,5 @@ class AppSettings extends Equatable {
     customThemeColor,
     backgroundImage,
     backgroundOpacity,
-    enableBackgroundBlur,
   ];
 }

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'dart:convert';
 import '../domain/mcp_config.dart';
 import 'mcp_client_base.dart';
 import '../../../core/services/log_service.dart';
@@ -8,6 +9,7 @@ import '../../../core/services/log_service.dart';
 class HttpMcpClient extends McpClientBase {
   final Dio _dio;
   Timer? _heartbeatTimer;
+  StreamController<String>? _sseController;
   final LogService _log = LogService();
 
   HttpMcpClient({required super.config, Dio? dio}) : _dio = dio ?? Dio();
@@ -29,23 +31,50 @@ class HttpMcpClient extends McpClientBase {
         _dio.options.headers.addAll(config.headers!);
       }
 
-      // 尝试连接
-      _log.debug('发送健康检查请求');
-      final response = await _dio.get('/health');
-
-      if (response.statusCode == 200) {
+      // 执行健康检查
+      final isHealthy = await healthCheck();
+      if (isHealthy) {
         status = McpConnectionStatus.connected;
         _log.info('HTTP MCP 客户端连接成功', {'endpoint': config.endpoint});
         _startHeartbeat();
         return true;
       } else {
         status = McpConnectionStatus.error;
-        _log.warning('HTTP MCP 客户端连接失败', {'statusCode': response.statusCode});
+        _log.warning('HTTP MCP 客户端连接失败', {'error': lastError});
         return false;
       }
     } catch (e) {
       status = McpConnectionStatus.error;
+      lastError = e.toString();
       _log.error('HTTP MCP 客户端连接异常', e);
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> healthCheck() async {
+    _log.debug('执行健康检查', {'endpoint': config.endpoint});
+    try {
+      final response = await _dio.get(
+        '/health',
+        options: Options(receiveTimeout: const Duration(seconds: 5)),
+      );
+      final isHealthy = response.statusCode == 200;
+      if (isHealthy) {
+        lastHealthCheck = DateTime.now();
+        lastError = null;
+        _log.info('健康检查通过', {'endpoint': config.endpoint});
+      } else {
+        lastError = 'HTTP ${response.statusCode}';
+        _log.warning('健康检查失败', {
+          'endpoint': config.endpoint,
+          'statusCode': response.statusCode,
+        });
+      }
+      return isHealthy;
+    } catch (e) {
+      lastError = e.toString();
+      _log.error('健康检查异常', e);
       return false;
     }
   }
@@ -54,6 +83,7 @@ class HttpMcpClient extends McpClientBase {
   Future<void> disconnect() async {
     _log.info('HTTP MCP 客户端断开连接', {'endpoint': config.endpoint});
     _stopHeartbeat();
+    _closeSseConnection();
     status = McpConnectionStatus.disconnected;
     _log.debug('设置连接状态为 disconnected');
   }
@@ -158,12 +188,10 @@ class HttpMcpClient extends McpClientBase {
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (
       timer,
     ) async {
-      try {
-        await _dio.get('/health');
-        _log.debug('MCP 心跳检测正常');
-      } catch (e) {
+      final isHealthy = await healthCheck();
+      if (!isHealthy) {
         status = McpConnectionStatus.error;
-        _log.error('MCP 心跳检测失败', e);
+        _log.error('MCP 心跳检测失败', lastError);
         _stopHeartbeat();
       }
     });
@@ -178,9 +206,68 @@ class HttpMcpClient extends McpClientBase {
     _heartbeatTimer = null;
   }
 
+  /// SSE 连接
+  Future<Stream<String>?> connectSSE(String endpoint) async {
+    _log.info('建立 SSE 连接', {'endpoint': endpoint});
+    try {
+      _sseController = StreamController<String>();
+
+      final response = await _dio.get<ResponseBody>(
+        endpoint,
+        options: Options(
+          responseType: ResponseType.stream,
+          headers: {'Accept': 'text/event-stream', 'Cache-Control': 'no-cache'},
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        response.data!.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .listen(
+              (data) {
+                _log.debug('收到 SSE 数据', {'dataLength': data.length});
+                if (!_sseController!.isClosed) {
+                  _sseController!.add(data);
+                }
+              },
+              onError: (error) {
+                _log.error('SSE 连接错误', error);
+                if (!_sseController!.isClosed) {
+                  _sseController!.addError(error);
+                }
+              },
+              onDone: () {
+                _log.info('SSE 连接关闭');
+                if (!_sseController!.isClosed) {
+                  _sseController!.close();
+                }
+              },
+              cancelOnError: true,
+            );
+        return _sseController!.stream;
+      }
+      _log.warning('SSE 连接失败', {'statusCode': response.statusCode});
+      return null;
+    } catch (e) {
+      _log.error('SSE 连接异常', e);
+      return null;
+    }
+  }
+
+  /// 关闭 SSE 连接
+  void _closeSseConnection() {
+    if (_sseController != null && !_sseController!.isClosed) {
+      _log.debug('关闭 SSE 连接');
+      _sseController!.close();
+      _sseController = null;
+    }
+  }
+
   @override
   void dispose() {
     _log.debug('HTTP MCP 客户端释放资源', {'endpoint': config.endpoint});
     _stopHeartbeat();
+    _closeSseConnection();
   }
 }

@@ -34,7 +34,6 @@ class BackgroundContainer extends ConsumerWidget {
     if (kDebugMode) {
       print('BackgroundContainer: backgroundImage = $backgroundImage');
       print('BackgroundContainer: opacity = ${settings.backgroundOpacity}');
-      print('BackgroundContainer: blur = ${settings.enableBackgroundBlur}');
     }
 
     // 没有背景图片时,使用主题背景色
@@ -45,9 +44,8 @@ class BackgroundContainer extends ConsumerWidget {
       );
     }
 
-    // 计算遮罩层的透明度:背景图片透明度越高,遮罩层应该越透明
-    // 用户设置的 opacity 表示背景图片的可见度 (0.0 = 不可见, 1.0 = 完全可见)
-    // 所以遮罩层的透明度应该是 1.0 - backgroundOpacity
+    // 计算内容层的透明度
+    // backgroundOpacity 表示内容的不透明度 (0.8 = 80% 不透明, 20% 透明)
     final maskOpacity = 1.0 - settings.backgroundOpacity;
 
     return Stack(
@@ -56,35 +54,14 @@ class BackgroundContainer extends ConsumerWidget {
         // 背景图片
         Positioned.fill(child: _buildBackgroundImage(backgroundImage)),
 
-        // 模糊效果 + 透明度遮罩（合并为一层）
-        if (settings.enableBackgroundBlur)
-          Positioned.fill(
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 10.0,
-                  sigmaY: 10.0,
-                  tileMode: TileMode.clamp,
-                ),
-                child: Container(
-                  // 模糊时保证至少 15% 的不透明度，确保模糊效果可见
-                  color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                    alpha: maskOpacity < 0.15 ? 0.15 : maskOpacity,
-                  ),
-                ),
-              ),
+        // 透明度遮罩
+        Positioned.fill(
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor.withValues(
+              alpha: settings.backgroundOpacity,
             ),
           ),
-
-        // 只有模糊效果关闭时才需要单独的透明度遮罩
-        if (!settings.enableBackgroundBlur)
-          Positioned.fill(
-            child: Container(
-              color: Theme.of(
-                context,
-              ).scaffoldBackgroundColor.withValues(alpha: maskOpacity),
-            ),
-          ),
+        ),
 
         // 实际内容
         child,
