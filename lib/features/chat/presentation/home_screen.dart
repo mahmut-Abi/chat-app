@@ -304,6 +304,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         drawerScrimColor: Colors.black.withValues(alpha: 0.5),
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,
+        // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
+        onDrawerChanged: Platform.isIOS
+            ? (isOpened) {
+                // 抽屉打开或关闭时，移除所有焦点防止键盘弹出
+                FocusManager.instance.primaryFocus?.unfocus();
+              }
+            : null,
         drawer: Drawer(
           backgroundColor: Theme.of(context).cardColor,
           child: ModernSidebar(
