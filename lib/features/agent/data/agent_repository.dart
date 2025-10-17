@@ -3,6 +3,7 @@ import '../../../core/storage/storage_service.dart';
 import 'tool_executor.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/services/log_service.dart';
+import 'dart:convert';
 
 /// Agent 仓库
 class AgentRepository {
@@ -35,7 +36,7 @@ class AgentRepository {
       updatedAt: DateTime.now(),
     );
 
-    await _storage.saveSetting('agent_${agent.id}', agent.toJson());
+    await _storage.saveSetting('agent_${agent.id}', jsonEncode(agent.toJson()));
     _log.debug('Agent 配置已保存', {'agentId': agent.id});
     return agent;
   }
@@ -61,7 +62,10 @@ class AgentRepository {
       parameters: parameters ?? {},
     );
 
-    await _storage.saveSetting('agent_tool_${tool.id}', tool.toJson());
+    await _storage.saveSetting(
+      'agent_tool_${tool.id}',
+      jsonEncode(tool.toJson()),
+    );
     _log.debug('工具已保存', {'toolId': tool.id});
     return tool;
   }
@@ -100,9 +104,18 @@ class AgentRepository {
       final agents = <AgentConfig>[];
       for (final key in agentKeys) {
         final data = _storage.getSetting(key);
-        if (data != null && data is Map<String, dynamic>) {
+        if (data != null) {
           try {
-            agents.add(AgentConfig.fromJson(data));
+            // 支持两种格式: 字符串(新) 和 Map(旧)
+            final Map<String, dynamic> json;
+            if (data is String) {
+              json = jsonDecode(data) as Map<String, dynamic>;
+            } else if (data is Map<String, dynamic>) {
+              json = data;
+            } else {
+              continue;
+            }
+            agents.add(AgentConfig.fromJson(json));
           } catch (e) {
             // 跳过无效的配置
           }
@@ -124,9 +137,18 @@ class AgentRepository {
       final tools = <AgentTool>[];
       for (final key in toolKeys) {
         final data = _storage.getSetting(key);
-        if (data != null && data is Map<String, dynamic>) {
+        if (data != null) {
           try {
-            tools.add(AgentTool.fromJson(data));
+            // 支持两种格式: 字符串(新) 和 Map(旧)
+            final Map<String, dynamic> json;
+            if (data is String) {
+              json = jsonDecode(data) as Map<String, dynamic>;
+            } else if (data is Map<String, dynamic>) {
+              json = data;
+            } else {
+              continue;
+            }
+            tools.add(AgentTool.fromJson(json));
           } catch (e) {
             // 跳过无效的工具
           }
@@ -142,13 +164,19 @@ class AgentRepository {
   /// 更新 Agent
   Future<void> updateAgent(AgentConfig agent) async {
     final updated = agent.copyWith(updatedAt: DateTime.now());
-    await _storage.saveSetting('agent_${agent.id}', updated.toJson());
+    await _storage.saveSetting(
+      'agent_${agent.id}',
+      jsonEncode(updated.toJson()),
+    );
   }
 
   /// 保存 Agent 配置
   Future<void> saveConfig(AgentConfig agent) async {
     final updated = agent.copyWith(updatedAt: DateTime.now());
-    await _storage.saveSetting('agent_${agent.id}', updated.toJson());
+    await _storage.saveSetting(
+      'agent_${agent.id}',
+      jsonEncode(updated.toJson()),
+    );
   }
 
   /// 删除 Agent
@@ -159,7 +187,10 @@ class AgentRepository {
 
   /// 更新工具
   Future<void> updateTool(AgentTool tool) async {
-    await _storage.saveSetting('agent_tool_${tool.id}', tool.toJson());
+    await _storage.saveSetting(
+      'agent_tool_${tool.id}',
+      jsonEncode(tool.toJson()),
+    );
   }
 
   /// 更新工具状态
@@ -173,18 +204,31 @@ class AgentRepository {
     if (toolKey.isEmpty) return;
 
     final data = _storage.getSetting(toolKey);
-    if (data != null && data is Map<String, dynamic>) {
-      final tool = AgentTool.fromJson(data);
-      final updated = AgentTool(
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        type: tool.type,
-        parameters: tool.parameters,
-        enabled: enabled,
-        iconName: tool.iconName,
-      );
-      await updateTool(updated);
+    if (data != null) {
+      try {
+        // 支持两种格式: 字符串(新) 和 Map(旧)
+        final Map<String, dynamic> json;
+        if (data is String) {
+          json = jsonDecode(data) as Map<String, dynamic>;
+        } else if (data is Map<String, dynamic>) {
+          json = data;
+        } else {
+          return;
+        }
+        final tool = AgentTool.fromJson(json);
+        final updated = AgentTool(
+          id: tool.id,
+          name: tool.name,
+          description: tool.description,
+          type: tool.type,
+          parameters: tool.parameters,
+          enabled: enabled,
+          iconName: tool.iconName,
+        );
+        await updateTool(updated);
+      } catch (e) {
+        // 忽略错误
+      }
     }
   }
 

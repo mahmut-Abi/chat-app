@@ -4,6 +4,7 @@ import 'mcp_client_base.dart';
 import 'mcp_client_factory.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/services/log_service.dart';
+import 'dart:convert';
 
 /// MCP 仓库
 class McpRepository {
@@ -44,14 +45,20 @@ class McpRepository {
       updatedAt: DateTime.now(),
     );
 
-    await _storage.saveSetting('mcp_config_${config.id}', config.toJson());
+    await _storage.saveSetting(
+      'mcp_config_${config.id}',
+      jsonEncode(config.toJson()),
+    );
     _log.debug('MCP 配置已保存', {'configId': config.id});
     return config;
   }
 
   /// 添加 MCP 配置 (createConfig 的别名)
   Future<McpConfig> addConfig(McpConfig config) async {
-    await _storage.saveSetting('mcp_config_${config.id}', config.toJson());
+    await _storage.saveSetting(
+      'mcp_config_${config.id}',
+      jsonEncode(config.toJson()),
+    );
     return config;
   }
 
@@ -65,9 +72,18 @@ class McpRepository {
       final configs = <McpConfig>[];
       for (final key in mcpKeys) {
         final data = _storage.getSetting(key);
-        if (data != null && data is Map<String, dynamic>) {
+        if (data != null) {
           try {
-            configs.add(McpConfig.fromJson(data));
+            // 支持两种格式: 字符串(新) 和 Map(旧)
+            final Map<String, dynamic> json;
+            if (data is String) {
+              json = jsonDecode(data) as Map<String, dynamic>;
+            } else if (data is Map<String, dynamic>) {
+              json = data;
+            } else {
+              continue;
+            }
+            configs.add(McpConfig.fromJson(json));
           } catch (e) {
             // 跳过无效的配置
           }
@@ -84,7 +100,10 @@ class McpRepository {
   Future<void> updateConfig(McpConfig config) async {
     _log.info('更新 MCP 配置', {'configId': config.id, 'name': config.name});
     final updated = config.copyWith(updatedAt: DateTime.now());
-    await _storage.saveSetting('mcp_config_${config.id}', updated.toJson());
+    await _storage.saveSetting(
+      'mcp_config_${config.id}',
+      jsonEncode(updated.toJson()),
+    );
   }
 
   /// 删除 MCP 配置
