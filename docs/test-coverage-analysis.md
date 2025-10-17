@@ -70,7 +70,7 @@
 **位置**: `lib/features/agent/data/`
 
 **缺失测试**:
-- [ ] `agent_integration.dart` - Agent 集成测试
+- [x] `agent_integration.dart` - Agent 集成测试 ✅ 已完成
 
 #### 4. MCP Integration & Factory（部分缺失）
 
@@ -78,7 +78,7 @@
 
 **缺失测试**:
 - [ ] `mcp_integration.dart` - MCP 集成测试
-- [ ] `mcp_client_factory.dart` - 工厂测试
+- [x] `mcp_client_factory.dart` - 工厂测试 ✅ 已完成
 
 ---
 

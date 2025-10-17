@@ -293,6 +293,15 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
           as List<String>);
 
   @override
+  _i5.Future<void> generateConversationTitle(String? conversationId) =>
+      (super.noSuchMethod(
+            Invocation.method(#generateConversationTitle, [conversationId]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
   _i5.Future<void> togglePinConversation(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#togglePinConversation, [id]),
