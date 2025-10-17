@@ -31,39 +31,75 @@ class MessageBubble extends StatelessWidget {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 头像和名称在上方
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  _buildAvatar(context, isUser),
-                  const SizedBox(width: 8),
-                  Text(
-                    isUser ? '用户' : (modelName ?? 'AI 助手'),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+        child: isUser
+            ? _buildUserMessage(context, isMobile)
+            : _buildAssistantMessage(context, isMobile),
+      ),
+    );
+  }
+
+  // 用户消息布局：头像在右上角
+  Widget _buildUserMessage(BuildContext context, bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // 头像和名称在右上方
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '用户',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
-            ),
-            // 消息内容
-            Row(
-              mainAxisAlignment: isUser
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  child: _buildMessageContent(context, isMobile, isUser),
-                ),
-              ],
-            ),
+              const SizedBox(width: 8),
+              _buildAvatar(context, true),
+            ],
+          ),
+        ),
+        // 消息内容右对齐
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Flexible(child: _buildMessageContent(context, isMobile, true)),
           ],
         ),
-      ),
+      ],
+    );
+  }
+
+  // AI助手消息布局：头像在左上角
+  Widget _buildAssistantMessage(BuildContext context, bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 头像和名称在左上方
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              _buildAvatar(context, false),
+              const SizedBox(width: 8),
+              Text(
+                modelName ?? 'AI 助手',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        // 消息内容左对齐
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(child: _buildMessageContent(context, isMobile, false)),
+          ],
+        ),
+      ],
     );
   }
 
