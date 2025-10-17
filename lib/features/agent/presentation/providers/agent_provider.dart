@@ -1,11 +1,11 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/agent_tool.dart';
-import '../../data/agent_repository.dart';
+ import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import 'package:riverpod/riverpod.dart';
+ import '../../domain/agent_tool.dart';
+ import '../../data/agent_repository.dart';
 import '../../data/tool_executor.dart';
 import '../../data/enhanced_agent_integration.dart';
 import '../../data/agent_chat_service.dart';
 import '../../../../core/providers/providers.dart';
-import 'package:riverpod/riverpod.dart';
 import '../../domain/agent_tool.dart' as agent_domain;
 import '../../../chat/domain/function_call.dart';
 
@@ -42,12 +42,12 @@ final allToolsProvider = FutureProvider<List<AgentTool>>((ref) async {
   return repository.getAllTools();
 });
 
-/// 当前会话的 Agent Provider
-final currentConversationAgentProvider =
-    StateProvider.autoDispose<agent_domain.AgentConfig?>((ref) => null);
-
-/// 获取指定 Agent 的工具定义
-final agentToolDefinitionsProvider =
+ /// 当前会话的 Agent Provider
+ final currentConversationAgentProvider =
+     StateProvider.autoDispose<agent_domain.AgentConfig?>((ref) => null);
+ 
+ /// 获取指定 Agent 的工具定义
+ final agentToolDefinitionsProvider =
     FutureProvider.family<List<ToolDefinition>, agent_domain.AgentConfig>(
   (ref, agent) async {
     final integration = ref.watch(enhancedAgentIntegrationProvider);

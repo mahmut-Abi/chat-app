@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
  import '../../../core/utils/platform_utils.dart';
  import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:io' show Platform;
 import '../../../shared/widgets/platform_dialog.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';

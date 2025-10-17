@@ -1,4 +1,3 @@
-import 'dart:io';
  import 'platform_utils.dart';
  import 'package:flutter/material.dart';
 

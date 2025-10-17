@@ -1,5 +1,4 @@
 // Desktop implementation using window_manager and tray_manager
-import 'dart:io';
 import 'package:flutter/material.dart';
  import 'platform_utils.dart';
  import 'package:window_manager/window_manager.dart';

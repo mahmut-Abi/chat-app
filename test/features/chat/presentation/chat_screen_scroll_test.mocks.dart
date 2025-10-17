@@ -55,6 +55,8 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
     required String? content,
     required _i3.ModelConfig? config,
     List<_i2.Message>? conversationHistory,
+    List<_i2.ImageAttachment>? images,
+    List<String>? files,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#sendMessage, [], {
@@ -62,6 +64,8 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
               #content: content,
               #config: config,
               #conversationHistory: conversationHistory,
+              #images: images,
+              #files: files,
             }),
             returnValue: _i5.Future<_i2.Message>.value(
               _FakeMessage_0(
@@ -71,6 +75,8 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
                   #content: content,
                   #config: config,
                   #conversationHistory: conversationHistory,
+                  #images: images,
+                  #files: files,
                 }),
               ),
             ),
@@ -83,6 +89,8 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
     required String? content,
     required _i3.ModelConfig? config,
     List<_i2.Message>? conversationHistory,
+    List<_i2.ImageAttachment>? images,
+    List<String>? files,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#sendMessageStream, [], {
@@ -90,6 +98,8 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
               #content: content,
               #config: config,
               #conversationHistory: conversationHistory,
+              #images: images,
+              #files: files,
             }),
             returnValue: _i5.Stream<String>.empty(),
           )

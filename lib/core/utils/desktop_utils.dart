@@ -1,6 +1,5 @@
-import 'dart:io';
+ import 'dart:io' if (dart.library.html) 'dart:html' as platform_io;
  import 'platform_utils.dart';
- import 'package_utils.dart';
  import 'package:flutter/foundation.dart';
 
 // 条件导入：仅在桌面平台导入实际实现，否则导入 stub
