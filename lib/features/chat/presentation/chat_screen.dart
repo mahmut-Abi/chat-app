@@ -48,7 +48,40 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _loadConversation();
     _loadAllConversations();
     _initScrollListener();
-    Future.microtask(() => _calculateTokens());
+    Future.microtask(() {
+      _calculateTokens();
+      _initializeDefaultModel();
+    });
+  }
+
+  // 初始化默认模型
+  void _initializeDefaultModel() async {
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    final activeApiConfig = await settingsRepo.getActiveApiConfig();
+
+    if (activeApiConfig != null && _selectedModel == null) {
+      final modelsRepo = ref.read(modelsRepositoryProvider);
+      try {
+        final apiConfigs = await settingsRepo.getAllApiConfigs();
+        final availableModels = await modelsRepo.getAvailableModels(apiConfigs);
+
+        // 查找默认模型
+        if (availableModels.isNotEmpty) {
+          final defaultModel = availableModels.firstWhere(
+            (model) => model.id == activeApiConfig.defaultModel,
+            orElse: () => availableModels.first,
+          );
+
+          if (mounted) {
+            setState(() {
+              _selectedModel = defaultModel;
+            });
+          }
+        }
+      } catch (e) {
+        print('初始化默认模型失败: $e');
+      }
+    }
   }
 
   void _initScrollListener() {

@@ -376,7 +376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             setState(() {
               _selectedConversation = conversation;
             });
-            context.go('/chat/\${conversation.id}');
+            context.go('/chat/${conversation.id}');
           },
         ),
       ),

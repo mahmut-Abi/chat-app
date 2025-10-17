@@ -47,8 +47,14 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
   }
 
   Widget _buildMarkdown(BuildContext context, AppSettings settings) {
+    final enableMarkdown = settings.enableMarkdown;
     final enableLatex = settings.enableLatex;
     final enableCodeHighlight = settings.enableCodeHighlight;
+
+    // 如果禁用 Markdown，直接显示纯文本
+    if (!enableMarkdown) {
+      return selectable ? SelectableText(content) : Text(content);
+    }
 
     // 使用内容和配置创建缓存键
     final cacheKey = '$content-$enableLatex-$enableCodeHighlight-$selectable';
