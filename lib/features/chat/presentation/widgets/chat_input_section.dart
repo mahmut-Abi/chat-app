@@ -49,7 +49,7 @@ class _ChatInputSectionState extends State<ChatInputSection> {
   Widget build(BuildContext context) {
     return GlassContainer(
       blur: 15.0,
-      opacity: 0.95,
+      opacity: 0.05,
       padding: const EdgeInsets.all(16),
       border: Border(
         top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
