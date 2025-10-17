@@ -9,6 +9,7 @@ import 'widgets/api_config_basic_section.dart';
 import 'widgets/api_config_proxy_section.dart';
 import 'widgets/api_config_model_section.dart';
 import '../../models/domain/model.dart';
+import '../../../shared/widgets/background_container.dart';
 
 class ApiConfigScreen extends ConsumerStatefulWidget {
   final ApiConfig? config;
@@ -107,67 +108,70 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            ApiConfigBasicSection(
-              nameController: _nameController,
-              baseUrlController: _baseUrlController,
-              apiKeyController: _apiKeyController,
-              organizationController: _organizationController,
-              selectedProvider: _selectedProvider,
-              onProviderChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedProvider = value;
-                    _updateBaseUrlForProvider(value);
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 24),
-            ApiConfigProxySection(
-              enableProxy: _enableProxy,
-              proxyUrlController: _proxyUrlController,
-              proxyUsernameController: _proxyUsernameController,
-              proxyPasswordController: _proxyPasswordController,
-              onProxyChanged: (value) {
-                setState(() => _enableProxy = value ?? false);
-              },
-            ),
-            const SizedBox(height: 24),
-            ApiConfigModelSection(
-              selectedModel: _selectedModel,
-              availableModels: _availableModels,
-              isLoadingModels: _isLoadingModels,
-              temperature: _temperature,
-              maxTokens: _maxTokens,
-              topP: _topP,
-              frequencyPenalty: _frequencyPenalty,
-              presencePenalty: _presencePenalty,
-              onModelChanged: (value) => setState(() => _selectedModel = value),
-              onFetchModels: _fetchAvailableModels,
-              onTemperatureChanged: (value) {
-                setState(() => _temperature = value);
-              },
-              onMaxTokensChanged: (value) {
-                setState(() => _maxTokens = value.round());
-              },
-              onTopPChanged: (value) {
-                setState(() => _topP = value);
-              },
-              onFrequencyPenaltyChanged: (value) {
-                setState(() => _frequencyPenalty = value);
-              },
-              onPresencePenaltyChanged: (value) {
-                setState(() => _presencePenalty = value);
-              },
-            ),
-            const SizedBox(height: 32),
-            _buildActionButtons(),
-          ],
+      body: BackgroundContainer(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              ApiConfigBasicSection(
+                nameController: _nameController,
+                baseUrlController: _baseUrlController,
+                apiKeyController: _apiKeyController,
+                organizationController: _organizationController,
+                selectedProvider: _selectedProvider,
+                onProviderChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedProvider = value;
+                      _updateBaseUrlForProvider(value);
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 24),
+              ApiConfigProxySection(
+                enableProxy: _enableProxy,
+                proxyUrlController: _proxyUrlController,
+                proxyUsernameController: _proxyUsernameController,
+                proxyPasswordController: _proxyPasswordController,
+                onProxyChanged: (value) {
+                  setState(() => _enableProxy = value ?? false);
+                },
+              ),
+              const SizedBox(height: 24),
+              ApiConfigModelSection(
+                selectedModel: _selectedModel,
+                availableModels: _availableModels,
+                isLoadingModels: _isLoadingModels,
+                temperature: _temperature,
+                maxTokens: _maxTokens,
+                topP: _topP,
+                frequencyPenalty: _frequencyPenalty,
+                presencePenalty: _presencePenalty,
+                onModelChanged: (value) =>
+                    setState(() => _selectedModel = value),
+                onFetchModels: _fetchAvailableModels,
+                onTemperatureChanged: (value) {
+                  setState(() => _temperature = value);
+                },
+                onMaxTokensChanged: (value) {
+                  setState(() => _maxTokens = value.round());
+                },
+                onTopPChanged: (value) {
+                  setState(() => _topP = value);
+                },
+                onFrequencyPenaltyChanged: (value) {
+                  setState(() => _frequencyPenalty = value);
+                },
+                onPresencePenaltyChanged: (value) {
+                  setState(() => _presencePenalty = value);
+                },
+              ),
+              const SizedBox(height: 32),
+              _buildActionButtons(),
+            ],
+          ),
         ),
       ),
     );

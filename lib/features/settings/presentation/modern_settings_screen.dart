@@ -181,7 +181,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: colorScheme.surface.withValues(alpha: 0.7),
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
       child: ListView.builder(
@@ -615,14 +615,19 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       constraints: const BoxConstraints(maxWidth: 900), // 增加宽度限制
       child: Card(
         elevation: 0,
-        color: Theme.of(
-          context,
-        ).colorScheme.surface.withValues(alpha: 0.8), // 添加20%透明度
+        color: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
-        child: Padding(padding: const EdgeInsets.all(24), child: child),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: child,
+        ),
       ),
     );
   }
