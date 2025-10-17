@@ -313,6 +313,9 @@ class _McpConfigScreenState extends ConsumerState<McpConfigScreen> {
         await repository.updateConfig(config);
       }
 
+      // 刷新 MCP 配置列表
+      ref.invalidate(mcpConfigsProvider);
+
       if (mounted) {
         Navigator.of(context).pop(true);
       }

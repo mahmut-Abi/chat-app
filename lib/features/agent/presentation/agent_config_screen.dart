@@ -274,6 +274,9 @@ class _AgentConfigScreenState extends ConsumerState<AgentConfigScreen> {
       final repository = ref.read(agentRepositoryProvider);
       await repository.saveConfig(config);
 
+      // 刷新 Agent 配置列表
+      ref.invalidate(agentConfigsProvider);
+
       if (mounted) {
         Navigator.of(context).pop(true);
       }
