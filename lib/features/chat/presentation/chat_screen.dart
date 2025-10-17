@@ -579,10 +579,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           .where((c) => c.id == widget.conversationId)
                           .firstOrNull,
                       onConversationSelected: (conversation) {
+                        // 移动端：关闭 Drawer 后隐藏键盘避免异常弹出
+                        FocusManager.instance.primaryFocus?.unfocus();
                         Navigator.of(context).pop();
                         context.go('/chat/${conversation.id}');
                       },
                       onCreateConversation: () async {
+                        // 移动端：关闭 Drawer 后隐藏键盘避免异常弹出
+                        FocusManager.instance.primaryFocus?.unfocus();
                         Navigator.of(context).pop();
                         final chatRepo = ref.read(chatRepositoryProvider);
                         final conversation = await chatRepo.createConversation(

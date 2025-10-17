@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'dart:io';
 
 /// iOS 玻璃质感容器 - 支持 iOS 26+ 的毛玻璃效果
@@ -31,31 +30,28 @@ class GlassContainer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (!isIOS) {
-      // 非 iOS 平台使用半透明背景和轻微模糊
+      // 非 iOS 平台使用半透明背景，不使用模糊
       return ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.zero,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur * 0.5, sigmaY: blur * 0.5),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              color:
-                  backgroundColor ??
-                  (isDark
-                      ? Colors.black.withValues(alpha: 0.3)
-                      : Colors.white.withValues(alpha: 0.7)),
-              borderRadius: borderRadius,
-              border:
-                  border ??
-                  Border.all(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : Colors.black.withValues(alpha: 0.05),
-                    width: 1,
-                  ),
-            ),
-            child: child,
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color:
+                backgroundColor ??
+                (isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.7)),
+            borderRadius: borderRadius,
+            border:
+                border ??
+                Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
+                  width: 1,
+                ),
           ),
+          child: child,
         ),
       );
     }
@@ -86,29 +82,22 @@ class GlassContainer extends StatelessWidget {
                 ],
               )
             : null,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: blur,
-            sigmaY: blur,
-            tileMode: TileMode.clamp,
-          ),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              // 使用渐变色增强玻璃质感
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  effectiveBackgroundColor,
-                  effectiveBackgroundColor.withValues(alpha: opacity * 0.8),
-                ],
-              ),
-              borderRadius: borderRadius,
-              border: border ?? Border.all(color: borderColor, width: 1),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            // 使用渐变色增强玻璃质感
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                effectiveBackgroundColor,
+                effectiveBackgroundColor.withValues(alpha: opacity * 0.8),
+              ],
             ),
-            child: child,
+            borderRadius: borderRadius,
+            border: border ?? Border.all(color: borderColor, width: 1),
           ),
+          child: child,
         ),
       ),
     );

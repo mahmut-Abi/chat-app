@@ -612,7 +612,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
   Widget _buildCard({required Widget child}) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 900), // 增加宽度限制
+      constraints: const BoxConstraints(maxWidth: 1200), // 增加宽度限制
       child: Card(
         elevation: 0,
         color: Colors.transparent,
