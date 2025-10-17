@@ -7,6 +7,7 @@ import '../../../models/domain/model.dart';
 import 'dart:io';
 import '../../../../core/utils/image_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 
 /// 聊天功能菜单组件
 class ChatFunctionMenu extends ConsumerStatefulWidget {
@@ -188,13 +189,8 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
     // 强制刷新 Agent 列表,确保获取最新数据
     ref.invalidate(agentConfigsProvider);
 
-    final agentsAsync = ref.read(agentConfigsProvider);
-
-    final agents = agentsAsync.when(
-      data: (agents) => agents,
-      loading: () => <AgentConfig>[],
-      error: (error, stackTrace) => <AgentConfig>[],
-    );
+    // 等待 Agent 列表加载完成
+    final agents = await ref.read(agentConfigsProvider.future);
 
     if (!mounted) return;
 
@@ -259,12 +255,24 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   }
 
   Future<void> _showMcpSelector() async {
-    // 强制刷新 MCP 列表,确保获取最新数据
+    // 强制刷新 MCP 列表，确保获取最新数据
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] 开始显示 MCP 选择器');
+    }
     ref.invalidate(mcpConfigsProvider);
 
     // 等待 MCP 列表加载完成
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] 等待 MCP 列表加载...');
+    }
     final mcpsAsync = await ref.read(mcpConfigsProvider.future);
     final mcps = mcpsAsync;
+    if (kDebugMode) {
+      print('[ChatFunctionMenu] MCP 列表加载完成: ${mcps.length} 个配置');
+      for (final mcp in mcps) {
+        print('[ChatFunctionMenu]   - ${mcp.name} (enabled: ${mcp.enabled})');
+      }
+    }
 
     if (!mounted) return;
 

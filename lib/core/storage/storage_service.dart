@@ -142,11 +142,26 @@ class StorageService {
 
   // Settings
   Future<void> saveSetting(String key, dynamic value) async {
+    if (kDebugMode) {
+      print('[StorageService] 保存设置: key=$key, valueType=${value.runtimeType}');
+    }
     await _settingsBoxInstance.put(key, value);
+    if (kDebugMode) {
+      // 验证保存
+      final saved = _settingsBoxInstance.get(key);
+      print('[StorageService] 验证保存: ${saved != null ? '成功' : '失败'}');
+    }
   }
 
   dynamic getSetting(String key) {
-    return _settingsBoxInstance.get(key);
+    if (kDebugMode) {
+      print('[StorageService] 读取设置: key=$key');
+    }
+    final value = _settingsBoxInstance.get(key);
+    if (kDebugMode) {
+      print('[StorageService] 读取结果: ${value != null ? '找到' : '未找到'}');
+    }
+    return value;
   }
 
   Future<void> deleteSetting(String key) async {
@@ -246,7 +261,12 @@ class StorageService {
 
   // Get all keys from settings box
   Future<List<String>> getAllKeys() async {
-    return _settingsBoxInstance.keys.map((k) => k.toString()).toList();
+    final keys = _settingsBoxInstance.keys.map((k) => k.toString()).toList();
+    if (kDebugMode) {
+      print('[StorageService] getAllKeys: 总共 ${keys.length} 个键');
+      print('[StorageService] 键列表: $keys');
+    }
+    return keys;
   }
 
   // Clear all data

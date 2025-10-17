@@ -195,10 +195,27 @@ class OpenAIApiClient {
     try {
       var requestData = request.copyWith(stream: true).toJson();
 
+      _log.info('流式请求原始数据', {
+        'model': requestData['model'],
+        'messagesCount': (requestData['messages'] as List?)?.length ?? 0,
+        'hasMultimodal':
+            (requestData['messages'] as List?)?.any((msg) {
+              final content = msg['content'];
+              return content is List;
+            }) ??
+            false,
+      });
+
       // 如果指定了 provider，过滤不支持的参数
       if (_provider != null && _provider.isNotEmpty) {
         requestData = _filterRequestParams(requestData, _provider);
       }
+
+      _log.info('发送流式请求数据', {
+        'provider': _provider ?? 'openai',
+        'url': '/chat/completions',
+        'stream': true,
+      });
 
       final response = await _dioClient.dio.post(
         '/chat/completions',
@@ -232,12 +249,17 @@ class OpenAIApiClient {
               }
             } catch (e) {
               // Skip invalid JSON chunks
+              _log.debug('跳过无效的 JSON 块', {'error': e.toString()});
               continue;
             }
           }
         }
       }
     } catch (e) {
+      _log.error('流式请求异常', {
+        'error': e.toString(),
+        'type': e.runtimeType.toString(),
+      });
       rethrow;
     }
   }

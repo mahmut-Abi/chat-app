@@ -44,6 +44,26 @@ class ChatRepository {
         files: files,
       );
 
+      _log.info('构建的消息列表', {
+        'messagesCount': messages.length,
+        'lastMessageType': messages.isNotEmpty
+            ? (messages.last['content'] is String ? 'text' : 'multimodal')
+            : 'none',
+        'messagesPreview': messages.map((m) {
+          if (m['content'] is String) {
+            return {'role': m['role'], 'contentType': 'text'};
+          } else if (m['content'] is List) {
+            final contentList = m['content'] as List;
+            return {
+              'role': m['role'],
+              'contentType': 'multimodal',
+              'parts': contentList.length,
+            };
+          }
+          return {'role': m['role'], 'contentType': 'unknown'};
+        }).toList(),
+      });
+
       final request = ChatCompletionRequest(
         model: config.model,
         messages: messages,
@@ -178,14 +198,22 @@ class ChatRepository {
     // 构建新消息（包含图片和文件）
     if ((images != null && images.isNotEmpty) ||
         (files != null && files.isNotEmpty)) {
-      final content = <Map<String, dynamic>>[
-        {'type': 'text', 'text': newContent},
-      ];
+      final content = <Map<String, dynamic>>[];
+
+      // 只有当文本不为空时才添加文本部分
+      if (newContent.isNotEmpty) {
+        content.add({'type': 'text', 'text': newContent});
+      }
 
       // 添加图片
       if (images != null) {
         for (final image in images) {
           if (image.base64Data != null && image.mimeType != null) {
+            _log.debug('添加图片到消息', {
+              'mimeType': image.mimeType,
+              'base64Length': image.base64Data!.length,
+              'path': image.path,
+            });
             content.add({
               'type': 'image_url',
               'image_url': {
