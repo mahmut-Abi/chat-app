@@ -185,6 +185,9 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   }
 
   Future<void> _showAgentSelector() async {
+    // 强制刷新 Agent 列表,确保获取最新数据
+    ref.invalidate(agentConfigsProvider);
+
     final agentsAsync = ref.read(agentConfigsProvider);
 
     final agents = agentsAsync.when(
@@ -256,6 +259,9 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   }
 
   Future<void> _showMcpSelector() async {
+    // 强制刷新 MCP 列表,确保获取最新数据
+    ref.invalidate(mcpConfigsProvider);
+
     final mcpsAsync = ref.read(mcpConfigsProvider);
 
     final mcps = mcpsAsync.when(
