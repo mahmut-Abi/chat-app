@@ -654,7 +654,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: BackgroundContainer(
           child: Scaffold(
             backgroundColor: Colors.transparent,
-            extendBodyBehindAppBar: false,
+            extendBodyBehindAppBar: true,
+            extendBody: true,
             // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
             onDrawerChanged: PlatformUtils.isIOS
                 ? (isOpened) {

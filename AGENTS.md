@@ -4,27 +4,51 @@ This document provides guidelines for contributors working on the Flutter Chat A
 
 ## Project Structure & Module Organization
 
-The project follows a feature-first architecture:
+The project follows a **Feature-First + Clean Architecture** approach. For detailed information about the project structure, please refer to:
+
+**📖 [项目结构说明文档 (docs/project-structure.md)](docs/project-structure.md)**
+
+### Quick Overview
 
 ```
 lib/
-├── core/              # Shared utilities, network, storage
-│   ├── network/       # API clients and HTTP configuration
-│   ├── storage/       # Local database and persistence
-│   ├── utils/         # Helper functions and extensions
-│   └── constants/     # App-wide constants and enums
-├── features/          # Feature modules (chat, settings, models)
+├── core/              # 核心功能层：网络、存储、服务、工具
+│   ├── network/       # API 客户端和 HTTP 配置
+│   ├── storage/       # 本地数据持久化
+│   ├── services/      # 系统级服务
+│   ├── utils/         # 通用工具类
+│   ├── providers/     # 全局 Provider
+│   ├── routing/       # 路由配置
+│   ├── constants/     # 应用常量
+│   └── error/         # 错误处理
+├── features/          # 功能模块层：按业务功能组织
 │   └── [feature]/
-│       ├── data/      # Data sources, repositories
-│       ├── domain/    # Business logic, entities
-│       └── presentation/ # UI, widgets, state management
-├── shared/            # Reusable UI components and themes
-│   ├── widgets/       # Common widgets
-│   └── themes/        # Theme configuration
-└── main.dart          # App entry point
+│       ├── data/      # 数据层：Repository、数据源
+│       ├── domain/    # 领域层：数据模型、业务实体
+│       └── presentation/ # 表现层：UI、Widgets、状态管理
+├── shared/            # 共享组件层：可复用的 UI 组件和主题
+│   ├── widgets/       # 通用组件
+│   ├── themes/        # 主题配置
+│   └── utils/         # 共享工具
+└── main.dart          # 应用入口
 ```
 
+**功能模块**:
+- `chat/` - 聊天功能（对话管理、消息发送、流式响应）
+- `agent/` - Agent 系统（Agent 管理、工具集成）
+- `mcp/` - MCP 集成（服务器管理、工具调用）
+- `models/` - 模型管理
+- `prompts/` - 提示词模板
+- `settings/` - 应用设置
+- `token_usage/` - Token 统计
+- `logs/` - 日志查看
+
 Tests mirror the `lib/` structure in `test/` directory.
+
+**重要文档**:
+- [项目结构详解](docs/project-structure.md) - 完整的目录结构和模块说明
+- [架构文档](docs/architecture.md) - 架构设计详细说明
+- [MCP 集成指南](docs/mcp-integration.md) - MCP 协议集成说明
 
 ## Build, Test, and Development Commands
 
