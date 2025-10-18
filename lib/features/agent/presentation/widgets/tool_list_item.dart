@@ -50,19 +50,33 @@ class ToolListItem extends ConsumerWidget {
                 ref.invalidate(agentToolsProvider);
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () async {
-                final result = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) => ToolConfigScreen(tool: tool),
-                  ),
-                );
-                if (result == true) ref.invalidate(agentToolsProvider);
-              },
-            ),
-            IconButton(icon: const Icon(Icons.delete), onPressed: onDelete),
+            if (!tool.isBuiltIn)
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () async {
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => ToolConfigScreen(tool: tool),
+                    ),
+                  );
+                  if (result == true) ref.invalidate(agentToolsProvider);
+                },
+              )
+            else
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: null,
+                tooltip: '内置工具不可编辑',
+              ),
+            if (!tool.isBuiltIn)
+              IconButton(icon: const Icon(Icons.delete), onPressed: onDelete)
+            else
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: null,
+                tooltip: '内置工具不可删除',
+              ),
           ],
         ),
       ),

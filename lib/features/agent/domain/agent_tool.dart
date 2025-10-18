@@ -8,6 +8,7 @@ class AgentTool {
   final String id;
   final String name;
   final String description;
+  final bool isBuiltIn; // 是否为内置工具
   final AgentToolType type;
   final Map<String, dynamic> parameters;
   final bool enabled;
@@ -18,6 +19,7 @@ class AgentTool {
     required this.name,
     required this.description,
     required this.type,
+    this.isBuiltIn = false,
     this.parameters = const {},
     this.enabled = true,
     this.iconName,

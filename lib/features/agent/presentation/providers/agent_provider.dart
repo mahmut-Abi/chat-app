@@ -74,6 +74,7 @@ final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
   await repository.createTool(
     name: 'calculator',
     type: AgentToolType.calculator,
+    isBuiltIn: true,
     parameters: {
       'type': 'object',
       'properties': {
@@ -86,6 +87,7 @@ final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
   await repository.createTool(
     name: 'search',
     type: AgentToolType.search,
+    isBuiltIn: true,
     parameters: {
       'type': 'object',
       'properties': {
@@ -98,6 +100,7 @@ final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
   await repository.createTool(
     name: 'file_reader',
     type: AgentToolType.fileOperation,
+    isBuiltIn: true,
     parameters: {
       'type': 'object',
       'properties': {

@@ -60,6 +60,7 @@ class AgentRepository {
     String? description,
     required AgentToolType type,
     Map<String, dynamic>? parameters,
+    bool isBuiltIn = false,
   }) async {
     _log.info('创建 Agent 工具', {
       'name': name,
@@ -72,6 +73,7 @@ class AgentRepository {
       name: name,
       description: description ?? '',
       type: type,
+      isBuiltIn: isBuiltIn,
       parameters: parameters ?? {},
     );
 
