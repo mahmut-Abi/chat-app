@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/providers.dart';
 import '../storage/storage_service.dart';
 import '../../features/agent/data/agent_repository.dart';
 import '../../features/agent/data/tool_executor.dart';
 import '../../features/agent/data/default_agents.dart';
 import '../../features/agent/domain/agent_tool.dart';
+import '../../features/mcp/data/mcp_repository.dart';
+import '../../features/mcp/data/default_mcp_servers.dart';
 import 'log_service.dart';
 
 /// 应用初始化服务
@@ -25,6 +28,9 @@ class AppInitializationService {
       
       // 2. 初始化内置 Agent
       await _initializeDefaultAgents();
+      
+      // 3. 初始化示例 MCP 服务器（可选）
+      await _initializeMcpServers();
       
       _log.info('应用初始化完成');
     } catch (e, stackTrace) {
@@ -135,22 +141,44 @@ class AppInitializationService {
     }
   }
   
+  /// 初始化示例 MCP 服务器
+  Future<void> _initializeMcpServers() async {
+    _log.info('初始化示例 MCP 服务器');
+    
+    try {
+      final repository = McpRepository(_storage);
+      await DefaultMcpServers.initializeQuickStartServers(repository);
+      
+      _log.info('示例 MCP 服务器初始化完成');
+    } catch (e, stackTrace) {
+      _log.error('示例 MCP 服务器初始化失败', e, stackTrace);
+      // 不抛出异常，MCP 是可选功能
+    }
+  }
+  
   /// 重置所有初始化数据
   Future<void> reset() async {
     _log.info('重置应用数据');
     
     try {
-      final repository = AgentRepository(_storage, ToolExecutorManager());
+      final agentRepo = AgentRepository(_storage, ToolExecutorManager());
+      final mcpRepo = McpRepository(_storage);
       
       // 删除所有工具和 Agent
-      final agents = await repository.getAllAgents();
+      final agents = await agentRepo.getAllAgents();
       for (final agent in agents) {
-        await repository.deleteAgent(agent.id);
+        await agentRepo.deleteAgent(agent.id);
       }
       
-      final tools = await repository.getAllTools();
+      final tools = await agentRepo.getAllTools();
       for (final tool in tools) {
-        await repository.deleteTool(tool.id);
+        await agentRepo.deleteTool(tool.id);
+      }
+      
+      // 删除所有 MCP 配置
+      final mcpConfigs = await mcpRepo.getAllConfigs();
+      for (final config in mcpConfigs) {
+        await mcpRepo.deleteConfig(config.id);
       }
       
       // 重新初始化

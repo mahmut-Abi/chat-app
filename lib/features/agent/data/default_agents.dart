@@ -1,6 +1,6 @@
 import 'agent_repository.dart';
 import '../domain/agent_tool.dart';
-import '../../core/services/log_service.dart';
+import '../../../core/services/log_service.dart';
 
 /// 默认 Agent 配置
 class DefaultAgents {

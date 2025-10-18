@@ -29,7 +29,7 @@ void main() {
       expect(agent.description, '用于测试的 Agent');
       expect(agent.toolIds.length, 2);
       expect(agent.systemPrompt, '你是一个测试助手');
-      expect(agent.isEnabled, true);
+      expect(agent.enabled, true);
     });
 
     test('应该能创建工具', () async {

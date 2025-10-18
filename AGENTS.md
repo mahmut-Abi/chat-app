@@ -1,313 +1,301 @@
-# Repository Guidelines
+# Agent 系统开发文档
 
-This document provides guidelines for contributors working on the Flutter Chat App project, a cross-platform AI chat application similar to Cherry Studio.
+本文档面向开发者，说明 Agent 系统的实现原理和开发指南。
 
-## Project Structure & Module Organization
+> 📖 **用户文档**: 如果你是普通用户，请查看 [Agent 使用指南](docs/agent-user-guide.md)
 
-The project follows a **Feature-First + Clean Architecture** approach. For detailed information about the project structure, please refer to:
+## 目录
 
-**📖 [项目结构说明文档 (docs/project-structure.md)](docs/project-structure.md)**
+- [系统架构](#系统架构)
+- [核心组件](#核心组件)
+- [开发指南](#开发指南)
+- [最佳实践](#最佳实践)
 
-### Quick Overview
+---
+
+## 系统架构
+
+### 三层架构
 
 ```
-lib/
-├── core/              # 核心功能层：网络、存储、服务、工具
-│   ├── network/       # API 客户端和 HTTP 配置
-│   ├── storage/       # 本地数据持久化
-│   ├── services/      # 系统级服务
-│   ├── utils/         # 通用工具类
-│   ├── providers/     # 全局 Provider
-│   ├── routing/       # 路由配置
-│   ├── constants/     # 应用常量
-│   └── error/         # 错误处理
-├── features/          # 功能模块层：按业务功能组织
-│   └── [feature]/
-│       ├── data/      # 数据层：Repository、数据源
-│       ├── domain/    # 领域层：数据模型、业务实体
-│       └── presentation/ # 表现层：UI、Widgets、状态管理
-├── shared/            # 共享组件层：可复用的 UI 组件和主题
-│   ├── widgets/       # 通用组件
-│   ├── themes/        # 主题配置
-│   └── utils/         # 共享工具
-└── main.dart          # 应用入口
+Chat Interface (用户交互层)
+        ↓
+Agent Provider (状态管理层)
+        ↓
+Agent Repository (业务逻辑层)
+        ↓
+Agent Config / Tool Executor / Tool Storage
 ```
 
-**功能模块**:
-- `chat/` - 聊天功能（对话管理、消息发送、流式响应）
-- `agent/` - Agent 系统（Agent 管理、工具集成、内置 Agent）
-- `mcp/` - MCP 集成（服务器管理、工具调用）
-- `models/` - 模型管理
-- `prompts/` - 提示词模板
-- `settings/` - 应用设置
-- `token_usage/` - Token 统计
-- `logs/` - 日志查看
+**核心层次**：
+- **Domain Layer**: AgentConfig、AgentTool、ToolExecutionResult
+- **Data Layer**: AgentRepository、ToolExecutorManager、DefaultAgents
+- **Presentation Layer**: AgentProvider、AgentSelectorDialog、AgentManagementScreen
 
-Tests mirror the `lib/` structure in `test/` directory.
+---
 
-**重要文档**:
-- [项目结构详解](docs/project-structure.md) - 完整的目录结构和模块说明
-- [架构文档](docs/architecture.md) - 架构设计详细说明
-- [MCP 集成指南](docs/mcp-integration.md) - MCP 协议集成说明
-- [Agent 功能验证](docs/agent-functionality-verification.md) - Agent 系统功能验证报告
-- [Agent 开发指南](docs/agent-development.md) - Agent 开发详细说明
+## 核心组件
 
-## Build, Test, and Development Commands
+### 1. AgentConfig
 
-**Setup and Dependencies**
-```bash
-flutter pub get                    # Install dependencies
-flutter pub run build_runner build # Generate code (freezed, json_serializable)
-```
+定义 Agent 的基本配置：
 
-**Running the App**
-```bash
-flutter run -d chrome              # Run on web
-flutter run -d macos               # Run on desktop
-flutter run                        # Run on connected device
-```
-
-**Testing**
-```bash
-flutter test                       # Run all unit tests
-flutter test --coverage            # Run tests with coverage
-```
-
-**Code Quality**
-```bash
-flutter analyze                    # Run static analysis
-flutter format .                   # Format all Dart files
-```
-
-## Coding Style & Naming Conventions
-
-**Formatting**
-- Use 2-space indentation
-- Follow official Dart style guide
-- Run `flutter format .` before committing
-- Maximum line length: 80 characters
-
-**Naming Patterns**
-- Files: `snake_case.dart` (e.g., `chat_message.dart`)
-- Classes: `PascalCase` (e.g., `ChatMessage`)
-- Variables/functions: `camelCase` (e.g., `sendMessage`)
-- Constants: `lowerCamelCase` (e.g., `maxTokens`)
-- Private members: prefix with `_` (e.g., `_apiClient`)
-
-**Code Generation**
-- Use `freezed` for immutable data classes
-- Use `json_serializable` for JSON serialization
-- Always run `build_runner` after modifying generated files
-
-## Testing Guidelines
-
-**Framework**: Flutter's built-in testing framework with `mockito` for mocking.
-
-**Test Organization**
-- Unit tests: `test/unit/`
-- Widget tests: `test/widget/`
-- Integration tests: `test/integration/`
-
-**Naming Conventions**
-- Test files: `*_test.dart` (e.g., `chat_repository_test.dart`)
-- Test groups: Describe the class/function being tested
-- Test cases: Use descriptive names starting with "should"
-
-**Example**
 ```dart
-group('ChatRepository', () {
-  test('should fetch messages successfully', () {
-    // Test implementation
-  });
-});
-```
-
-**Coverage Requirements**
-- Aim for 80%+ coverage on business logic
-- All API clients and repositories must have tests
-- UI tests are optional but encouraged
-
-## Commit & Pull Request Guidelines
-
-**Commit Messages**
-Follow conventional commits format:
-```
-type(scope): subject
-
-Types: feat, fix, docs, style, refactor, test, chore
-Example: feat(chat): add streaming response support
-```
-
-**Pull Request Requirements**
-- Link related issues using `Closes #123` or `Fixes #456`
-- Provide clear description of changes
-- Include screenshots for UI changes
-- Ensure all tests pass and code is formatted
-- Request review from at least one maintainer
-- Keep PRs focused and reasonably sized
-
-**Git Commit Requirements**
-- Every completed task MUST be committed with `git commit`
-- Commit messages must be in Chinese (中文)
-- Follow conventional commits format with Chinese descriptions
-- Example: `feat(聊天): 添加流式响应支持`
-- Types remain in English: feat, fix, docs, style, refactor, test, chore
-
-**Branch Naming**
-- Feature: `feature/description` (e.g., `feature/add-markdown-support`)
-- Bug fix: `fix/description` (e.g., `fix/streaming-error`)
-- Documentation: `docs/description`
-
-## Security & Configuration
-
-**API Keys**
-- Never commit API keys or secrets
-- Use `flutter_secure_storage` for sensitive data
-- Store configuration in environment-specific files
-
-**Dependencies**
-- Review security advisories before adding dependencies
-- Keep dependencies up to date
-- Use `flutter pub outdated` regularly
-
-## Language and Localization
-
-**Communication Language**
-- All agent/AI responses must be in Chinese (中文)
-- Documentation files (README, CHANGELOG, etc.) should be written in Chinese
-- Code comments should be in Chinese when added
-- Commit messages must use Chinese descriptions
-- Variable names, function names, and code itself remain in English
-
-**Documentation File Organization**
-- `AGENTS.md`, `README.md`, and `todo.md` should be placed in the project root directory
-- All other newly generated markdown files must be placed in the `docs/` directory
-- Examples of files that belong in `docs/`:
-  - Architecture documentation (e.g., `docs/architecture.md`)
-  - API documentation (e.g., `docs/api.md`)
-  - Deployment guides (e.g., `docs/deployment.md`)
-  - Feature specifications (e.g., `docs/features.md`)
-- When creating new documentation, always place it in `docs/` unless it's one of the three exceptions above
-
-**Example**:
-```dart
-// 发送聊天消息到服务器
-Future<void> sendMessage(String content) async {
-  // 实现代码
+@freezed
+class AgentConfig with _$AgentConfig {
+  const factory AgentConfig({
+    required String id,           // UUID
+    required String name,         // Agent 名称
+    required String description,  // 功能描述
+    required List<String> toolIds,// 可用工具列表
+    String? systemPrompt,         // 系统提示词
+    @Default(true) bool isEnabled,
+    @Default(false) bool isBuiltIn,
+  }) = _AgentConfig;
 }
 ```
 
-## Architecture Overview
+### 2. AgentTool
 
-**State Management**: Riverpod 2.x
-- Use `Provider` for simple state
-- Use `StateNotifierProvider` for complex state with business logic
-- Keep providers in `providers/` within each feature module
+定义工具的结构：
 
-**Navigation**: go_router
-- Define routes in `lib/core/routing/app_router.dart`
-- Use type-safe route parameters
+```dart
+enum AgentToolType {
+  calculator,     // 计算器
+  search,        // 搜索
+  fileOperation, // 文件操作
+  codeExecution, // 代码执行
+  custom,        // 自定义
+}
 
-**Data Flow**
-```
-UI → Provider → Repository → Data Source (API/DB) → Repository → Provider → UI
-```
-
-Keep business logic in repositories and domain layer, not in widgets.
-
-## Development Environment Setup
-
-**Local Build Requirements**
-- Before completing any task, verify the project builds successfully
-- Use `brew` to install Flutter and related dependencies on macOS:
-  ```bash
-  brew install flutter
-  brew install cocoapods
-  brew install --cask android-studio  # If targeting Android
-  ```
-- Run `flutter doctor` to verify installation
-- For iOS development, install Xcode from App Store
-- For Android development, configure Android SDK through Android Studio
-- Always test compilation before committing:
-  ```bash
-  flutter analyze          # Check for errors
-  flutter build macos      # Test macOS build
-  flutter build web        # Test web build
-  flutter build apk        # Test Android build (if targeting Android)
-  flutter build ios        # Test iOS build (if targeting iOS)
-  ```
-- Fix any compilation errors before committing changes
-- If tests exist, run `flutter test` to ensure they pass
-
-## Common Issues and Solutions
-
-**颜色值转换**
-- 使用 `Color.toARGB32()` 而不是已废弃的 `.value`
-- 例：`color.toARGB32().toRadixString(16)`
-
-**类结构**
-- 确保所有方法都在类内部
-- 检查大括号匹配，避免过早关闭类
-
-**PDF 生成**
-- `pw.BorderRadius` 不能使用 `const`
-- 使用 `pw.BorderRadius.all(pw.Radius.circular(5))` 而不是 `const pw.BorderRadius.all(...)`
-
-**Trailing Commas**
-- 在多行参数列表中始终添加末尾逗号
-- 例：`DropdownMenuItem(...),` 而不是 `DropdownMenuItem(...))`
-
-**DropdownButton 参数**
-- 必须提供 `value` 参数，不能使用 `.r` 等错误语法
-- 正确：`value: _selectedColor`
-- 错误：`.r: _selectedColor`
-
-## Mobile Platform Configuration
-
-**Android 配置**
-- 应用 ID: `com.aichat.app`
-- minSdkVersion: 21 (Android 5.0)
-- 必须权限: INTERNET, ACCESS_NETWORK_STATE
-- 文件访问: READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE (API 32 及以下)
-
-**iOS 配置**
-- Bundle ID: 需要在 Xcode 中配置
-- 最低支持: iOS 12.0
-- 权限描述: 相册、相机、麦克风（为未来功能预留）
-
-**平台特定注意事项**
-- Android 需要配置签名证书用于发布版本
-- iOS 需要 Apple Developer 账号用于真机调试和发布
-- 所有平台均已配置必要的权限和设置
-
-## Git Hooks
-
-本项目配置了 Git pre-commit hook，会在每次提交前自动运行代码格式和质量检查。
-
-### 安装 Hooks
-
-新克隆项目后，需要运行以下命令安装 hooks：
-
-```bash
-./scripts/setup-hooks.sh
+@freezed
+class AgentTool with _$AgentTool {
+  const factory AgentTool({
+    required String id,
+    required String name,
+    required String description,
+    required AgentToolType type,
+    required Map<String, dynamic> parameters,
+    @Default(true) bool enabled,
+  }) = _AgentTool;
+}
 ```
 
-### Hook 行为
+### 3. AgentRepository
 
-**1. Dart 代码格式检查**
-- ✅ **允许提交**: 如果所有暂存的 Dart 文件都已格式化
-- ❌ **阻止提交**: 如果有未格式化的 Dart 文件
+核心方法：
 
-**2. Flutter Analyze 代码质量检查**
-- ✅ **允许提交**: 如果只有 warning 和 info 级别的问题  
-- ❌ **阻止提交**: 如果存在 error 级别的问题  
+```dart
+// Agent 管理
+Future<AgentConfig> createAgent({...});
+Future<void> updateAgent(AgentConfig agent);
+Future<void> deleteAgent(String id);
+Future<List<AgentConfig>> getAllAgents();
 
-### 跳过 Hook
+// Tool 管理
+Future<AgentTool> createTool({...});
+Future<List<AgentTool>> getAllTools();
 
-如需跳过 hook 检查：
-
-```bash
-git commit --no-verify -m "commit message"
+// Tool 执行
+Future<ToolExecutionResult> executeTool(
+  AgentTool tool,
+  Map<String, dynamic> arguments,
+);
 ```
 
-详细信息请查阅 `docs/git-hooks.md`
+---
+
+## 开发指南
+
+### 添加新工具
+
+#### 1. 定义工具类型
+
+```dart
+enum AgentToolType {
+  // ... 现有类型
+  weather,  // 新增
+}
+```
+
+#### 2. 实现执行器
+
+```dart
+class WeatherExecutor implements ToolExecutor {
+  @override
+  Future<ToolExecutionResult> execute(Map<String, dynamic> arguments) async {
+    try {
+      final city = arguments['city'] as String;
+      final weather = await _fetchWeather(city);
+      
+      return ToolExecutionResult(
+        success: true,
+        result: weather,
+      );
+    } catch (e) {
+      return ToolExecutionResult(
+        success: false,
+        error: '获取天气失败: ${e.toString()}',
+      );
+    }
+  }
+}
+```
+
+#### 3. 注册执行器
+
+```dart
+ToolExecutorManager() {
+  registerExecutor(AgentToolType.weather, WeatherExecutor());
+}
+```
+
+#### 4. 创建工具配置
+
+```dart
+await repository.createTool(
+  name: 'weather',
+  description: '查询城市天气',
+  type: AgentToolType.weather,
+  parameters: {
+    'type': 'object',
+    'properties': {
+      'city': {'type': 'string', 'description': '城市名称'},
+    },
+    'required': ['city'],
+  },
+);
+```
+
+### 创建内置 Agent
+
+在 `lib/features/agent/data/default_agents.dart` 中：
+
+```dart
+await repository.createAgent(
+  name: '数学专家',
+  description: '专注于数学计算',
+  toolIds: [calcTool.id],
+  systemPrompt: '''你是一位数学专家，擅长解决各类数学问题。''',
+  isBuiltIn: true,
+  iconName: 'calculate',
+);
+```
+
+---
+
+## 最佳实践
+
+### 1. Agent 设计原则
+
+**单一职责** - 每个 Agent 专注特定领域
+```dart
+✅ Agent('数学专家', tools: [calculator])
+❌ Agent('万能助手', tools: [calculator, search, file, code, ...])
+```
+
+**清晰提示词** - 明确 Agent 的能力和使用场景
+```dart
+✅ '''你是数学专家，擅长：1. 代数计算 2. 几何问题 3. 统计分析'''
+❌ '''你是数学专家'''
+```
+
+### 2. 工具开发原则
+
+**健壮的错误处理**
+```dart
+try {
+  // 验证参数
+  if (!arguments.containsKey('param')) {
+    return ToolExecutionResult(success: false, error: '缺少参数');
+  }
+  
+  // 执行逻辑
+  final result = await _doWork(arguments);
+  return ToolExecutionResult(success: true, result: result);
+  
+} catch (e) {
+  LogService().error('执行失败', e);
+  return ToolExecutionResult(success: false, error: e.toString());
+}
+```
+
+**清晰的参数定义**
+```dart
+parameters: {
+  'type': 'object',
+  'properties': {
+    'city': {
+      'type': 'string',
+      'description': '城市名称',
+      'examples': ['北京', '上海'],
+    },
+  },
+  'required': ['city'],
+}
+```
+
+### 3. 性能优化
+
+**缓存工具结果**
+```dart
+class CachedExecutor implements ToolExecutor {
+  final Map<String, ToolExecutionResult> _cache = {};
+  
+  @override
+  Future<ToolExecutionResult> execute(Map<String, dynamic> args) async {
+    final key = _generateKey(args);
+    if (_cache.containsKey(key)) return _cache[key]!;
+    
+    final result = await _actualExecute(args);
+    _cache[key] = result;
+    return result;
+  }
+}
+```
+
+**并行执行**
+```dart
+final results = await Future.wait([
+  repository.executeTool(tool1, args1),
+  repository.executeTool(tool2, args2),
+]);
+```
+
+---
+
+## 代码规范
+
+- **Agent 名称**: 中文，简洁明确
+- **工具名称**: snake_case
+- **类名**: PascalCase
+- **方法名**: camelCase
+- **注释**: 使用 `///` 文档注释
+
+---
+
+## 相关文档
+
+- [Agent 使用指南](docs/agent-user-guide.md) - 用户说明
+- [项目结构](docs/PROJECT_STRUCTURE.md) - 项目组织
+- [架构设计](docs/architecture.md) - 整体架构
+
+---
+
+## 常见问题
+
+**Q: 如何添加新的 Agent？**  
+A: 在 `default_agents.dart` 中添加初始化逻辑，或通过 UI 创建。
+
+**Q: 工具执行失败怎么办？**  
+A: 检查日志，验证参数，确保执行器正确实现。
+
+**Q: 如何持久化配置？**  
+A: AgentRepository 自动使用 Hive 处理持久化。
+
+**Q: 可以动态加载工具吗？**  
+A: 可以，实现 ToolExecutor 接口并注册到 ToolExecutorManager。
+
+---
+
+**最后更新**: 2025-01-18 | **版本**: 1.4.0
