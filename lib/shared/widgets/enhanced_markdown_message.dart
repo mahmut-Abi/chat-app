@@ -99,86 +99,119 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
     return screenWidth < 600; // 小于 600px 视为移动设备
   }
 
-  MarkdownStyleSheet _buildStyleSheet(BuildContext context, bool isDarkMode) {
+  MarkdownStyleSheet _buildStyleSheet(
+    BuildContext context,
+    bool isDarkMode,
+    bool isMobile,
+  ) {
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black87;
     final codeBackgroundColor = isDarkMode 
         ? const Color(0xFF2D2D2D)
         : const Color(0xFFF6F8FA);
 
+    // 移动端使用更小的字号和间距
+    final baseFontSize = isMobile ? 14.0 : 15.0;
+    final h1Size = isMobile ? 24.0 : 28.0;
+    final h2Size = isMobile ? 20.0 : 24.0;
+    final h3Size = isMobile ? 18.0 : 20.0;
+    final h4Size = isMobile ? 16.0 : 18.0;
+    final h5Size = isMobile ? 15.0 : 16.0;
+    final h6Size = isMobile ? 14.0 : 15.0;
+    
+    final pPaddingVertical = isMobile ? 6.0 : 8.0;
+    final h1PaddingTop = isMobile ? 16.0 : 24.0;
+    final h1PaddingBottom = isMobile ? 12.0 : 16.0;
+    final h2PaddingTop = isMobile ? 14.0 : 20.0;
+    final h2PaddingBottom = isMobile ? 10.0 : 12.0;
+    final blockHorizontalPadding = isMobile ? 12.0 : 16.0;
+    final listIndent = isMobile ? 20.0 : 28.0;
+
     return MarkdownStyleSheet(
       // 段落样式
       p: TextStyle(
-        fontSize: 15,
+        fontSize: baseFontSize,
         height: 1.6,
         color: textColor,
         letterSpacing: 0.2,
       ),
-      pPadding: const EdgeInsets.symmetric(vertical: 8),
+      pPadding: EdgeInsets.symmetric(vertical: pPaddingVertical),
 
-      // 标题样式
+      // 标题样式 - 移动端使用较小字号
       h1: TextStyle(
-        fontSize: 28,
+        fontSize: h1Size,
         fontWeight: FontWeight.bold,
         color: textColor,
         height: 1.3,
         letterSpacing: -0.5,
       ),
-      h1Padding: const EdgeInsets.only(top: 24, bottom: 16),
+      h1Padding: EdgeInsets.only(top: h1PaddingTop, bottom: h1PaddingBottom),
       
       h2: TextStyle(
-        fontSize: 24,
+        fontSize: h2Size,
         fontWeight: FontWeight.bold,
         color: textColor,
         height: 1.3,
         letterSpacing: -0.3,
       ),
-      h2Padding: const EdgeInsets.only(top: 20, bottom: 12),
+      h2Padding: EdgeInsets.only(top: h2PaddingTop, bottom: h2PaddingBottom),
       
       h3: TextStyle(
-        fontSize: 20,
+        fontSize: h3Size,
         fontWeight: FontWeight.w600,
         color: textColor,
         height: 1.4,
       ),
-      h3Padding: const EdgeInsets.only(top: 16, bottom: 10),
+      h3Padding: EdgeInsets.only(
+        top: isMobile ? 12.0 : 16.0,
+        bottom: isMobile ? 8.0 : 10.0,
+      ),
       
       h4: TextStyle(
-        fontSize: 18,
+        fontSize: h4Size,
         fontWeight: FontWeight.w600,
         color: textColor,
         height: 1.4,
       ),
-      h4Padding: const EdgeInsets.only(top: 12, bottom: 8),
+      h4Padding: EdgeInsets.only(
+        top: isMobile ? 10.0 : 12.0,
+        bottom: isMobile ? 6.0 : 8.0,
+      ),
       
       h5: TextStyle(
-        fontSize: 16,
+        fontSize: h5Size,
         fontWeight: FontWeight.w600,
         color: textColor,
         height: 1.5,
       ),
-      h5Padding: const EdgeInsets.only(top: 12, bottom: 8),
+      h5Padding: EdgeInsets.only(
+        top: isMobile ? 10.0 : 12.0,
+        bottom: isMobile ? 6.0 : 8.0,
+      ),
       
       h6: TextStyle(
-        fontSize: 15,
+        fontSize: h6Size,
         fontWeight: FontWeight.w600,
         color: textColor.withValues(alpha: 0.8),
         height: 1.5,
       ),
-      h6Padding: const EdgeInsets.only(top: 10, bottom: 6),
+      h6Padding: EdgeInsets.only(
+        top: isMobile ? 8.0 : 10.0,
+        bottom: isMobile ? 4.0 : 6.0,
+      ),
 
-      // 列表样式
+      // 列表样式 - 移动端使用较小缩进
       listBullet: TextStyle(
-        fontSize: 15,
+        fontSize: baseFontSize,
         color: theme.colorScheme.primary,
         fontWeight: FontWeight.bold,
       ),
-      listIndent: 28,
-      listBulletPadding: const EdgeInsets.only(right: 12),
+      listIndent: listIndent,
+      listBulletPadding: EdgeInsets.only(right: isMobile ? 8.0 : 12.0),
 
-      // 引用块样式
+      // 引用块样式 - 移动端使用较小内边距
       blockquote: TextStyle(
-        fontSize: 15,
+        fontSize: baseFontSize,
         fontStyle: FontStyle.italic,
         color: textColor.withValues(alpha: 0.7),
         height: 1.6,
@@ -187,24 +220,24 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         color: isDarkMode 
             ? Colors.white.withValues(alpha: 0.03)
             : Colors.black.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(isMobile ? 6.0 : 8.0),
         border: Border(
           left: BorderSide(
             color: theme.colorScheme.primary.withValues(alpha: 0.6),
-            width: 4,
+            width: isMobile ? 3.0 : 4.0,
           ),
         ),
       ),
-      blockquotePadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
+      blockquotePadding: EdgeInsets.symmetric(
+        horizontal: blockHorizontalPadding,
+        vertical: isMobile ? 10.0 : 12.0,
       ),
 
-      // 代码样式
+      // 代码样式 - 移动端使用较小字号
       code: TextStyle(
         backgroundColor: codeBackgroundColor,
         fontFamily: 'monospace',
-        fontSize: 14,
+        fontSize: isMobile ? 13.0 : 14.0,
         color: isDarkMode ? const Color(0xFFE06C75) : const Color(0xFFD73A49),
         fontWeight: FontWeight.w500,
       ),
@@ -216,7 +249,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         border: Border(
           top: BorderSide(
             color: textColor.withValues(alpha: 0.1),
-            width: 2,
+            width: isMobile ? 1.5 : 2.0,
           ),
         ),
       ),
@@ -227,6 +260,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         decoration: TextDecoration.underline,
         decorationColor: theme.colorScheme.primary.withValues(alpha: 0.4),
         fontWeight: FontWeight.w500,
+        fontSize: baseFontSize,
       ),
 
       // 强调和加粗样式
@@ -245,14 +279,14 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         color: textColor.withValues(alpha: 0.6),
       ),
 
-      // 表格样式
+      // 表格样式 - 移动端使用较小字号和内边距
       tableHead: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 15,
+        fontSize: isMobile ? 14.0 : 15.0,
         color: textColor,
       ),
       tableBody: TextStyle(
-        fontSize: 14,
+        fontSize: isMobile ? 13.0 : 14.0,
         color: textColor,
       ),
       tableBorder: TableBorder.all(
@@ -260,13 +294,13 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         width: 1,
       ),
       tableHeadAlign: TextAlign.left,
-      tableCellsPadding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
+      tableCellsPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 8.0 : 12.0,
+        vertical: isMobile ? 6.0 : 8.0,
       ),
 
-      // 其他间距
-      blockSpacing: 12,
+      // 其他间距 - 移动端使用较小间距
+      blockSpacing: isMobile ? 10.0 : 12.0,
       textScaleFactor: 1.0,
     );
   }
@@ -313,10 +347,12 @@ class LaTeXBuilder extends MarkdownElementBuilder {
 class CodeBlockBuilder extends MarkdownElementBuilder {
   final bool enableHighlight;
   final bool isDarkMode;
+  final bool isMobile;
 
   CodeBlockBuilder({
     this.enableHighlight = true,
     required this.isDarkMode,
+    required this.isMobile,
   });
 
   @override
@@ -341,11 +377,22 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
         ? const Color(0xFFCCCCCC) 
         : const Color(0xFF586069);
 
+    // 移动端使用更小的边距和字号
+    final borderRadius = isMobile ? 8.0 : 12.0;
+    final verticalMargin = isMobile ? 8.0 : 10.0;
+    final headerPadding = isMobile ? 10.0 : 12.0;
+    final headerHorizontalPadding = isMobile ? 12.0 : 16.0;
+    final contentPadding = isMobile ? 12.0 : 16.0;
+    final dotSize = isMobile ? 10.0 : 12.0;
+    final dotSpacing = isMobile ? 4.0 : 6.0;
+    final fontSize = isMobile ? 13.0 : 14.0;
+    final maxHeight = isMobile ? 400.0 : 500.0;
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: verticalMargin),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: isDarkMode 
               ? Colors.white.withValues(alpha: 0.1)
@@ -355,21 +402,24 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: isMobile ? 4.0 : 8.0,
+            offset: Offset(0, isMobile ? 1.0 : 2.0),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 代码块头部 - 美化设计
+          // 代码块头部 - 美化设计，移动端简化
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: headerHorizontalPadding,
+              vertical: headerPadding,
+            ),
             decoration: BoxDecoration(
               color: headerColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(borderRadius),
               ),
               border: Border(
                 bottom: BorderSide(
@@ -382,34 +432,36 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
             ),
             child: Row(
               children: [
-                // 装饰性圆点
-                Row(
-                  children: [
-                    _buildDot(Colors.red.withValues(alpha: 0.8)),
-                    const SizedBox(width: 6),
-                    _buildDot(Colors.yellow.withValues(alpha: 0.8)),
-                    const SizedBox(width: 6),
-                    _buildDot(Colors.green.withValues(alpha: 0.8)),
-                  ],
-                ),
-                const SizedBox(width: 16),
-                // 语言标签
+                // 装饰性圆点 - 移动端隐藏或缩小
+                if (!isMobile) ...[
+                  Row(
+                    children: [
+                      _buildDot(Colors.red.withValues(alpha: 0.8), dotSize),
+                      SizedBox(width: dotSpacing),
+                      _buildDot(Colors.yellow.withValues(alpha: 0.8), dotSize),
+                      SizedBox(width: dotSpacing),
+                      _buildDot(Colors.green.withValues(alpha: 0.8), dotSize),
+                    ],
+                  ),
+                  const SizedBox(width: 16),
+                ],
+                // 语言标签 - 移动端使用较小样式
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 8.0 : 10.0,
+                    vertical: isMobile ? 3.0 : 4.0,
                   ),
                   decoration: BoxDecoration(
                     color: languageTagColor,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(isMobile ? 4.0 : 6.0),
                   ),
                   child: Text(
                     language.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 11,
+                    style: TextStyle(
+                      fontSize: isMobile ? 10.0 : 11.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      letterSpacing: 0.8,
+                      letterSpacing: isMobile ? 0.5 : 0.8,
                     ),
                   ),
                 ),
@@ -419,23 +471,24 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
                   code: code,
                   color: copyButtonColor,
                   isDarkMode: isDarkMode,
+                  isMobile: isMobile,
                 ),
               ],
             ),
           ),
           // 代码内容 - 改进样式
           Container(
-            constraints: const BoxConstraints(
-              maxHeight: 500, // 限制最大高度，超过则滚动
+            constraints: BoxConstraints(
+              maxHeight: maxHeight, // 限制最大高度，超过则滚动
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(contentPadding),
                 decoration: BoxDecoration(
                   color: backgroundColor,
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(12),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(borderRadius),
                   ),
                 ),
                 child: enableHighlight
@@ -446,7 +499,7 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
                         padding: EdgeInsets.zero,
                         textStyle: TextStyle(
                           fontFamily: 'monospace',
-                          fontSize: 14,
+                          fontSize: fontSize,
                           height: 1.5,
                           color: textColor,
                         ),
@@ -455,7 +508,7 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
                         code,
                         style: TextStyle(
                           fontFamily: 'monospace',
-                          fontSize: 14,
+                          fontSize: fontSize,
                           height: 1.5,
                           color: textColor,
                         ),
@@ -468,10 +521,10 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
     );
   }
 
-  Widget _buildDot(Color color) {
+  Widget _buildDot(Color color, double size) {
     return Container(
-      width: 12,
-      height: 12,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
@@ -492,11 +545,13 @@ class _CopyButton extends StatefulWidget {
   final String code;
   final Color color;
   final bool isDarkMode;
+  final bool isMobile;
 
   const _CopyButton({
     required this.code,
     required this.color,
     required this.isDarkMode,
+    required this.isMobile,
   });
 
   @override
@@ -518,6 +573,13 @@ class _CopyButtonState extends State<_CopyButton> {
 
   @override
   Widget build(BuildContext context) {
+    // 移动端使用更小的按钮
+    final iconSize = widget.isMobile ? 14.0 : 16.0;
+    final fontSize = widget.isMobile ? 11.0 : 12.0;
+    final horizontalPadding = widget.isMobile ? 8.0 : 12.0;
+    final verticalPadding = widget.isMobile ? 4.0 : 6.0;
+    final spacing = widget.isMobile ? 4.0 : 6.0;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -525,9 +587,9 @@ class _CopyButtonState extends State<_CopyButton> {
         borderRadius: BorderRadius.circular(6),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 6,
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
           ),
           decoration: BoxDecoration(
             color: _copied 
@@ -542,14 +604,14 @@ class _CopyButtonState extends State<_CopyButton> {
             children: [
               Icon(
                 _copied ? Icons.check : Icons.content_copy,
-                size: 16,
+                size: iconSize,
                 color: _copied ? Colors.green : widget.color,
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: spacing),
               Text(
                 _copied ? '已复制' : '复制',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: fontSize,
                   color: _copied ? Colors.green : widget.color,
                   fontWeight: _copied ? FontWeight.w600 : FontWeight.normal,
                 ),
