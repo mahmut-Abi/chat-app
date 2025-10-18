@@ -181,27 +181,20 @@ class _OpaquePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // 使用委托构建器执行转场动画
-    final transition = _delegate.buildTransitions(
+    // 为子页面添加不透明背景，但保持原生转场动画
+    // 这样每个页面都有自己的背景，不会互相透视
+    final opaqueChild = ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: child,
+    );
+    
+    // 使用原生转场动画
+    return _delegate.buildTransitions(
       route,
       context,
       animation,
       secondaryAnimation,
-      child,
-    );
-
-    // 在转场动画外层添加不透明背景层
-    // 避免新旧页面重叠时透过背景看到彼此
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // 不透明背景层
-        ColoredBox(
-          color: Theme.of(context).scaffoldBackgroundColor,
-        ),
-        // 转场动画内容
-        transition,
-      ],
+      opaqueChild,
     );
   }
 }
