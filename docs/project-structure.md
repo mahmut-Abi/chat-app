@@ -151,14 +151,27 @@ features/[feature_name]/
 **核心功能**:
 - Agent 创建和管理
 - 内置工具集成（计算器、搜索、文件操作）
+- 5 个预配置内置 Agent（通用助手、数学专家、研究助手、文件管理员、编程助手）
 - 工具调用执行
 - Agent 与聊天集成
 
 **关键文件**:
 - `data/agent_repository.dart` - Agent 数据仓库
 - `data/tool_executor.dart` - 工具执行器
+- `data/default_agents.dart` - 内置 Agent 配置
 - `data/tools/` - 内置工具实现
+  - `calculator_tool.dart` - 计算器工具
+  - `search_tool.dart` - 搜索工具
+  - `file_operation_tool.dart` - 文件操作工具
 - `domain/agent_tool.dart` - Agent 工具模型
+- `presentation/providers/agent_provider.dart` - Agent Provider
+
+**内置 Agent**:
+1. **通用助手** - 计算器 + 搜索，适合日常使用
+2. **数学专家** - 计算器，专注数学问题
+3. **研究助手** - 搜索 + 文件操作，适合学术研究
+4. **文件管理员** - 文件操作，专注文件管理
+5. **编程助手** - 文件操作 + 搜索，适合代码开发
 
 ### features/mcp/ - MCP 集成
 
@@ -426,3 +439,6 @@ assets/
 - [docs/architecture.md](architecture.md) - 架构详细说明
 - [docs/api.md](api.md) - API 文档
 - [docs/mcp-integration.md](mcp-integration.md) - MCP 集成指南
+- [docs/agent-functionality-verification.md](agent-functionality-verification.md) - Agent 功能验证
+- [docs/built-in-agents.md](built-in-agents.md) - 内置 Agent 说明
+- [docs/agent-development.md](agent-development.md) - Agent 开发指南

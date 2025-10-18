@@ -35,7 +35,7 @@ lib/
 
 **功能模块**:
 - `chat/` - 聊天功能（对话管理、消息发送、流式响应）
-- `agent/` - Agent 系统（Agent 管理、工具集成）
+- `agent/` - Agent 系统（Agent 管理、工具集成、内置 Agent）
 - `mcp/` - MCP 集成（服务器管理、工具调用）
 - `models/` - 模型管理
 - `prompts/` - 提示词模板
@@ -49,6 +49,8 @@ Tests mirror the `lib/` structure in `test/` directory.
 - [项目结构详解](docs/project-structure.md) - 完整的目录结构和模块说明
 - [架构文档](docs/architecture.md) - 架构设计详细说明
 - [MCP 集成指南](docs/mcp-integration.md) - MCP 协议集成说明
+- [Agent 功能验证](docs/agent-functionality-verification.md) - Agent 系统功能验证报告
+- [Agent 开发指南](docs/agent-development.md) - Agent 开发详细说明
 
 ## Build, Test, and Development Commands
 

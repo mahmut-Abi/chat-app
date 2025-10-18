@@ -70,6 +70,8 @@ class AgentConfig {
   final bool enabled;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isBuiltIn; // 是否为内置 Agent
+  final String? iconName; // 图标名称
 
   AgentConfig({
     required this.id,
@@ -80,6 +82,8 @@ class AgentConfig {
     this.enabled = true,
     required this.createdAt,
     required this.updatedAt,
+    this.isBuiltIn = false,
+    this.iconName,
   });
 
   factory AgentConfig.fromJson(Map<String, dynamic> json) =>
@@ -96,6 +100,8 @@ class AgentConfig {
     bool? enabled,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isBuiltIn,
+    String? iconName,
   }) {
     return AgentConfig(
       id: id ?? this.id,
@@ -106,6 +112,8 @@ class AgentConfig {
       enabled: enabled ?? this.enabled,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isBuiltIn: isBuiltIn ?? this.isBuiltIn,
+      iconName: iconName ?? this.iconName,
     );
   }
 }

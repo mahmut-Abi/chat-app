@@ -20,6 +20,8 @@ class AgentRepository {
     String? description,
     required List<String> toolIds,
     String? systemPrompt,
+    bool isBuiltIn = false,
+    String? iconName,
   }) async {
     _log.info('创建 Agent 配置', {
       'name': name,
@@ -35,6 +37,8 @@ class AgentRepository {
       systemPrompt: systemPrompt,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      isBuiltIn: isBuiltIn,
+      iconName: iconName,
     );
 
     await _storage.saveSetting('agent_${agent.id}', jsonEncode(agent.toJson()));

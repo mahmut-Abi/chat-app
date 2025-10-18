@@ -5,6 +5,7 @@ import '../../data/agent_repository.dart';
 import '../../data/tool_executor.dart';
 import '../../data/enhanced_agent_integration.dart';
 import '../../data/agent_chat_service.dart';
+import '../../data/default_agents.dart';
 import '../../../../core/providers/providers.dart';
 import '../../domain/agent_tool.dart' as agent_domain;
 import '../../../chat/domain/function_call.dart';
@@ -110,4 +111,15 @@ final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
       'required': ['operation', 'path'],
     },
   );
+});
+
+/// 初始化默认 Agent
+final initializeDefaultAgentsProvider = FutureProvider<void>((ref) async {
+  final repository = ref.watch(agentRepositoryProvider);
+  
+  // 先确保工具已初始化
+  await ref.watch(initializeDefaultToolsProvider.future);
+  
+  // 初始化默认 Agent
+  await DefaultAgents.initializeDefaultAgents(repository);
 });

@@ -53,6 +53,8 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
     String? description,
     required List<String>? toolIds,
     String? systemPrompt,
+    bool? isBuiltIn = false,
+    String? iconName,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#createAgent, [], {
@@ -60,6 +62,8 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
               #description: description,
               #toolIds: toolIds,
               #systemPrompt: systemPrompt,
+              #isBuiltIn: isBuiltIn,
+              #iconName: iconName,
             }),
             returnValue: _i4.Future<_i2.AgentConfig>.value(
               _FakeAgentConfig_0(
@@ -69,6 +73,8 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
                   #description: description,
                   #toolIds: toolIds,
                   #systemPrompt: systemPrompt,
+                  #isBuiltIn: isBuiltIn,
+                  #iconName: iconName,
                 }),
               ),
             ),

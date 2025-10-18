@@ -336,4 +336,29 @@ class MockChatRepository extends _i1.Mock implements _i4.ChatRepository {
             returnValue: <_i3.Conversation>[],
           )
           as List<_i3.Conversation>);
+
+  @override
+  _i5.Future<void> recordTokenUsage({
+    required String? conversationId,
+    required String? messageId,
+    required String? model,
+    required int? promptTokens,
+    required int? completionTokens,
+    required int? totalTokens,
+    required String? messageContent,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#recordTokenUsage, [], {
+              #conversationId: conversationId,
+              #messageId: messageId,
+              #model: model,
+              #promptTokens: promptTokens,
+              #completionTokens: completionTokens,
+              #totalTokens: totalTokens,
+              #messageContent: messageContent,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }
