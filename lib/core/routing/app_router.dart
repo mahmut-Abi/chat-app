@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import '../utils/platform_utils.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
@@ -104,11 +103,25 @@ class AppRouter {
     Widget child,
   ) {
     if (PlatformUtils.isIOS) {
-      // iOS使用Cupertino风格的转场动画
-      // 不透明背景，避免页面重叠问题
-      return CupertinoPage(
+      // iOS使用自定义页面，兼顾背景图和转场性能
+      return CustomTransitionPage(
         key: state.pageKey,
         child: child,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // iOS风格的右滑进入动画
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+          var offsetAnimation = animation.drive(tween);
+          
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       );
     } else {
       // Android和其他平台使用Material转场

@@ -21,13 +21,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     final templatesAsync = ref.watch(promptTemplatesProvider);
 
     return Scaffold(
-      backgroundColor: PlatformUtils.isIOS
-          ? Theme.of(context).scaffoldBackgroundColor
-          : Colors.transparent,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: PlatformUtils.isIOS
-            ? null
-            : Colors.transparent,
+        backgroundColor: Colors.transparent,
         title: const Text('提示词模板'),
         actions: [
           IconButton(

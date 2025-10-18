@@ -49,13 +49,9 @@ class TokenUsageScreen extends ConsumerWidget {
     records.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return Scaffold(
-      backgroundColor: PlatformUtils.isIOS
-          ? Theme.of(context).scaffoldBackgroundColor
-          : Colors.transparent,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: PlatformUtils.isIOS
-            ? null
-            : Colors.transparent,
+        backgroundColor: Colors.transparent,
         title: const Text('Token 消耗记录'),
       ),
       body: Column(

@@ -14,13 +14,9 @@ class McpScreen extends ConsumerWidget {
     final configsAsync = ref.watch(mcpConfigsProvider);
 
     return Scaffold(
-      backgroundColor: PlatformUtils.isIOS
-          ? Theme.of(context).scaffoldBackgroundColor
-          : Colors.transparent,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: PlatformUtils.isIOS
-            ? null
-            : Colors.transparent,
+        backgroundColor: Colors.transparent,
         title: const Text('MCP 配置'),
         actions: [
           IconButton(

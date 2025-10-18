@@ -92,13 +92,9 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: PlatformUtils.isIOS
-          ? Theme.of(context).scaffoldBackgroundColor
-          : Colors.transparent,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: PlatformUtils.isIOS
-            ? null
-            : Colors.transparent,
+        backgroundColor: Colors.transparent,
         title: Text(widget.config == null ? '添加 API 配置' : '编辑 API 配置'),
         actions: [
           TextButton.icon(
