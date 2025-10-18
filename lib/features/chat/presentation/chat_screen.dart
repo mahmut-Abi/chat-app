@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/platform_dialog.dart';
+import '../../../shared/widgets/page_background.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/providers/providers.dart';
@@ -640,12 +641,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     // 移动端：禁用右划手势返回，但保留 AppBar 返回按钮
     // 桌面端/设置页面：允许正常返回
-    return PopScope(
-      canPop: !isMobile,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
+    return PageBackground(
+      child: PopScope(
+        canPop: !isMobile,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
         // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
-      },
-      child: GestureDetector(
+        },
+        child: GestureDetector(
         onTap: () {
           // 点击空白区域隐藏键盘
           _inputFocusNode.unfocus();
@@ -853,8 +855,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
   @override
   void dispose() {

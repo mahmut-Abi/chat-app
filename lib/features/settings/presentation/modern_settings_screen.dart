@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
  import '../../../core/utils/platform_utils.dart';
  import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
+import '../../../shared/widgets/page_background.dart';
 import '../../../core/services/log_service.dart';
 import '../domain/api_config.dart';
 import 'widgets/api_config_section.dart';
@@ -127,9 +128,10 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     final colorScheme = Theme.of(context).colorScheme;
 
     if (_isMobile) {
-      return Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
+      return PageBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: Text(_tabs[_selectedIndex].title),
           leading: IconButton(
@@ -150,14 +152,16 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                       : _buildTabView(),
                 ),
               ],
-            ),
           ),
+        ),
+        ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Row(
+    return PageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Row(
           children: [
             _buildSideNav(context),
             Expanded(
@@ -169,6 +173,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
             ),
           ],
         ),
+      ),
       );
   }
 

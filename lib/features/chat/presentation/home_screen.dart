@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
  import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/platform_dialog.dart';
+import '../../../shared/widgets/page_background.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/conversation.dart';
 import 'chat_screen.dart';
@@ -212,7 +213,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return _buildMobileLayout();
     }
 
-    return Scaffold(
+    return PageBackground(
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -249,6 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 : ChatScreen(conversationId: _selectedConversation!.id),
           ),
         ],
+      ),
       ),
     );
   }
@@ -292,9 +295,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Widget _buildMobileLayout() {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
+    return PageBackground(
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) return;
         // 阻止默认的返回行为，避免 iOS 右划手势触发路由返回
       },
@@ -369,6 +373,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
           ],
         ),
+      ),
       ),
     );
   }
