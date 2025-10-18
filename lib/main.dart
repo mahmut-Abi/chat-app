@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
- import 'dart:async';
- import 'core/routing/app_router.dart';
- import 'core/utils/platform_utils.dart';
- import 'shared/themes/app_theme.dart';
+import 'dart:async';
+import 'core/routing/app_router.dart';
+import 'core/utils/platform_utils.dart';
+import 'shared/themes/app_theme.dart';
 import 'core/storage/storage_service.dart';
 import 'core/providers/providers.dart';
 import 'features/settings/domain/api_config.dart';
@@ -12,6 +12,7 @@ import 'core/utils/desktop_utils.dart';
 import 'core/services/permission_service.dart';
 import 'core/services/log_service.dart';
 import 'core/services/network_service.dart';
+import 'core/services/app_initialization_service.dart';
 
 void main() async {
   runZonedGuarded(
@@ -56,6 +57,16 @@ void main() async {
       // Initialize storage
       final storage = StorageService();
       await storage.init();
+
+      // Initialize app data (tools, agents, etc.)
+      final log = LogService();
+      try {
+        final initService = AppInitializationService(storage);
+        await initService.initialize();
+        log.info('应用数据初始化完成');
+      } catch (e) {
+        log.error('应用数据初始化失败，将继续启动', {'error': e.toString()});
+      }
 
       runApp(
         ProviderScope(
