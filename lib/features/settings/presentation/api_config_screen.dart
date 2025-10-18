@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/api_config.dart';
 import '../../../core/network/dio_client.dart';
@@ -91,9 +92,13 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null
+            : Colors.transparent,
         title: Text(widget.config == null ? '添加 API 配置' : '编辑 API 配置'),
         actions: [
           TextButton.icon(

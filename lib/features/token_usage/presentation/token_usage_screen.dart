@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/token_record.dart';
 import 'package:intl/intl.dart';
@@ -48,9 +49,13 @@ class TokenUsageScreen extends ConsumerWidget {
     records.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null
+            : Colors.transparent,
         title: const Text('Token 消耗记录'),
       ),
       body: Column(

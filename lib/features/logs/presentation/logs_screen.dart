@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../../../core/services/log_service.dart';
 import '../../../core/providers/providers.dart';
 import 'package:intl/intl.dart';
@@ -42,9 +43,13 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null
+            : Colors.transparent,
         title: const Text('程序日志'),
         actions: [
           IconButton(

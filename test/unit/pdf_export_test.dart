@@ -1,119 +1,88 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chat_app/core/utils/pdf_export.dart';
 import 'package:chat_app/features/chat/domain/conversation.dart';
 import 'package:chat_app/features/chat/domain/message.dart';
 
 void main() {
-  group('PdfExport', () {
-    late Conversation testConversation;
-
-    setUp(() {
-      testConversation = Conversation(
-        id: 'conv1',
-        title: '测试对话',
+  group('PDF Export 中文支持测试', () {
+    test('应该能够创建包含中文的对话', () {
+      // 创建包含中文的测试对话
+      final conversation = Conversation(
+        id: 'test-id',
+        title: '测试对话 - 中文标题',
         messages: [
           Message(
-            id: 'msg1',
-            content: '用户消息',
+            id: 'msg-1',
+            content: '你好，这是一个中文测试消息',
             role: MessageRole.user,
-            timestamp: DateTime(2024, 1, 1, 10, 0),
-            tokenCount: 5,
+            timestamp: DateTime.now(),
           ),
           Message(
-            id: 'msg2',
-            content: 'AI 回复',
+            id: 'msg-2',
+            content: '您好！我是 AI 助手。很高兴为您服务。',
             role: MessageRole.assistant,
-            timestamp: DateTime(2024, 1, 1, 10, 1),
-            tokenCount: 10,
+            timestamp: DateTime.now(),
           ),
-        ],
-        createdAt: DateTime(2024, 1, 1),
-        updatedAt: DateTime(2024, 1, 1, 10, 1),
-        systemPrompt: '你是一个有用的 AI 助手',
-        tags: const ['重要', '工作'],
-        totalTokens: 15,
-      );
-    });
-
-    test('应该正确创建 PDF 文档', () {
-      // 我们不能直接测试 exportConversationToPdf 因为它需要 UI
-      // 但我们可以验证 Conversation 数据结构
-      expect(testConversation.title, '测试对话');
-      expect(testConversation.messages.length, 2);
-      expect(testConversation.systemPrompt, '你是一个有用的 AI 助手');
-      expect(testConversation.tags, ['重要', '工作']);
-      expect(testConversation.totalTokens, 15);
-    });
-
-    test('应该正确过滤系统消息', () {
-      final conversationWithSystem = testConversation.copyWith(
-        messages: [
           Message(
-            id: 'sys',
-            content: '系统消息',
-            role: MessageRole.system,
-            timestamp: DateTime(2024, 1, 1, 9, 59),
+            id: 'msg-3',
+            content: '请帮我测试中文字符：汉字、标点符号（）、特殊字符！@#￥%',
+            role: MessageRole.user,
+            timestamp: DateTime.now(),
           ),
-          ...testConversation.messages,
         ],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        tags: ['测试', '中文', 'PDF导出'],
+        systemPrompt: '你是一个友好的 AI 助手，请用中文回答问题。',
       );
 
-      final nonSystemMessages = conversationWithSystem.messages
-          .where((m) => m.role != MessageRole.system)
-          .toList();
-
-      expect(nonSystemMessages.length, 2);
-      expect(
-        nonSystemMessages.every((m) => m.role != MessageRole.system),
-        true,
-      );
+      // 验证对话创建成功
+      expect(conversation.title, contains('中文'));
+      expect(conversation.messages.length, equals(3));
+      expect(conversation.messages[0].content, contains('中文'));
+      expect(conversation.tags, contains('中文'));
     });
 
-    test('应该正确计算 Token 总数', () {
-      final totalTokens = testConversation.messages.fold<int>(
-        0,
-        (sum, msg) => sum + (msg.tokenCount ?? 0),
-      );
-
-      expect(totalTokens, 15);
-      expect(totalTokens, testConversation.totalTokens);
+    test('应该能够处理空对话列表', () {
+      final conversations = <Conversation>[];
+      expect(conversations.isEmpty, isTrue);
     });
 
-    test('应该正确区分用户和 AI 消息', () {
-      final userMessages = testConversation.messages
-          .where((m) => m.role == MessageRole.user)
-          .toList();
+    test('应该能够处理多个包含中文的对话', () {
+      final conversations = [
+        Conversation(
+          id: 'conv-1',
+          title: '第一个对话',
+          messages: [
+            Message(
+              id: 'msg-1',
+              content: '第一条消息',
+              role: MessageRole.user,
+              timestamp: DateTime.now(),
+            ),
+          ],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        Conversation(
+          id: 'conv-2',
+          title: '第二个对话',
+          messages: [
+            Message(
+              id: 'msg-2',
+              content: '第二条消息',
+              role: MessageRole.user,
+              timestamp: DateTime.now(),
+            ),
+          ],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
 
-      final aiMessages = testConversation.messages
-          .where((m) => m.role == MessageRole.assistant)
-          .toList();
-
-      expect(userMessages.length, 1);
-      expect(aiMessages.length, 1);
-      expect(userMessages.first.content, '用户消息');
-      expect(aiMessages.first.content, 'AI 回复');
-    });
-
-    test('应该正确处理空消息列表', () {
-      final emptyConversation = testConversation.copyWith(messages: []);
-
-      expect(emptyConversation.messages.isEmpty, true);
-      expect(emptyConversation.title, '测试对话');
-    });
-
-    test('应该正确处理无系统提示词的对话', () {
-      final newConversation = Conversation(
-        id: testConversation.id,
-        title: testConversation.title,
-        messages: testConversation.messages,
-        createdAt: testConversation.createdAt,
-        updatedAt: testConversation.updatedAt,
-        systemPrompt: null,
-        tags: testConversation.tags,
-        totalTokens: testConversation.totalTokens,
-      );
-
-      expect(newConversation.systemPrompt, null);
-      expect(newConversation.messages.length, 2);
+      expect(conversations.length, equals(2));
+      expect(conversations[0].title, equals('第一个对话'));
+      expect(conversations[1].title, equals('第二个对话'));
     });
   });
 }

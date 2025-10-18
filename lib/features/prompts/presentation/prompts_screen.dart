@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
 import 'prompt_config_screen.dart';
@@ -20,9 +21,13 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     final templatesAsync = ref.watch(promptTemplatesProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null
+            : Colors.transparent,
         title: const Text('提示词模板'),
         actions: [
           IconButton(

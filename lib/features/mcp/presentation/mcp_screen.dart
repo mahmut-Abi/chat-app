@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
@@ -13,9 +14,13 @@ class McpScreen extends ConsumerWidget {
     final configsAsync = ref.watch(mcpConfigsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null
+            : Colors.transparent,
         title: const Text('MCP 配置'),
         actions: [
           IconButton(

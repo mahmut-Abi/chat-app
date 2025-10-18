@@ -129,9 +129,13 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
     if (_isMobile) {
       return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.transparent,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: PlatformUtils.isIOS
+              ? null
+              : Colors.transparent,
           title: Text(_tabs[_selectedIndex].title),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -157,7 +161,9 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       body: Row(
           children: [
             _buildSideNav(context),

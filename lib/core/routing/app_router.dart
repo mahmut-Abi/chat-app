@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import '../utils/platform_utils.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/modern_settings_screen.dart';
@@ -14,36 +16,106 @@ class AppRouter {
   static final router = GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/',
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const HomeScreen(),
+        ),
+      ),
       GoRoute(
         path: '/chat/:id',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return ChatScreen(
-            key: ValueKey<String>(id), // 防止 Widget 重用
-            conversationId: id,
+          return _buildPage(
+            context,
+            state,
+            ChatScreen(
+              key: ValueKey<String>(id),
+              conversationId: id,
+            ),
           );
         },
       ),
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const ModernSettingsScreen(),
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const ModernSettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/models',
-        builder: (context, state) => const ModelsScreen(),
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const ModelsScreen(),
+        ),
       ),
-      GoRoute(path: '/mcp', builder: (context, state) => const McpScreen()),
+      GoRoute(
+        path: '/mcp',
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const McpScreen(),
+        ),
+      ),
       GoRoute(
         path: '/token-usage',
-        builder: (context, state) => const TokenUsageScreen(),
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const TokenUsageScreen(),
+        ),
       ),
-      GoRoute(path: '/agent', builder: (context, state) => const AgentScreen()),
+      GoRoute(
+        path: '/agent',
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const AgentScreen(),
+        ),
+      ),
       GoRoute(
         path: '/prompts',
-        builder: (context, state) => const PromptsScreen(),
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const PromptsScreen(),
+        ),
       ),
-      GoRoute(path: '/logs', builder: (context, state) => const LogsScreen()),
+      GoRoute(
+        path: '/logs',
+        pageBuilder: (context, state) => _buildPage(
+          context,
+          state,
+          const LogsScreen(),
+        ),
+      ),
     ],
   );
+
+  /// 构建页面 - 根据平台选择合适的转场动画
+  static Page _buildPage(
+    BuildContext context,
+    GoRouterState state,
+    Widget child,
+  ) {
+    if (PlatformUtils.isIOS) {
+      // iOS使用Cupertino风格的转场动画
+      // 不透明背景，避免页面重叠问题
+      return CupertinoPage(
+        key: state.pageKey,
+        child: child,
+      );
+    } else {
+      // Android和其他平台使用Material转场
+      return MaterialPage(
+        key: state.pageKey,
+        child: child,
+      );
+    }
+  }
 }

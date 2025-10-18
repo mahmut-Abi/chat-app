@@ -651,7 +651,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _inputFocusNode.unfocus();
         },
         child: Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: PlatformUtils.isIOS
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.transparent,
           extendBodyBehindAppBar: true,
           extendBody: true,
             // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出

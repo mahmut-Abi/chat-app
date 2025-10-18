@@ -213,9 +213,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: PlatformUtils.isIOS
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? null  // iOS使用默认AppBar背景
+            : Colors.transparent,
         title: const Text('Chat App'),
         actions: [
           IconButton(
@@ -299,7 +303,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         // 阻止默认的返回行为，避免 iOS 右划手势触发路由返回
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: PlatformUtils.isIOS
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.transparent,
         drawerScrimColor: Colors.black.withValues(alpha: 0.5),
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,

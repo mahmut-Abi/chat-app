@@ -22,6 +22,7 @@ class BackgroundContainer extends ConsumerStatefulWidget {
 class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
   String? _currentBackgroundImage;
   double _currentOpacity = 0.8;
+  Widget? _cachedBackgroundStack;
 
   @override
   Widget build(BuildContext context) {
@@ -30,33 +31,43 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
     return settingsAsync.when(
       data: (settings) {
         // 仅在背景相关设置变化时更新状态
-        if (_currentBackgroundImage != settings.backgroundImage ||
-            _currentOpacity != settings.backgroundOpacity) {
+        final needsRebuild = _currentBackgroundImage != settings.backgroundImage ||
+            _currentOpacity != settings.backgroundOpacity;
+        
+        if (needsRebuild) {
           _currentBackgroundImage = settings.backgroundImage;
           _currentOpacity = settings.backgroundOpacity;
+          _cachedBackgroundStack = null; // 清除缓存
         }
+        
         return _buildWithBackground(context);
       },
-      loading: () => Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: widget.child,
-      ),
-      error: (error, stack) => Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: widget.child,
-      ),
+      loading: () => widget.child,
+      error: (error, stack) => widget.child,
     );
   }
 
   Widget _buildWithBackground(BuildContext context) {
     // 没有背景图片时,使用主题背景色
     if (_currentBackgroundImage == null || _currentBackgroundImage!.isEmpty) {
-      return Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: widget.child,
-      );
+      return widget.child;
     }
 
+    // 使用缓存的背景Stack
+    _cachedBackgroundStack ??= _buildBackgroundStack();
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // 使用RepaintBoundary优化重绘性能
+        RepaintBoundary(child: _cachedBackgroundStack!),
+        widget.child,
+      ],
+    );
+  }
+
+  /// 构建背景Stack（会被缓存）
+  Widget _buildBackgroundStack() {
     // backgroundOpacity 含义：
     // 0.0 = 背景完全不可见（内容完全不透明）
     // 1.0 = 背景完全可见（内容完全透明）
@@ -67,20 +78,14 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
       fit: StackFit.expand,
       children: [
         // 背景图片
-        Positioned.fill(child: _buildBackgroundImage(_currentBackgroundImage!)),
-
+        _buildBackgroundImage(_currentBackgroundImage!),
         // 内容遮罩层（用于调节背景可见度）
         if (contentOverlayOpacity > 0)
-          Positioned.fill(
-            child: Container(
-              color: Theme.of(context).scaffoldBackgroundColor.withValues(
-                alpha: contentOverlayOpacity,
-              ),
+          Container(
+            color: Theme.of(context).scaffoldBackgroundColor.withValues(
+              alpha: contentOverlayOpacity,
             ),
           ),
-
-        // 实际内容
-        widget.child,
       ],
     );
   }
