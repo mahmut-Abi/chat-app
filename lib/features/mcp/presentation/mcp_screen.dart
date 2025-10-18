@@ -33,13 +33,11 @@ class McpScreen extends ConsumerWidget {
         ],
       ),
       body: configsAsync.when(
-        
-          data: (configs) => configs.isEmpty
+        data: (configs) => configs.isEmpty
               ? _buildEmptyState(context)
               : _buildConfigList(context, ref, configs),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('加载失败: $error')),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('加载失败: $error')),
       ),
     );
   }

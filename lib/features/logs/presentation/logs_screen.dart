@@ -60,14 +60,12 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
         ],
       ),
       body: Column(
-        
-          children: [
-            _buildFilterBar(),
-            Expanded(
-              child: logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
-            ),
-          ],
-        ),
+        children: [
+          _buildFilterBar(),
+          Expanded(
+            child: logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
+          ),
+        ],
       ),
     );
   }
@@ -75,7 +73,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
   Widget _buildFilterBar() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      
+      child: Column(
         children: [
           TextField(
             controller: _searchController,
@@ -134,7 +132,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -192,7 +190,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SelectableText(

@@ -20,9 +20,17 @@ class PdfExport {
     final pdf = pw.Document();
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
+    // 加载中文字体
+    final font = await PdfGoogleFonts.notoSansSCRegular();
+    final fontBold = await PdfGoogleFonts.notoSansSCBold();
+
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
+        theme: pw.ThemeData.withFont(
+          base: font,
+          bold: fontBold,
+        ),
         build: (context) => [
           // 标题
           pw.Header(
@@ -168,10 +176,18 @@ class PdfExport {
     final pdf = pw.Document();
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
+    // 加载中文字体
+    final font = await PdfGoogleFonts.notoSansSCRegular();
+    final fontBold = await PdfGoogleFonts.notoSansSCBold();
+
     // 封面页
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
+        theme: pw.ThemeData.withFont(
+          base: font,
+          bold: fontBold,
+        ),
         build: (context) => pw.Center(
           child: pw.Column(
             mainAxisAlignment: pw.MainAxisAlignment.center,
@@ -204,6 +220,10 @@ class PdfExport {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
+          theme: pw.ThemeData.withFont(
+            base: font,
+            bold: fontBold,
+          ),
           build: (context) => [
             pw.Header(
               level: 0,

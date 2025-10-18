@@ -111,12 +111,11 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
         ],
       ),
       body: Form(
-        
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              ApiConfigBasicSection(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            ApiConfigBasicSection(
                 nameController: _nameController,
                 baseUrlController: _baseUrlController,
                 apiKeyController: _apiKeyController,
@@ -173,7 +172,6 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
               const SizedBox(height: 32),
               _buildActionButtons(),
             ],
-          ),
         ),
       ),
     );
