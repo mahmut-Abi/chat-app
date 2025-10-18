@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/utils/no_transition_builder.dart';
 
 class AppTheme {
   // 默认字体大小
@@ -26,6 +27,19 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       textTheme: textTheme,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.iOS: _OpaquePageTransitionsBuilder(
+            const CupertinoPageTransitionsBuilder(),
+          ),
+          TargetPlatform.android: _OpaquePageTransitionsBuilder(
+            const FadeUpwardsPageTransitionsBuilder(),
+          ),
+          TargetPlatform.macOS: const NoTransitionBuilder(),
+          TargetPlatform.windows: const NoTransitionBuilder(),
+          TargetPlatform.linux: const NoTransitionBuilder(),
+        },
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: color,
         brightness: Brightness.light,
@@ -73,6 +87,19 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       textTheme: textTheme,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.iOS: _OpaquePageTransitionsBuilder(
+            const CupertinoPageTransitionsBuilder(),
+          ),
+          TargetPlatform.android: _OpaquePageTransitionsBuilder(
+            const FadeUpwardsPageTransitionsBuilder(),
+          ),
+          TargetPlatform.macOS: const NoTransitionBuilder(),
+          TargetPlatform.windows: const NoTransitionBuilder(),
+          TargetPlatform.linux: const NoTransitionBuilder(),
+        },
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: color,
         brightness: Brightness.dark,
@@ -135,6 +162,46 @@ class AppTheme {
       labelLarge: TextStyle(fontSize: 14 * scale),
       labelMedium: TextStyle(fontSize: 12 * scale),
       labelSmall: TextStyle(fontSize: 11 * scale),
+    );
+  }
+}
+
+/// 为移动端转场动画添加不透明背景
+/// 避免在透明背景时页面重叠
+class _OpaquePageTransitionsBuilder extends PageTransitionsBuilder {
+  final PageTransitionsBuilder _delegate;
+
+  const _OpaquePageTransitionsBuilder(this._delegate);
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    // 使用委托构建器执行转场动画
+    final transition = _delegate.buildTransitions(
+      route,
+      context,
+      animation,
+      secondaryAnimation,
+      child,
+    );
+
+    // 在转场动画外层添加不透明背景层
+    // 避免新旧页面重叠时透过背景看到彼此
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // 不透明背景层
+        ColoredBox(
+          color: Theme.of(context).scaffoldBackgroundColor,
+        ),
+        // 转场动画内容
+        transition,
+      ],
     );
   }
 }
