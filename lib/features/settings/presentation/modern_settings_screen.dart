@@ -183,7 +183,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(alpha: 0.8),
+        color: colorScheme.surface.withValues(alpha: 0.5),
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
       child: ListView.builder(
