@@ -24,10 +24,12 @@
    }
  
    static bool get isLinux {
-     if (kIsWeb) return false;
-     return Platform.isLinux;
-   }
- 
-   static bool get isMobile => isIOS || isAndroid;
-   static bool get isDesktop => isMacOS || isWindows || isLinux;
- }
+    if (kIsWeb) return false;
+    return Platform.isLinux;
+  }
+
+  static bool get isWeb => kIsWeb;
+  
+  static bool get isMobile => isIOS || isAndroid;
+  static bool get isDesktop => isMacOS || isWindows || isLinux;
+}

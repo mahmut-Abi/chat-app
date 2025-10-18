@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 
 import '../../core/providers/providers.dart';
+import '../../core/services/log_service.dart';
 
 /// 背景容器 - 提供全局背景图片支持
 ///
@@ -35,6 +36,10 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
             _currentOpacity != settings.backgroundOpacity;
         
         if (needsRebuild) {
+          LogService().debug('BackgroundContainer rebuild', {
+            'hasImage': settings.backgroundImage != null,
+            'opacity': settings.backgroundOpacity,
+          });
           _currentBackgroundImage = settings.backgroundImage;
           _currentOpacity = settings.backgroundOpacity;
           _cachedBackgroundStack = null; // 清除缓存
@@ -50,19 +55,27 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
   Widget _buildWithBackground(BuildContext context) {
     // 没有背景图片时,使用主题背景色
     if (_currentBackgroundImage == null || _currentBackgroundImage!.isEmpty) {
-      return widget.child;
+      // 为了确保 iOS 转场效果，总是提供一个 Container 包装
+      return ColoredBox(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: widget.child,
+      );
     }
 
     // 使用缓存的背景Stack
     _cachedBackgroundStack ??= _buildBackgroundStack();
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // 使用RepaintBoundary优化重绘性能
-        RepaintBoundary(child: _cachedBackgroundStack!),
-        widget.child,
-      ],
+    // 为了确保 iOS 转场效果，在最底层添加 ColoredBox
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 使用RepaintBoundary优化重绘性能
+          RepaintBoundary(child: _cachedBackgroundStack!),
+          widget.child,
+        ],
+      ),
     );
   }
 

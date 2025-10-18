@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
  import '../../../core/utils/platform_utils.dart';
  import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io' show Platform;
 import '../../../core/providers/providers.dart';
 import '../../../core/services/log_service.dart';
 import '../domain/api_config.dart';
@@ -179,7 +178,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
     return Container(
       height: 56,
       decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(alpha: 0.7),
+        color: colorScheme.surface.withValues(alpha: 0.8),
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
       child: ListView.builder(

@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../utils/platform_utils.dart';
+import '../services/log_service.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/chat/presentation/home_screen.dart';
 import '../../features/settings/presentation/modern_settings_screen.dart';
@@ -102,33 +103,29 @@ class AppRouter {
     GoRouterState state,
     Widget child,
   ) {
-    if (PlatformUtils.isIOS) {
-      // iOS使用自定义页面，兼顾背景图和转场性能
-      return CustomTransitionPage(
-        key: state.pageKey,
-        child: child,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // iOS风格的右滑进入动画
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
-          var offsetAnimation = animation.drive(tween);
-          
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
-      );
-    } else {
-      // Android和其他平台使用Material转场
-      return MaterialPage(
-        key: state.pageKey,
-        child: child,
-      );
-    }
+    // 调试日志
+    LogService().debug('Building page', {
+      'path': state.path,
+      'platform': _getPlatformName(),
+      'pageKey': state.pageKey.toString(),
+    });
+    
+    // 所有平台统一使用 MaterialPage
+    // 通过 Theme 的 pageTransitionsTheme 控制不同平台的转场效果
+    return MaterialPage(
+      key: state.pageKey,
+      child: child,
+    );
+  }
+  
+  /// 获取平台名称（用于日志）
+  static String _getPlatformName() {
+    if (PlatformUtils.isIOS) return 'iOS';
+    if (PlatformUtils.isAndroid) return 'Android';
+    if (PlatformUtils.isMacOS) return 'macOS';
+    if (PlatformUtils.isWindows) return 'Windows';
+    if (PlatformUtils.isLinux) return 'Linux';
+    if (PlatformUtils.isWeb) return 'Web';
+    return 'Unknown';
   }
 }
