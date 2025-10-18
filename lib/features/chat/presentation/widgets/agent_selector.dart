@@ -98,7 +98,7 @@ class AgentSelector extends StatelessWidget {
           ],
           onChanged: onChanged,
         ),
-        if (selectedAgent != null) ...[]
+        if (selectedAgent != null) ...[
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(8),
