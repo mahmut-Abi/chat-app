@@ -11,7 +11,6 @@ import 'dart:io';
 import '../../../core/utils/image_utils.dart';
 import '../../../core/utils/image_upload_validator.dart';
 import '../../../core/utils/platform_utils.dart';
-import '../../../shared/widgets/background_container.dart';
 import 'widgets/modern_sidebar.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/chat_message_list.dart';
@@ -651,11 +650,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           // 点击空白区域隐藏键盘
           _inputFocusNode.unfocus();
         },
-        child: BackgroundContainer(
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            extendBodyBehindAppBar: true,
-            extendBody: true,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          extendBodyBehindAppBar: true,
+          extendBody: true,
             // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
             onDrawerChanged: PlatformUtils.isIOS
                 ? (isOpened) {
@@ -855,9 +853,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   @override
   void dispose() {

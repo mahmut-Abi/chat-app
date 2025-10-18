@@ -235,7 +235,7 @@ class _ImprovedBackgroundSettingsScreenState
       fit: StackFit.expand,
       children: [
         imageWidget,
-        Container(color: Colors.white.withValues(alpha: 1 - _opacity)),
+        Container(color: Colors.white.withValues(alpha: 1.0 - _opacity)),
         // 移除模糊效果功能
         Center(
           child: Container(
@@ -531,7 +531,7 @@ class _ImprovedBackgroundSettingsScreenState
               children: [
                 Icon(Icons.opacity, size: 20, color: colorScheme.primary),
                 const SizedBox(width: 12),
-                Text('透明度', style: Theme.of(context).textTheme.titleMedium),
+                Text('背景可见度', style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -551,6 +551,13 @@ class _ImprovedBackgroundSettingsScreenState
                   ),
                 ),
               ],
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 32, bottom: 8),
+              child: Text(
+                '值越高，背景图片越明显',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ),
             Slider(
               value: _opacity,

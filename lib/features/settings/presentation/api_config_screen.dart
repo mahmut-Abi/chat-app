@@ -9,7 +9,6 @@ import 'widgets/api_config_basic_section.dart';
 import 'widgets/api_config_proxy_section.dart';
 import 'widgets/api_config_model_section.dart';
 import '../../models/domain/model.dart';
-import '../../../shared/widgets/background_container.dart';
 import '../../../core/utils/message_utils.dart';
 
 class ApiConfigScreen extends ConsumerStatefulWidget {
@@ -92,7 +91,9 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(widget.config == null ? '添加 API 配置' : '编辑 API 配置'),
         actions: [
           TextButton.icon(
@@ -109,8 +110,8 @@ class _ApiConfigScreenState extends ConsumerState<ApiConfigScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: BackgroundContainer(
-        child: Form(
+      body: Form(
+        
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
-import '../../../shared/widgets/background_container.dart';
 
 /// MCP 配置界面
 class McpScreen extends ConsumerWidget {
@@ -14,7 +13,9 @@ class McpScreen extends ConsumerWidget {
     final configsAsync = ref.watch(mcpConfigsProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('MCP 配置'),
         actions: [
           IconButton(
@@ -31,8 +32,8 @@ class McpScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: BackgroundContainer(
-        child: configsAsync.when(
+      body: configsAsync.when(
+        
           data: (configs) => configs.isEmpty
               ? _buildEmptyState(context)
               : _buildConfigList(context, ref, configs),

@@ -234,11 +234,11 @@ class _BackgroundSettingsScreenState
 
             // 透明度设置
             Text(
-              '遮罩透明度: ${(_opacity * 100).toInt()}%',
+              '背景可见度: ${(_opacity * 100).toInt()}%',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Text(
-              '值越高,背景图片越不明显',
+              '值越高,背景图片越明显',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 8),
@@ -304,7 +304,7 @@ class _BackgroundSettingsScreenState
       fit: StackFit.expand,
       children: [
         imageWidget,
-        Container(color: Colors.white.withValues(alpha: _opacity)),
+        Container(color: Colors.white.withValues(alpha: 1.0 - _opacity)),
         if (_enableBlur)
           Container(
             decoration: BoxDecoration(

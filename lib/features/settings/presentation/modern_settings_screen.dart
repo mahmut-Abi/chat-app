@@ -13,7 +13,6 @@ import 'mixins/settings_theme_mixin.dart';
 import 'mixins/settings_api_config_mixin.dart';
 import 'mixins/settings_data_mixin.dart';
 import 'package:go_router/go_router.dart';
-import '../../../shared/widgets/background_container.dart';
 import '../../../core/utils/keyboard_utils.dart';
 
 /// 现代化设置页面
@@ -130,17 +129,17 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
 
     if (_isMobile) {
       return Scaffold(
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: Text(_tabs[_selectedIndex].title),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
           ),
           elevation: 0,
-          backgroundColor: colorScheme.surface,
         ),
-        body: BackgroundContainer(
-          child: SafeArea(
+        body: SafeArea(
             child: Column(
               children: [
                 _buildMobileTabBar(context),
@@ -154,13 +153,12 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               ],
             ),
           ),
-        ),
       );
     }
 
     return Scaffold(
-      body: BackgroundContainer(
-        child: Row(
+      backgroundColor: Colors.transparent,
+      body: Row(
           children: [
             _buildSideNav(context),
             Expanded(
@@ -172,8 +170,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildMobileTabBar(BuildContext context) {

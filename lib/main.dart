@@ -13,6 +13,7 @@ import 'core/services/permission_service.dart';
 import 'core/services/log_service.dart';
 import 'core/services/network_service.dart';
 import 'core/services/app_initialization_service.dart';
+import 'shared/widgets/background_container.dart';
 
 void main() async {
   runZonedGuarded(
@@ -102,13 +103,15 @@ class MyApp extends ConsumerWidget {
     final themeColor = _getThemeColor(settings);
     final fontSize = settings.fontSize;
 
-    return MaterialApp.router(
-      title: 'Chat App',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.getLightTheme(themeColor, fontSize),
-      darkTheme: AppTheme.getDarkTheme(themeColor, fontSize),
-      themeMode: _getThemeMode(settings.themeMode),
-      routerConfig: AppRouter.router,
+    return BackgroundContainer(
+      child: MaterialApp.router(
+        title: 'Chat App',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.getLightTheme(themeColor, fontSize),
+        darkTheme: AppTheme.getDarkTheme(themeColor, fontSize),
+        themeMode: _getThemeMode(settings.themeMode),
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 

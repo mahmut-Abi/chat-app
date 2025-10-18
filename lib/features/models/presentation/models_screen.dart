@@ -4,7 +4,6 @@ import '../domain/model.dart';
 import '../../settings/domain/api_config.dart';
 import '../../../core/providers/providers.dart';
 import 'package:go_router/go_router.dart';
-import '../../../shared/widgets/background_container.dart';
 
 class ModelsScreen extends ConsumerStatefulWidget {
   const ModelsScreen({super.key});
@@ -173,7 +172,9 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('模型管理'),
         actions: [
           IconButton(
@@ -183,7 +184,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
           ),
         ],
       ),
-      body: BackgroundContainer(child: _buildBody(colorScheme)),
+      body: _buildBody(colorScheme),
     );
   }
 

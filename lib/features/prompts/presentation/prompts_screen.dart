@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
 import 'prompt_config_screen.dart';
-import '../../../shared/widgets/background_container.dart';
 
 class PromptsScreen extends ConsumerStatefulWidget {
   const PromptsScreen({super.key});
@@ -21,7 +20,9 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     final templatesAsync = ref.watch(promptTemplatesProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('提示词模板'),
         actions: [
           IconButton(
@@ -37,8 +38,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           ),
         ],
       ),
-      body: BackgroundContainer(
-        child: templatesAsync.when(
+      body: templatesAsync.when(
           data: (templates) {
             var filteredTemplates = templates;
 
@@ -71,7 +71,6 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(child: Text('加载失败: $error')),
         ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreate,
         child: const Icon(Icons.add),

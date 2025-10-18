@@ -13,7 +13,6 @@ import '../../../shared/utils/responsive_utils.dart';
 import '../../../core/utils/desktop_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import '../../../shared/widgets/background_container.dart';
 import 'package:flutter/foundation.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -214,7 +213,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Chat App'),
         actions: [
           IconButton(
@@ -243,11 +244,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onManageGroups: _showGroupManagement,
           ),
           Expanded(
-            child: BackgroundContainer(
-              child: _selectedConversation == null
-                  ? _buildWelcomeScreen()
-                  : ChatScreen(conversationId: _selectedConversation!.id),
-            ),
+            child: _selectedConversation == null
+                ? _buildWelcomeScreen()
+                : ChatScreen(conversationId: _selectedConversation!.id),
           ),
         ],
       ),
@@ -300,7 +299,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         // 阻止默认的返回行为，避免 iOS 右划手势触发路由返回
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Colors.transparent,
         drawerScrimColor: Colors.black.withValues(alpha: 0.5),
         drawerEnableOpenDragGesture: true,
         endDrawerEnableOpenDragGesture: false,
@@ -338,7 +337,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         body: Stack(
           children: [
             _selectedConversation == null
-                ? BackgroundContainer(child: _buildWelcomeScreen())
+                ? _buildWelcomeScreen()
                 : ChatScreen(conversationId: _selectedConversation!.id),
             // 左上角透明菜单按钮 (仅非 iOS 平台显示)
             if (!PlatformUtils.isIOS)

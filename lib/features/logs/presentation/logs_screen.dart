@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/log_service.dart';
 import '../../../core/providers/providers.dart';
 import 'package:intl/intl.dart';
-import '../../../shared/widgets/background_container.dart';
 
 /// 日志查看界面
 class LogsScreen extends ConsumerStatefulWidget {
@@ -43,7 +42,9 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('程序日志'),
         actions: [
           IconButton(
@@ -58,8 +59,8 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
           ),
         ],
       ),
-      body: BackgroundContainer(
-        child: Column(
+      body: Column(
+        
           children: [
             _buildFilterBar(),
             Expanded(
@@ -74,7 +75,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
   Widget _buildFilterBar() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      
         children: [
           TextField(
             controller: _searchController,
@@ -133,7 +134,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
+      
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -191,7 +192,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
+            
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SelectableText(
