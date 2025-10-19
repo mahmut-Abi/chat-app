@@ -154,7 +154,7 @@ class MessageBubble extends StatelessWidget {
                 children: [
                   if (message.tokenCount != null) ...[
                     Text(
-                      '\${message.tokenCount} tokens',
+                      '${message.tokenCount} tokens',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Theme.of(
                           context,
