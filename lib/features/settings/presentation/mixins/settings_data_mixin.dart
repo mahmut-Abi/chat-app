@@ -205,6 +205,8 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         ref.invalidate(agentToolsProvider);
         ref.invalidate(mcpConfigsProvider);
         ref.invalidate(promptTemplatesProvider);
+        ref.invalidate(conversationsProvider);
+        ref.invalidate(conversationGroupsProvider);
         
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);

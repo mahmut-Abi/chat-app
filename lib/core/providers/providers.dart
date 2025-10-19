@@ -3,6 +3,7 @@ import '../storage/storage_service.dart';
 import '../network/dio_client.dart';
 import '../network/openai_api_client.dart';
 import '../../features/chat/data/chat_repository.dart';
+import '../../features/chat/domain/conversation.dart';
 import '../../features/settings/data/settings_repository.dart';
 import '../../features/settings/domain/api_config.dart';
 import '../../features/models/data/models_repository.dart';
@@ -198,4 +199,16 @@ final promptTemplatesProvider =
 final tokenUsageRepositoryProvider = Provider<TokenUsageRepository>((ref) {
   final storage = ref.watch(storageServiceProvider);
   return TokenUsageRepository(storage);
+});
+
+// Conversations Provider
+final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>((ref) async {
+  final chatRepo = ref.watch(chatRepositoryProvider);
+  return chatRepo.getAllConversations();
+});
+
+// Conversation Groups Provider  
+final conversationGroupsProvider = FutureProvider.autoDispose<List<ConversationGroup>>((ref) async {
+  final chatRepo = ref.watch(chatRepositoryProvider);
+  return chatRepo.getAllGroups();
 });
