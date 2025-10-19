@@ -48,6 +48,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
   bool _hasListenersRegistered = false;
+  bool _enableWebSearch = false;
+  bool _enableModelThinking = false;
 
   @override
   void initState() {
@@ -358,6 +360,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         topP: activeApiConfig.topP,
         frequencyPenalty: activeApiConfig.frequencyPenalty,
         presencePenalty: activeApiConfig.presencePenalty,
+        enableWebSearch: _enableWebSearch,
+        enableModelThinking: _enableModelThinking,
       );
 
       final stream = chatRepo.sendMessageStream(
@@ -878,6 +882,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           _selectedModel = model;
                         });
                       },
+                      onWebSearchToggled: (enabled) {
+                        setState(() {
+                          _enableWebSearch = enabled;
+                        });
+                      },
+                      enableWebSearch: _enableWebSearch,
+                      onModelThinkingToggled: (enabled) {
+                        setState(() {
+                          _enableModelThinking = enabled;
+                        });
+                      },
+                      enableModelThinking: _enableModelThinking,
                     ),
                   ],
                 ),

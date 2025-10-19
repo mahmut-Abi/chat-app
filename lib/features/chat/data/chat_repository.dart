@@ -99,6 +99,8 @@ class ChatRepository {
         frequencyPenalty: config.frequencyPenalty,
         presencePenalty: config.presencePenalty,
         stream: false,
+        webSearch: config.enableWebSearch,
+        thinking: config.enableModelThinking ? {'type': 'enabled'} : null,
       );
 
       final response = await _apiClient.createChatCompletion(request);
@@ -202,6 +204,8 @@ class ChatRepository {
         frequencyPenalty: config.frequencyPenalty,
         presencePenalty: config.presencePenalty,
         stream: true,
+        webSearch: config.enableWebSearch,
+        thinking: config.enableModelThinking ? {'type': 'enabled'} : null,
       );
 
       await for (final chunk in _apiClient.createChatCompletionStream(

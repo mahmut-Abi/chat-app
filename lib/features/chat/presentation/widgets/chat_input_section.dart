@@ -23,6 +23,10 @@ class ChatInputSection extends StatefulWidget {
   final Function(AgentConfig?)? onAgentSelected;
   final Function(McpConfig?)? onMcpSelected;
   final Function(AiModel)? onModelSelected;
+  final Function(bool)? onWebSearchToggled;
+  final bool enableWebSearch;
+  final Function(bool)? onModelThinkingToggled;
+  final bool enableModelThinking;
 
   const ChatInputSection({
     super.key,
@@ -40,6 +44,10 @@ class ChatInputSection extends StatefulWidget {
     this.onAgentSelected,
     this.onMcpSelected,
     this.onModelSelected,
+    this.onWebSearchToggled,
+    this.enableWebSearch = false,
+    this.onModelThinkingToggled,
+    this.enableModelThinking = false,
   });
 
   @override
@@ -87,9 +95,13 @@ class _ChatInputSectionState extends State<ChatInputSection> {
                 onAgentSelected: widget.onAgentSelected,
                 onMcpSelected: widget.onMcpSelected,
                 onModelSelected: widget.onModelSelected,
+                onWebSearchToggled: widget.onWebSearchToggled,
                 selectedAgent: widget.selectedAgent,
                 selectedMcp: widget.selectedMcp,
                 selectedModel: widget.selectedModel,
+                enableWebSearch: widget.enableWebSearch,
+                onModelThinkingToggled: widget.onModelThinkingToggled,
+                enableModelThinking: widget.enableModelThinking,
               ),
               Expanded(
                 child: TextField(

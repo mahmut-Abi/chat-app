@@ -137,6 +137,10 @@ class ChatCompletionRequest {
   final bool stream;
   @JsonKey(includeIfNull: false)
   final List<ToolDefinition>? tools;
+  @JsonKey(name: 'web_search', includeIfNull: false)
+  final bool? webSearch;
+  @JsonKey(name: 'thinking', includeIfNull: false)
+  final Map<String, dynamic>? thinking;
 
   const ChatCompletionRequest({
     required this.model,
@@ -148,6 +152,8 @@ class ChatCompletionRequest {
     this.presencePenalty,
     this.stream = false,
     this.tools,
+    this.webSearch,
+    this.thinking,
   });
 
   factory ChatCompletionRequest.fromJson(Map<String, dynamic> json) =>
@@ -161,23 +167,27 @@ class ChatCompletionRequest {
     double? temperature,
     int? maxTokens,
     double? topP,
-  double? frequencyPenalty,
-  double? presencePenalty,
-  bool? stream,
-  List<ToolDefinition>? tools,
-}) {
-  return ChatCompletionRequest(
-    model: model ?? this.model,
-    messages: messages ?? this.messages,
-    temperature: temperature ?? this.temperature,
-    maxTokens: maxTokens ?? this.maxTokens,
-    topP: topP ?? this.topP,
-    frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
-    presencePenalty: presencePenalty ?? this.presencePenalty,
-    stream: stream ?? this.stream,
-    tools: tools ?? this.tools,
-  );
-}
+    double? frequencyPenalty,
+    double? presencePenalty,
+    bool? stream,
+    List<ToolDefinition>? tools,
+    bool? webSearch,
+    Map<String, dynamic>? thinking,
+  }) {
+    return ChatCompletionRequest(
+      model: model ?? this.model,
+      messages: messages ?? this.messages,
+      temperature: temperature ?? this.temperature,
+      maxTokens: maxTokens ?? this.maxTokens,
+      topP: topP ?? this.topP,
+      frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
+      presencePenalty: presencePenalty ?? this.presencePenalty,
+      stream: stream ?? this.stream,
+      tools: tools ?? this.tools,
+      webSearch: webSearch ?? this.webSearch,
+      thinking: thinking ?? this.thinking,
+    );
+  }
 }
 
 @JsonSerializable(explicitToJson: true)

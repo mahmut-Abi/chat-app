@@ -16,9 +16,13 @@ class ChatFunctionMenu extends ConsumerStatefulWidget {
   final Function(AgentConfig?)? onAgentSelected;
   final Function(McpConfig?)? onMcpSelected;
   final Function(AiModel)? onModelSelected;
+  final Function(bool)? onWebSearchToggled;
   final AgentConfig? selectedAgent;
   final McpConfig? selectedMcp;
   final AiModel? selectedModel;
+  final bool enableWebSearch;
+  final Function(bool)? onModelThinkingToggled;
+  final bool enableModelThinking;
 
   const ChatFunctionMenu({
     super.key,
@@ -27,9 +31,13 @@ class ChatFunctionMenu extends ConsumerStatefulWidget {
     this.onAgentSelected,
     this.onMcpSelected,
     this.onModelSelected,
+    this.onWebSearchToggled,
     this.selectedAgent,
     this.selectedMcp,
     this.selectedModel,
+    this.enableWebSearch = false,
+    this.onModelThinkingToggled,
+    this.enableModelThinking = false,
   });
 
   @override
@@ -72,6 +80,60 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
           ),
         ),
         const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'web_search',
+          child: Row(
+            children: [
+              Icon(
+                Icons.search,
+                color: widget.enableWebSearch
+                    ? Theme.of(context).colorScheme.secondary
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                widget.enableWebSearch ? '网络搜索: 开启' : '网络搜索: 关闭',
+              ),
+              const Spacer(),
+              Switch(
+                value: widget.enableWebSearch,
+                onChanged: (value) {
+                  Navigator.pop(context);
+                  if (widget.onWebSearchToggled != null) {
+                    widget.onWebSearchToggled!(value);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'model_thinking',
+          child: Row(
+            children: [
+              Icon(
+                Icons.psychology_outlined,
+                color: widget.enableModelThinking
+                    ? Theme.of(context).colorScheme.secondary
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                widget.enableModelThinking ? '模型思考: 开启' : '模型思考: 关闭',
+              ),
+              const Spacer(),
+              Switch(
+                value: widget.enableModelThinking,
+                onChanged: (value) {
+                  Navigator.pop(context);
+                  if (widget.onModelThinkingToggled != null) {
+                    widget.onModelThinkingToggled!(value);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
         PopupMenuItem(
           value: 'agent',
           child: Row(
@@ -133,6 +195,9 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
       ],
       onSelected: (value) {
         switch (value) {
+          case 'web_search':
+            // Handled by the switch in the menu item
+            break;
           case 'image':
             _pickImages();
             break;

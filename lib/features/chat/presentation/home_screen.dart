@@ -36,6 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _initDesktopFeatures();
   }
 
+
   void _initDesktopFeatures() {
     if (DesktopUtils.isDesktop) {
       trayManager.addListener(this);
@@ -203,6 +204,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         },
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 监听 providers 变化，确保导入数据后立即刷新
+    ref.listen(conversationsProvider, (previous, next) {
+      if (next.hasValue) {
+        _loadData();
+      }
+    });
+    ref.listen(conversationGroupsProvider, (previous, next) {
+      if (next.hasValue) {
+        _loadData();
+      }
+    });
   }
 
   @override

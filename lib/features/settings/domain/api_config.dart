@@ -24,6 +24,7 @@ class ApiConfig extends Equatable {
   final double topP;
   final double frequencyPenalty;
   final double presencePenalty;
+  final bool enableWebSearch;
 
   const ApiConfig({
     required this.id,
@@ -43,6 +44,7 @@ class ApiConfig extends Equatable {
     this.topP = 1.0,
     this.frequencyPenalty = 0.0,
     this.presencePenalty = 0.0,
+    this.enableWebSearch = false,
   });
 
   factory ApiConfig.fromJson(Map<String, dynamic> json) =>
@@ -68,6 +70,7 @@ class ApiConfig extends Equatable {
     double? topP,
     double? frequencyPenalty,
     double? presencePenalty,
+    bool? enableWebSearch,
   }) {
     return ApiConfig(
       id: id ?? this.id,
@@ -87,6 +90,7 @@ class ApiConfig extends Equatable {
       topP: topP ?? this.topP,
       frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
       presencePenalty: presencePenalty ?? this.presencePenalty,
+      enableWebSearch: enableWebSearch ?? this.enableWebSearch,
     );
   }
 
@@ -109,6 +113,7 @@ class ApiConfig extends Equatable {
     topP,
     frequencyPenalty,
     presencePenalty,
+    enableWebSearch,
   ];
 }
 

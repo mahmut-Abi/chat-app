@@ -140,6 +140,8 @@ class ModelConfig extends Equatable {
   final double topP;
   final double frequencyPenalty;
   final double presencePenalty;
+  final bool enableWebSearch;
+  final bool enableModelThinking;
 
   const ModelConfig({
     required this.model,
@@ -148,6 +150,8 @@ class ModelConfig extends Equatable {
     this.topP = 1.0,
     this.frequencyPenalty = 0.0,
     this.presencePenalty = 0.0,
+    this.enableWebSearch = false,
+    this.enableModelThinking = false,
   });
 
   factory ModelConfig.fromJson(Map<String, dynamic> json) =>
@@ -162,6 +166,8 @@ class ModelConfig extends Equatable {
     double? topP,
     double? frequencyPenalty,
     double? presencePenalty,
+    bool? enableWebSearch,
+    bool? enableModelThinking,
   }) {
     return ModelConfig(
       model: model ?? this.model,
@@ -170,9 +176,12 @@ class ModelConfig extends Equatable {
       topP: topP ?? this.topP,
       frequencyPenalty: frequencyPenalty ?? this.frequencyPenalty,
       presencePenalty: presencePenalty ?? this.presencePenalty,
+      enableWebSearch: enableWebSearch ?? this.enableWebSearch,
+      enableModelThinking: enableModelThinking ?? this.enableModelThinking,
     );
   }
 
+  @override
   @override
   List<Object?> get props => [
     model,
@@ -181,5 +190,7 @@ class ModelConfig extends Equatable {
     topP,
     frequencyPenalty,
     presencePenalty,
+    enableWebSearch,
+    enableModelThinking,
   ];
 }
