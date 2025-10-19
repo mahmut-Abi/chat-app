@@ -44,11 +44,23 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       final tempDir = Directory.systemTemp;
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'chat_export_' + timestamp.toString() + '.json';
-      final filePath = tempDir.path + '/' + fileName;
+      final fileName = 'chat_export_$timestamp.json';
+      final filePath = '${tempDir.path}/$fileName';
       final file = File(filePath);
       await file.writeAsString(jsonData);
-      await Share.shareXFiles([XFile(filePath)], subject: 'Chat Export');
+      
+      // iOS 需要提供 sharePositionOrigin 以支持 iPad
+      final box = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
+      
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        subject: 'Chat Export',
+        sharePositionOrigin: sharePositionOrigin,
+      );
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
@@ -56,6 +68,11 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       }
     } catch (e, stack) {
       _log.error('iOS share failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+        );
+      }
     }
   }
 
@@ -63,11 +80,16 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       final tempDir = Directory.systemTemp;
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'chat_export_' + timestamp.toString() + '.json';
-      final filePath = tempDir.path + '/' + fileName;
+      final fileName = 'chat_export_$timestamp.json';
+      final filePath = '${tempDir.path}/$fileName';
       final file = File(filePath);
       await file.writeAsString(jsonData);
-      await Share.shareXFiles([XFile(filePath)], subject: 'Chat Export');
+      
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        subject: 'Chat Export',
+      );
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
@@ -75,6 +97,11 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       }
     } catch (e, stack) {
       _log.error('Android share failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+        );
+      }
     }
   }
 
@@ -82,16 +109,26 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       final result = await FilePicker.platform.saveFile(
         dialogTitle: 'Export Data',
-        fileName: 'chat_export_' + DateTime.now().millisecondsSinceEpoch.toString() + '.json',
+        fileName: 'chat_export_${DateTime.now().millisecondsSinceEpoch}.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
       if (result != null) {
         final file = File(result);
         await file.writeAsString(jsonData);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
+          );
+        }
       }
     } catch (e, stack) {
       _log.error('Desktop save failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+        );
+      }
     }
   }
 
@@ -133,9 +170,19 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       if (!mounted) return;
       if (importResult['success'] == true) {
         _log.info('Import successful', importResult);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Import successful'), duration: Duration(seconds: 2)),
+          );
+        }
       }
     } catch (e, stack) {
       _log.error('Import failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Import failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isImporting = false);
     }
@@ -158,8 +205,18 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final storageService = ref.read(storageServiceProvider);
       await storageService.clearAll();
       _log.info('Data cleared');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data cleared'), duration: Duration(seconds: 2)),
+        );
+      }
     } catch (e, stack) {
       _log.error('Clear failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Clear failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+        );
+      }
     }
   }
 }
