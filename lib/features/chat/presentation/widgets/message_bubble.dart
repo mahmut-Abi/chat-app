@@ -139,72 +139,81 @@ class MessageBubble extends StatelessWidget {
                 message.content,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (message.tokenCount != null) ...[
-                  Text(
-                    '${message.tokenCount} tokens',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 1,
-                    height: 12,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                // 显示响应时间（只对 AI 助手消息）
-                if (!isUser && message.responseDurationMs != null) ...[
-                  Text(
-                    _formatDuration(message.responseDurationMs!),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 1,
-                    height: 12,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                // 移动端隐藏按钮，桌面端显示
-                if (!isMobile)
-                  MessageActions(
-                    isUserMessage: isUser,
-                    onCopy: () => _copyMessage(context),
-                    onEdit: isUser && onEdit != null
-                        ? () => _showEditDialog(context)
-                        : null,
-                    onDelete: onDelete,
-                    onRegenerate: !isUser && onRegenerate != null
-                        ? onRegenerate
-                        : null,
-                  ),
-                if (message.isStreaming)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: SizedBox(
-                      width: 12,
-                      height: 12,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
+            // 只有当有底部元数据时才显示间距和 Row
+            if (message.tokenCount != null ||
+                (!isUser && message.responseDurationMs != null) ||
+                !isMobile ||
+                message.isStreaming)
+              const SizedBox(height: 4),
+            if (message.tokenCount != null ||
+                (!isUser && message.responseDurationMs != null) ||
+                !isMobile ||
+                message.isStreaming)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (message.tokenCount != null) ...[
+                    Text(
+                      '\${message.tokenCount} tokens',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 1,
+                      height: 12,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  // 显示响应时间（只对 AI 助手消息）
+                  if (!isUser && message.responseDurationMs != null) ...[
+                    Text(
+                      _formatDuration(message.responseDurationMs!),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 1,
+                      height: 12,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  // 移动端隐藏按钮，桌面端显示
+                  if (!isMobile)
+                    MessageActions(
+                      isUserMessage: isUser,
+                      onCopy: () => _copyMessage(context),
+                      onEdit: isUser && onEdit != null
+                          ? () => _showEditDialog(context)
+                          : null,
+                      onDelete: onDelete,
+                      onRegenerate: !isUser && onRegenerate != null
+                          ? onRegenerate
+                          : null,
+                    ),
+                  if (message.isStreaming)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
           ],
         ),
       ),
@@ -366,10 +375,10 @@ class MessageBubble extends StatelessWidget {
     if (duration.inMinutes > 0) {
       final minutes = duration.inMinutes;
       final seconds = duration.inSeconds % 60;
-      return '${minutes}分${seconds}秒';
+      return '$minutes分$seconds秒';
     } else {
       final seconds = duration.inSeconds;
-      return '${seconds}秒';
+      return '$seconds秒';
     }
   }
 }
