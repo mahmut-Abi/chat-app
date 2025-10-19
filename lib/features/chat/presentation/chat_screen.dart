@@ -73,7 +73,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
+    print('🔍 ChatScreen: 注册 provider 监听器');
         if (mounted) {
+      print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
           setState(() {
             _conversations = conversations;
           });
@@ -84,6 +86,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.listen(conversationGroupsProvider, (previous, next) {
       next.whenData((groups) {
         if (mounted) {
+      print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
           setState(() {
             _groups = groups;
           });

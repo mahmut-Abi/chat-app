@@ -206,7 +206,9 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         ref.invalidate(mcpConfigsProvider);
         ref.invalidate(promptTemplatesProvider);
         ref.invalidate(conversationsProvider);
+        print('🔄 Settings: 已刷新 conversationsProvider');
         ref.invalidate(conversationGroupsProvider);
+        print('🔄 Settings: 已刷新 conversationGroupsProvider');
         
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);
