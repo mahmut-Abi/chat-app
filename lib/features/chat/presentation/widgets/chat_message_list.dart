@@ -47,12 +47,12 @@ class ChatMessageList extends StatelessWidget {
       );
     }
 
-    // 添加20%透明度的背景容器
+    // 使用完全透明的背景，让 PageBackground 的背景图片显示出来
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(
           context,
-        ).scaffoldBackgroundColor.withValues(alpha: 0.8), // 80%不透明 = 20%透明
+        ).scaffoldBackgroundColor.withValues(alpha: 0.0), // 完全透明，让背景图片显示出来
       ),
       child: ListView.builder(
         controller: scrollController,

@@ -40,6 +40,7 @@ class Message extends Equatable {
   final int? promptTokens; // Prompt token 数量
   final int? completionTokens; // Completion token 数量
   final List<ToolCall>? toolCalls; // 工具调用
+  final int? responseDurationMs; // 响应时间（毫秒）
 
   const Message({
     required this.id,
@@ -52,6 +53,7 @@ class Message extends Equatable {
     this.metadata,
     this.tokenCount,
     this.images,
+  this.responseDurationMs,
   this.model,
   this.promptTokens,
   this.completionTokens,
@@ -72,6 +74,7 @@ class Message extends Equatable {
     bool? hasError,
     String? errorMessage,
     Map<String, dynamic>? metadata,
+  int? responseDurationMs,
     int? tokenCount,
     List<ImageAttachment>? images,
   String? model,
@@ -93,6 +96,7 @@ class Message extends Equatable {
   model: model ?? this.model,
   promptTokens: promptTokens ?? this.promptTokens,
   completionTokens: completionTokens ?? this.completionTokens,
+  responseDurationMs: responseDurationMs ?? this.responseDurationMs,
   toolCalls: toolCalls ?? this.toolCalls,
 );
 }
@@ -111,6 +115,7 @@ class Message extends Equatable {
     images,
   model,
   promptTokens,
+  responseDurationMs,
   completionTokens,
   toolCalls,
 ];

@@ -292,6 +292,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _messageController.clear();
     _scrollToBottom();
 
+    // 记录响应开始时间
+    final responseStartTime = DateTime.now();
+
     final assistantMessage = Message(
       id: _uuid.v4(),
       role: MessageRole.assistant,
@@ -355,6 +358,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _isLoading = false;
       });
 
+      // 计算响应时间
+      final responseDurationMs = DateTime.now().difference(responseStartTime).inMilliseconds;
+
       // 使用 TokenCounter 估算 token 数量
       final estimatedTokens = TokenCounter.estimate(fullContent);
       int estimatedPromptTokens = TokenCounter.estimate(userMessage.content);
@@ -377,7 +383,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               promptTokens: estimatedPromptTokens,
               completionTokens: estimatedTokens,
               model: modelToUse,
+              responseDurationMs: responseDurationMs,
             );
+
+
           }
         });
 

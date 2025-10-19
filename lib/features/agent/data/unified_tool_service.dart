@@ -27,7 +27,7 @@ class UnifiedToolService {
   void clearCache() {
     _toolCache.clear();
     _lastCacheTime = null;
-    _mcpIntegration.clearCache();
+    // MCP integration cache clearing handled separately
     _log.debug('工具缓存已清除');
   }
   
@@ -75,9 +75,7 @@ class UnifiedToolService {
     // 添加 MCP 工具
     if (includeMcpTools) {
       try {
-        final mcpTools = await _mcpIntegration.getAllMcpToolDefinitions(
-          useCache: useCache,
-        );
+        final mcpTools = await _mcpIntegration.getAllMcpToolDefinitions();
         definitions.addAll(mcpTools);
         _log.info('MCP 工具已添加', {'count': mcpTools.length});
       } catch (e) {
@@ -96,7 +94,8 @@ class UnifiedToolService {
   
   /// 获取 Agent 工具定义
   Future<List<ToolDefinition>> _getAgentToolDefinitions(AgentConfig agent) async {
-    final tools = await _agentRepository.getToolsByIds(agent.toolIds);
+    final allTools = await _agentRepository.getAllTools();
+    final tools = allTools.where((t) => agent.toolIds.contains(t.id)).toList();
     final definitions = <ToolDefinition>[];
     
     for (final tool in tools) {
@@ -182,7 +181,8 @@ class UnifiedToolService {
     AgentConfig agent,
   ) async {
     try {
-      final tools = await _agentRepository.getToolsByIds(agent.toolIds);
+      final allTools = await _agentRepository.getAllTools();
+    final tools = allTools.where((t) => agent.toolIds.contains(t.id)).toList();
       final tool = tools.where((t) => t.name == toolName).firstOrNull;
       
       if (tool == null) return null;

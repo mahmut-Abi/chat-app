@@ -87,6 +87,7 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
     String? description,
     required _i2.AgentToolType? type,
     Map<String, dynamic>? parameters,
+    bool? isBuiltIn = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#createTool, [], {
@@ -94,6 +95,7 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
               #description: description,
               #type: type,
               #parameters: parameters,
+              #isBuiltIn: isBuiltIn,
             }),
             returnValue: _i4.Future<_i2.AgentTool>.value(
               _FakeAgentTool_1(
@@ -103,6 +105,7 @@ class MockAgentRepository extends _i1.Mock implements _i3.AgentRepository {
                   #description: description,
                   #type: type,
                   #parameters: parameters,
+                  #isBuiltIn: isBuiltIn,
                 }),
               ),
             ),

@@ -139,13 +139,31 @@ class MessageBubble extends StatelessWidget {
                 message.content,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (message.tokenCount != null) ...[
                   Text(
                     '${message.tokenCount} tokens',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 1,
+                    height: 12,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                // 显示响应时间（只对 AI 助手消息）
+                if (!isUser && message.responseDurationMs != null) ...[
+                  Text(
+                    _formatDuration(message.responseDurationMs!),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -341,5 +359,17 @@ class MessageBubble extends StatelessWidget {
       onEdit!(result);
     }
     controller.dispose();
+  }
+
+  String _formatDuration(int milliseconds) {
+    final duration = Duration(milliseconds: milliseconds);
+    if (duration.inMinutes > 0) {
+      final minutes = duration.inMinutes;
+      final seconds = duration.inSeconds % 60;
+      return '${minutes}分${seconds}秒';
+    } else {
+      final seconds = duration.inSeconds;
+      return '${seconds}秒';
+    }
   }
 }
