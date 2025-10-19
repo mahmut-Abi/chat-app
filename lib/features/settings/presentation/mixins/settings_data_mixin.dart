@@ -170,6 +170,20 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       if (!mounted) return;
       if (importResult['success'] == true) {
         _log.info('Import successful', importResult);
+        
+        // 刷新所有相关的 provider 以立即生效
+        ref.invalidate(appSettingsProvider);
+        ref.invalidate(activeApiConfigProvider);
+        ref.invalidate(agentConfigsProvider);
+        ref.invalidate(agentToolsProvider);
+        ref.invalidate(mcpConfigsProvider);
+        ref.invalidate(promptTemplatesProvider);
+        
+        // 强制刷新设置
+        final settingsRepo = ref.read(settingsRepositoryProvider);
+        final settings = await settingsRepo.getSettings();
+        await ref.read(appSettingsProvider.notifier).updateSettings(settings);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Import successful'), duration: Duration(seconds: 2)),
@@ -205,6 +219,15 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final storageService = ref.read(storageServiceProvider);
       await storageService.clearAll();
       _log.info('Data cleared');
+      
+      // 清空数据后也需要刷新 provider
+      ref.invalidate(appSettingsProvider);
+      ref.invalidate(activeApiConfigProvider);
+      ref.invalidate(agentConfigsProvider);
+      ref.invalidate(agentToolsProvider);
+      ref.invalidate(mcpConfigsProvider);
+      ref.invalidate(promptTemplatesProvider);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Data cleared'), duration: Duration(seconds: 2)),
