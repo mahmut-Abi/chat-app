@@ -6,6 +6,7 @@ import '../../../../core/providers/providers.dart';
 import '../../../../core/services/log_service.dart';
 import '../../../../core/utils/data_export_import.dart';
 import '../../../../core/utils/platform_utils.dart';
+import '../../../../core/utils/pdf_export.dart';
 import '../../../../shared/widgets/platform_dialog.dart';
 import 'dart:io';
 
@@ -132,20 +133,46 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     }
   }
 
+
   Future<void> exportToPdf() async {
     _log.info('Export to PDF');
     try {
-      final storageService = ref.read(storageServiceProvider);
-      final conversations = storageService.getAllConversations();
+      final chatRepo = ref.read(chatRepositoryProvider);
+      final conversations = chatRepo.getAllConversations();
+      
       if (conversations.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No conversations to export')),
+            const SnackBar(
+              content: Text('没有对话可导出'),
+              duration: Duration(seconds: 2),
+            ),
           );
         }
+        return;
+      }
+      
+      // 导出所有对话为 PDF
+      await PdfExport.exportConversationsToPdf(conversations);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PDF 导出成功'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e, stack) {
       _log.error('PDF export failed', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF 导出失败: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
