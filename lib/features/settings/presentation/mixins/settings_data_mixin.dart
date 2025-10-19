@@ -215,7 +215,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Import successful'), duration: Duration(seconds: 2)),
+            const SnackBar(
+              content: Text('导入成功！请返回主页查看对话列表'),
+              duration: Duration(seconds: 3),
+            ),
           );
         }
       }
