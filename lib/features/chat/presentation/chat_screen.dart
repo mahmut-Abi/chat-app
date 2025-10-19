@@ -648,6 +648,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
+
+    // 监听对话列表变化，自动刷新
+    ref.listen(conversationsProvider, (previous, next) {
+      next.whenData((conversations) {
+        if (mounted) {
+          setState(() {
+            _conversations = conversations;
+          });
+        }
+      });
+    });
+
+    // 监听对话分组变化，自动刷新
+    ref.listen(conversationGroupsProvider, (previous, next) {
+      next.whenData((groups) {
+        if (mounted) {
+          setState(() {
+            _groups = groups;
+          });
+        }
+      });
+    });
     // 移动端：禁用右划手势返回，但保留 AppBar 返回按钮
     // 桌面端/设置页面：允许正常返回
     return PageBackground(

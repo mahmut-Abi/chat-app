@@ -216,7 +216,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('导入成功！请返回主页查看对话列表'),
+              content: Text('导入成功！对话列表已自动刷新'),
               duration: Duration(seconds: 3),
             ),
           );
