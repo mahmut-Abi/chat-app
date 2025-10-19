@@ -47,6 +47,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   AiModel? _selectedModel;
   List<Conversation> _conversations = [];
   List<ConversationGroup> _groups = [];
+  bool _hasListenersRegistered = false;
 
   @override
   void initState() {
@@ -66,6 +67,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.didChangeDependencies();
     
     // 监听 provider 变化并自动刷新对话列表
+    
+    // 只注册一次监听器避免重复注册
+    if (_hasListenersRegistered) return;
+    _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
         if (mounted) {
