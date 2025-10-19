@@ -32,6 +32,8 @@ class OpenAIApiClient {
       // 不支持: frequency_penalty, presence_penalty
       filtered.remove('frequency_penalty');
       filtered.remove('presence_penalty');
+      filtered.remove('web_search');
+      filtered.remove('thinking');
 
       // 限制 temperature 范围 (0-2)
       if (filtered['temperature'] != null) {
