@@ -4,6 +4,7 @@ import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
 import 'prompt_config_screen.dart';
+import '../../../core/utils/message_utils.dart';
 
 class PromptsScreen extends ConsumerStatefulWidget {
   const PromptsScreen({super.key});
@@ -259,7 +260,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('模板已创建')));
+        ).showSnackBar(SnackBar(content: Row(children: [Icon(Icons.check_circle, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('模板已创建'))], ), backgroundColor: Colors.green.shade600, behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 1)));
       }
     }
   }

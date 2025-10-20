@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../core/services/network_service.dart';
+import '../../core/utils/message_utils.dart';
 
 class NetworkStatusWidget extends StatefulWidget {
   final Widget child;
@@ -55,25 +56,7 @@ class _NetworkStatusWidgetState extends State<NetworkStatusWidget> {
   void _showNoConnectionSnackBar() {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.signal_wifi_off, color: Colors.white),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                '网络连接中断，请检查网络设置',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.red.shade700,
-        duration: const Duration(seconds: 5),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    MessageUtils.showWarning(context, '网络连接中断，请检查网络设置', duration: const Duration(seconds: 5));
   }
 
   @override

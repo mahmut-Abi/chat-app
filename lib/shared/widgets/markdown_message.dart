@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/utils/message_utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
@@ -94,12 +95,7 @@ class CodeBlock extends StatelessWidget {
                       : Colors.grey.shade600,
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: code));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('代码已复制'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    MessageUtils.showCopied(context);
                   },
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),

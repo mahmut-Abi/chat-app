@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:ui';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/services/log_service.dart';
+import '../../../../core/utils/message_utils.dart';
 
 /// 改进的背景设置页面
 class ImprovedBackgroundSettingsScreen extends ConsumerStatefulWidget {

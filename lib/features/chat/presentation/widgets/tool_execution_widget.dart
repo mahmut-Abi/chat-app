@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/utils/message_utils.dart';
 
 /// 工具执行结果显示组件
 class ToolExecutionWidget extends StatefulWidget {
@@ -215,11 +216,6 @@ class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
         : result['error']?.toString() ?? '';
     
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('已复制到剪贴板'),
-        duration: Duration(seconds: 1),
-      ),
-    );
+    MessageUtils.showCopied(context);
   }
 }

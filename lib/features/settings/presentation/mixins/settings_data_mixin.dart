@@ -6,6 +6,7 @@ import '../../../../core/providers/providers.dart';
 import '../../../../core/services/log_service.dart';
 import '../../../../core/utils/data_export_import.dart';
 import '../../../../core/utils/platform_utils.dart';
+import '../../../../core/utils/message_utils.dart';
 import '../../../../core/utils/pdf_export.dart';
 import '../../../../shared/widgets/platform_dialog.dart';
 import 'dart:io';
@@ -63,9 +64,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       );
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
-        );
+        MessageUtils.showSuccess(context, 'Export successful');
       }
     } catch (e, stack) {
       _log.error('iOS share failed', e, stack);
@@ -92,9 +91,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       );
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
-        );
+        MessageUtils.showSuccess(context, 'Export successful');
       }
     } catch (e, stack) {
       _log.error('Android share failed', e, stack);
@@ -215,13 +212,17 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         final settings = await settingsRepo.getSettings();
         await ref.read(appSettingsProvider.notifier).updateSettings(settings);
         
+        // 等待 conversations 提供程序完成重建，确保导入的数据立即可用
+        try {
+          await ref.read(conversationsProvider.future);
+          await ref.read(conversationGroupsProvider.future);
+          print('✅ Settings: 对话列表已重新加载完成');
+        } catch (e) {
+          _log.error('Failed to reload conversations after import', e);
+        }
+        
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('导入成功！对话列表已自动刷新'),
-              duration: Duration(seconds: 3),
-            ),
-          );
+          MessageUtils.showSuccess(context, '导入成功！对话列表已自动刷新', duration: const Duration(seconds: 3));
         }
       }
     } catch (e, stack) {
@@ -261,11 +262,19 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       ref.invalidate(agentToolsProvider);
       ref.invalidate(mcpConfigsProvider);
       ref.invalidate(promptTemplatesProvider);
+      ref.invalidate(conversationsProvider);
+      ref.invalidate(conversationGroupsProvider);
+      
+      // 等待 providers 重建完成
+      try {
+        await ref.read(conversationsProvider.future);
+        await ref.read(conversationGroupsProvider.future);
+      } catch (e) {
+        _log.error('Failed to reload after clear', e);
+      }
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data cleared'), duration: Duration(seconds: 2)),
-        );
+        MessageUtils.showSuccess(context, 'Data cleared');
       }
     } catch (e, stack) {
       _log.error('Clear failed', e, stack);

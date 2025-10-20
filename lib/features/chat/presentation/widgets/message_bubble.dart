@@ -5,6 +5,7 @@ import '../../../../shared/widgets/enhanced_markdown_message.dart';
 import '../../../../shared/widgets/message_actions.dart';
 import 'dart:io';
 import 'image_viewer_screen.dart';
+import '../../../../core/utils/message_utils.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -222,9 +223,7 @@ class MessageBubble extends StatelessWidget {
 
   void _copyMessage(BuildContext context) {
     Clipboard.setData(ClipboardData(text: message.content));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('消息已复制'), duration: Duration(seconds: 1)),
-    );
+    MessageUtils.showCopied(context);
   }
 
   void _showContextMenu(BuildContext context) {

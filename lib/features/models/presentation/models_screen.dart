@@ -5,6 +5,7 @@ import '../domain/model.dart';
 import '../../settings/domain/api_config.dart';
 import '../../../core/providers/providers.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/utils/message_utils.dart';
 
 class ModelsScreen extends ConsumerStatefulWidget {
   const ModelsScreen({super.key});

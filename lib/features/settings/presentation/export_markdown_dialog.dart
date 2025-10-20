@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../core/utils/message_utils.dart';
 
 // Markdown 导出显示对话框
 class ExportMarkdownDialog extends StatelessWidget {
@@ -49,12 +50,7 @@ class ExportMarkdownDialog extends StatelessWidget {
                     label: const Text('复制到剪贴板'),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: markdown));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('已复制到剪贴板'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
+                      MessageUtils.showCopied(context);
                     },
                   ),
                 ),

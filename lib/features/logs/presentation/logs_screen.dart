@@ -5,6 +5,7 @@ import '../../../core/utils/platform_utils.dart';
 import '../../../core/services/log_service.dart';
 import '../../../core/providers/providers.dart';
 import 'package:intl/intl.dart';
+import '../../../core/utils/message_utils.dart';
 
 /// 日志查看界面
 class LogsScreen extends ConsumerStatefulWidget {
@@ -301,7 +302,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('日志已复制到剪贴板')));
+        ).showSnackBar(SnackBar(content: Row(children: [Icon(Icons.check_circle, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('日志已复制'))], ), backgroundColor: Colors.green.shade600, behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 1)));
       }
     } catch (e) {
       if (mounted) {

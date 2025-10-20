@@ -4,6 +4,7 @@ import '../../../core/utils/platform_utils.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
+import '../../../core/utils/message_utils.dart';
 
 /// MCP 配置界面
 class McpScreen extends ConsumerWidget {
