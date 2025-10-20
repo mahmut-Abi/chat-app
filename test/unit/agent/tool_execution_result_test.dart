@@ -135,8 +135,8 @@ void main() {
           result: 'Success message',
         );
 
-        expect(result.isSuccess, true);
-        expect(result.hasResult, true);
+        expect(result.success, true);
+        expect(result.result != null, true);
       });
 
       test('should validate failure with error', () {
@@ -145,8 +145,8 @@ void main() {
           error: 'Tool failed',
         );
 
-        expect(result.isSuccess, false);
-        expect(result.hasError, true);
+        expect(result.success, false);
+        expect(result.error != null, true);
       });
 
       test('should handle edge case: success without result', () {
