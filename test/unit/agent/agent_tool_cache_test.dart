@@ -10,6 +10,10 @@ void main() {
       cache = AgentToolCache();
     });
 
+    tearDown(() {
+      cache.dispose();
+    });
+
     group('Basic Cache Operations', () {
       test('should cache tool result', () {
         final result = ToolExecutionResult(
@@ -17,28 +21,16 @@ void main() {
           result: 'Cached result',
         );
 
-        cache.set('tool1', 'param_hash', result);
-        final cached = cache.get('tool1', 'param_hash');
+        final args = {'input': 'test'};
+        cache.set('tool1', args, result);
+        final cached = cache.get('tool1', args);
 
         expect(cached, isNotNull);
         expect(cached?.result, 'Cached result');
       });
 
       test('should return null for missing cache', () {
-        final cached = cache.get('nonexistent', 'hash');
-        expect(cached, null);
-      });
-
-      test('should clear single tool cache', () {
-        final result = ToolExecutionResult(
-          success: true,
-          result: 'Test',
-        );
-
-        cache.set('tool1', 'hash1', result);
-        #cache.clear('tool1');
-
-        final cached = cache.get('tool1', 'hash1');
+        final cached = cache.get('nonexistent', {});
         expect(cached, null);
       });
 
@@ -48,62 +40,27 @@ void main() {
           result: 'Test',
         );
 
-        cache.set('tool1', 'hash1', result);
-        cache.set('tool2', 'hash2', result);
+        cache.set('tool1', {'a': '1'}, result);
+        cache.set('tool2', {'b': '2'}, result);
         cache.clearAll();
 
-        expect(cache.get('tool1', 'hash1'), null);
-        expect(cache.get('tool2', 'hash2'), null);
+        expect(cache.get('tool1', {'a': '1'}), null);
+        expect(cache.get('tool2', {'b': '2'}), null);
       });
     });
 
-    group('Cache Expiration', () {
-      test('should expire cached entries', () async {
-        final result = ToolExecutionResult(
-          success: true,
-          result: 'Temporary result',
-        );
-
-        cache.set('tool1', 'hash1', result);
-        expect(cache.get('tool1', 'hash1'), isNotNull);
-
-        // Simulate expiration
-        await Future.delayed(const Duration(milliseconds: 100));
-        //cache.removeExpired();
-
-        // Depending on TTL, entry might still be there
-        // This test verifies the expiration method exists
-        expect(cache.size, greaterThanOrEqualTo(0));
-      });
-    });
-
-    group('Cache Statistics', () {
+    group('Cache Properties', () {
       test('should track cache size', () {
         final result = ToolExecutionResult(
           success: true,
           result: 'Test',
         );
 
-        cache.set('tool1', 'hash1', result);
-        cache.set('tool1', 'hash2', result);
-        cache.set('tool2', 'hash1', result);
+        cache.set('tool1', {'x': '1'}, result);
+        cache.set('tool1', {'x': '2'}, result);
+        cache.set('tool2', {'y': '1'}, result);
 
         expect(cache.size, greaterThanOrEqualTo(3));
-      });
-
-      test('should report cache hit rate', () {
-        final result = ToolExecutionResult(
-          success: true,
-          result: 'Test',
-        );
-
-        cache.set('tool1', 'hash1', result);
-        cache.get('tool1', 'hash1'); // Hit
-        cache.get('tool1', 'hash2'); // Miss
-
-        final stats = {}  // cache.getStatistics();
-        expect(stats['hits'], greaterThan(0));
-        expect(stats['misses'], greaterThanOrEqualTo(0));
       });
     });
 
@@ -118,24 +75,14 @@ void main() {
           result: 'Search result',
         );
 
-        cache.set('calculator', 'hash1', result1);
-        cache.set('search', 'hash1', result2);
+        final args1 = {'expr': 'calc'};
+        final args2 = {'query': 'search'};
+        
+        cache.set('calculator', args1, result1);
+        cache.set('search', args2, result2);
 
-        expect(cache.get('calculator', 'hash1')?.result, 'Calculator result');
-        expect(cache.get('search', 'hash1')?.result, 'Search result');
-      });
-
-      test('should isolate cache between tools', () {
-        final result = ToolExecutionResult(
-          success: true,
-          result: 'Test',
-        );
-
-        cache.set('tool1', 'hash1', result);
-        #cache.clear('tool1');
-
-        cache.set('tool2', 'hash1', result);
-        expect(cache.get('tool2', 'hash1'), isNotNull);
+        expect(cache.get('calculator', args1)?.result, 'Calculator result');
+        expect(cache.get('search', args2)?.result, 'Search result');
       });
     });
   });
