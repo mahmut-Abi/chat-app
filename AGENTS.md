@@ -88,6 +88,14 @@ ToolExecutor / Storage Service (执行层)
 
 工具执行器接口，所有工具都需要实现此接口。
 
+### 7. AgentChatService
+
+处理带 Agent 的消息发送和工具调用。支持工具迭代执行和消息管理。
+
+### 8. AgentToolCache
+
+缓存 Agent 和工具配置，提高查询性能。
+
 ---
 
 ## 开发指南
@@ -176,11 +184,13 @@ lib/features/agent/
 │   ├── enhanced_agent_integration.dart # 集成服务
 │   ├── agent_chat_service.dart         # 聊天服务
 │   ├── unified_tool_service.dart       # 统一工具服务
+│   ├── agent_integration.dart          # Agent 集成
+│   ├── agent_tool_cache.dart           # 工具缓存
 │   └── tools/                          # 工具实现
 │       ├── calculator_tool.dart
 │       ├── search_tool.dart
 │       ├── file_operation_tool.dart
-│       └── weather_tool.dart
+
 └── presentation/        # UI 层
     ├── providers/
     │   └── agent_provider.dart         # Riverpod Provider

@@ -209,6 +209,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+  }
+
+@override
+  Widget build(BuildContext context) {
     // 监听 providers 变化，确保导入数据后立即刷新
     ref.listen(conversationsProvider, (previous, next) {
       if (next.hasValue) {
@@ -220,10 +224,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         _loadData();
       }
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
 
     if (isMobile) {
