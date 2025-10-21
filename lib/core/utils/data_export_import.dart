@@ -44,7 +44,7 @@ class DataExportImport {
       final version = data['version'];
       if (version != null && version != '1.0.0') {
         // 记录版本协议不匹配的警告，但仍然尝试导入
-        _log.warning('Data version mismatch', {'version': version, 'expected': '1.0.0'});
+        // 版本协议不匹配的警告
       }
 
       int conversationsCount = 0;
@@ -108,10 +108,10 @@ class DataExportImport {
       if (data.containsKey('agentTools')) {
         final agentTools = data['agentTools'] as List;
         for (final tool in agentTools) {
-          final toolMap = tool as Map<String, dynamic>;
-          // 使用 saveSetting 因为工具使用 agent_tool_ 前缀
-          await _storage.saveSetting('agent_tool_' + (toolMap['id'] as String), jsonEncode(toolMap));
-          agentToolsCount++;
+         final toolMap = tool as Map<String, dynamic>;
+         // 使用 saveSetting 因为工具使用 agent_tool_ 前缀
+         await _storage.saveSetting('agent_tool_' + (toolMap['id'] as String), jsonEncode(toolMap));
+          agentToolsCount += 1;
         }
       }
 
