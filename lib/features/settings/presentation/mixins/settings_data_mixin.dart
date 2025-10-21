@@ -206,6 +206,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         print('🔄 Settings: 已刷新 conversationsProvider');
         ref.invalidate(conversationGroupsProvider);
         print('🔄 Settings: 已刷新 conversationGroupsProvider');
+        ref.invalidate(conversationModelsProvider);
         
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);
@@ -215,14 +216,23 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         // 等待 conversations 提供程序完成重建，确保导入的数据立即可用
         try {
           await ref.read(conversationsProvider.future);
-          await ref.read(conversationGroupsProvider.future);
-          print('✅ Settings: 对话列表已重新加载完成');
+         await ref.read(conversationGroupsProvider.future);
+         print('✅ Settings: 对话列表已重新加载完成');
         } catch (e) {
           _log.error('Failed to reload conversations after import', e);
         }
         
         if (mounted) {
-          MessageUtils.showSuccess(context, '导入成功！对话列表已自动刷新', duration: const Duration(seconds: 3));
+          final msg = '导入成功：';
+          final counts = [];
+          if (importResult['conversationsCount'] ?? 0 > 0) counts.add('${importResult['conversationsCount']} 对话');
+          if (importResult['apiConfigsCount'] ?? 0 > 0) counts.add('${importResult['apiConfigsCount']} API');
+          if (importResult['mcpConfigsCount'] ?? 0 > 0) counts.add('${importResult['mcpConfigsCount']} MCP');
+          if (importResult['agentConfigsCount'] ?? 0 > 0) counts.add('${importResult['agentConfigsCount']} Agent');
+          if (importResult['groupsCount'] ?? 0 > 0) counts.add('${importResult['groupsCount']} 分组');
+          if (importResult['promptTemplatesCount'] ?? 0 > 0) counts.add('${importResult['promptTemplatesCount']} 模板');
+          final message = msg + counts.join(', ');
+          MessageUtils.showSuccess(context, message, duration: const Duration(seconds: 4));
         }
       }
     } catch (e, stack) {

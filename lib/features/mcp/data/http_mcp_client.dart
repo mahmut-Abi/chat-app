@@ -11,8 +11,19 @@ class HttpMcpClient extends McpClientBase {
   Timer? _heartbeatTimer;
   StreamController<String>? _sseController;
   final LogService _log = LogService();
+  int _failureCount = 0;
+  static const int _maxFailures = 3;
 
   HttpMcpClient({required super.config, Dio? dio}) : _dio = dio ?? Dio();
+
+  /// 调整 URL 路径（移除开头的 /）
+  String _normalizePath(String path) {
+    String normalized = path;
+    while (normalized.startsWith('/')) {
+      normalized = normalized.substring(1);
+    }
+    return normalized.isEmpty ? '' : '/$normalized';
+  }
 
   @override
   Future<bool> connect() async {
@@ -77,6 +88,60 @@ class HttpMcpClient extends McpClientBase {
       _log.error('健康检查异常', e);
       return false;
     }
+  }
+
+  /// 为 Kubernetes SSE 服务器优化的健康检查
+  Future<bool> healthCheckForSSEServer() async {
+    _log.debug('Kubernetes SSE 服务器健康检查', {'endpoint': config.endpoint});
+    try {
+      // 氺试略斥橣 SSE 端点以检测连接
+      final response = await _dio.get(
+        '/api/kubernetes/sse',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 5),
+          followRedirects: true,
+        ),
+      );
+      
+      // SSE 端点返回 200 表示正常
+      if (response.statusCode == 200) {
+        lastHealthCheck = DateTime.now();
+        lastError = null;
+        _log.info('Kubernetes SSE 服务器健康检查成功', {'endpoint': config.endpoint});
+        return true;
+      } else {
+        lastError = 'Kubernetes SSE: HTTP ${response.statusCode}';
+        _log.warning('Kubernetes SSE 健康检查失败', {
+          'statusCode': response.statusCode,
+        });
+        return false;
+      }
+    } catch (e) {
+      lastError = 'Kubernetes SSE: ${e.toString()}';
+      _log.error('Kubernetes SSE 健康检查异常', e);
+      return false;
+    }
+  }
+
+  /// 尝试其他健康检查端点
+  Future<bool> _tryAlternativeHealthChecks() async {
+    final endpoints = ['health', 'api/health', 'ping', 'api/ping', 'tools'];
+    
+    for (final endpoint in endpoints) {
+      try {
+        final response = await _dio.get(
+          endpoint,
+          options: Options(receiveTimeout: const Duration(seconds: 3)),
+        );
+        if (response.statusCode == 200) {
+          _log.info('替代健康检查拓扑成功', {'endpoint': endpoint});
+          return true;
+        }
+      } catch (e) {
+        _log.debug('替代端点失败', {'endpoint': endpoint});
+      }
+    }
+    return false;
   }
 
   @override
@@ -182,6 +247,44 @@ class HttpMcpClient extends McpClientBase {
     }
   }
 
+  /// 获取工具列表（增强版）
+  Future<List<Map<String, dynamic>>?> listToolsEnhanced() async {
+    _log.debug('获取 MCP 工具列表(增强)');
+    try {
+      final response = await _dio.get('/tools');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        
+        // 众加处理哬各 API 哬各的哬各形式
+        List<Map<String, dynamic>>? tools;
+        
+        if (data is List) {
+          // 直接返回列表
+          tools = data.cast<Map<String, dynamic>>();
+        } else if (data is Map<String, dynamic>) {
+          // 处理 nested 结构（如 {"tools": [...]})
+          if (data['tools'] is List) {
+            tools = (data['tools'] as List).cast<Map<String, dynamic>>();
+          } else if (data['data'] is List) {
+            tools = (data['data'] as List).cast<Map<String, dynamic>>();
+          } else if (data['items'] is List) {
+            tools = (data['items'] as List).cast<Map<String, dynamic>>();
+          }
+        }
+        
+        if (tools != null) {
+          _log.info('获取到 MCP 工具列表', {'count': tools.length});
+          return tools;
+        }
+      }
+      _log.warning('获取工具列表失败', {'statusCode': response.statusCode, 'dataType': data.runtimeType});
+      return null;
+    } catch (e) {
+      _log.error('获取工具列表异常', e);
+      return null;
+    }
+  }
+
   /// 开始心跳检测
   void _startHeartbeat() {
     _log.debug('启动 MCP 心跳检测');
@@ -210,7 +313,8 @@ class HttpMcpClient extends McpClientBase {
   Future<Stream<String>?> connectSSE(String endpoint) async {
     _log.info('建立 SSE 连接', {'endpoint': endpoint});
     try {
-      _sseController = StreamController<String>();
+      // 使用广播流，支持多个监听器
+      _sseController = StreamController<String>.broadcast();
 
       final response = await _dio.get<ResponseBody>(
         endpoint,

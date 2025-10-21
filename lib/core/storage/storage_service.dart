@@ -255,18 +255,91 @@ class StorageService {
   }
 
   Future<void> clearAllModels() async {
-    _log.info('清除所有模型');
-    await _modelsBoxInstance.clear();
+   _log.info('清除所有模型');
+   await _modelsBoxInstance.clear();
+ }
+
+ // Get all keys from settings box
+ Future<List<String>> getAllKeys() async {
+   final keys = _settingsBoxInstance.keys.map((k) => k.toString()).toList();
+   if (kDebugMode) {
+     print('[StorageService] getAllKeys: 总共 ${keys.length} 个键');
+     print('[StorageService] 键列表: $keys');
+   }
+   return keys;
+ }
+
+  // MCP Configs
+  Future<void> saveMcpConfig(String id, Map<String, dynamic> data) async {
+    await _settingsBoxInstance.put('mcp_config_$id', jsonEncode(data));
   }
 
-  // Get all keys from settings box
-  Future<List<String>> getAllKeys() async {
-    final keys = _settingsBoxInstance.keys.map((k) => k.toString()).toList();
-    if (kDebugMode) {
-      print('[StorageService] getAllKeys: 总共 ${keys.length} 个键');
-      print('[StorageService] 键列表: $keys');
+  Future<Map<String, dynamic>?> getMcpConfig(String id) async {
+    final data = _settingsBoxInstance.get('mcp_config_$id');
+    if (data == null) return null;
+    return jsonDecode(data as String) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAllMcpConfigs() async {
+    final configs = <Map<String, dynamic>>[];
+    for (final key in _settingsBoxInstance.keys) {
+      if (key.toString().startsWith('mcp_config_')) {
+        final data = _settingsBoxInstance.get(key);
+        if (data != null) {
+          configs.add(jsonDecode(data as String) as Map<String, dynamic>);
+        }
+      }
     }
-    return keys;
+    return configs;
+  }
+
+  Future<void> deleteMcpConfig(String id) async {
+    await _settingsBoxInstance.delete('mcp_config_$id');
+  }
+
+  // Agent Configs
+  Future<void> saveAgentConfig(String id, Map<String, dynamic> data) async {
+    await _settingsBoxInstance.put('agent_$id', jsonEncode(data));
+  }
+
+  Future<Map<String, dynamic>?> getAgentConfig(String id) async {
+    final data = _settingsBoxInstance.get('agent_$id');
+    if (data == null) return null;
+    return jsonDecode(data as String) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAllAgentConfigs() async {
+    final agents = <Map<String, dynamic>>[];
+    for (final key in _settingsBoxInstance.keys) {
+      if (key.toString().startsWith('agent_') && !key.toString().contains('tool')) {
+        final data = _settingsBoxInstance.get(key);
+        if (data != null) {
+          agents.add(jsonDecode(data as String) as Map<String, dynamic>);
+        }
+      }
+    }
+    return agents;
+  }
+
+  Future<List<Map<String, dynamic>>> getAllAgentTools() async {
+    final tools = <Map<String, dynamic>>[];
+    for (final key in _settingsBoxInstance.keys) {
+      if (key.toString().startsWith('agent_tool_')) {
+        final data = _settingsBoxInstance.get(key);
+        if (data != null) {
+          tools.add(jsonDecode(data as String) as Map<String, dynamic>);
+        }
+      }
+    }
+    return tools;
+  }
+
+  Future<void> deleteAgentConfig(String id) async {
+    await _settingsBoxInstance.delete('agent_$id');
+  }
+
+  Future<void> deleteAgentTool(String id) async {
+    await _settingsBoxInstance.delete('agent_tool_$id');
   }
 
   // Clear all data

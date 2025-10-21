@@ -25,7 +25,7 @@ void main() {
       const agentName = '测试 Agent';
       const toolIds = ['tool1', 'tool2'];
 
-      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async {});
+      when(mockStorage.saveSetting(any as String, any as String)).thenAnswer((_) async {});
 
       // Act
       final agent = await repository.createAgent(
@@ -37,7 +37,7 @@ void main() {
       expect(agent.name, equals(agentName));
       expect(agent.toolIds, equals(toolIds));
       expect(agent.id, isNotEmpty);
-      verify(mockStorage.saveSetting(any, any)).called(1);
+      verify(mockStorage.saveSetting(any as String, any as String)).called(1);
     });
 
     test('创建工具成功', () async {
@@ -45,7 +45,7 @@ void main() {
       const toolName = '计算器';
       const toolType = AgentToolType.calculator;
 
-      when(mockStorage.saveSetting(any, any)).thenAnswer((_) async {});
+      when(mockStorage.saveSetting(any as String, any as String)).thenAnswer((_) async {});
 
       // Act
       final tool = await repository.createTool(
@@ -57,7 +57,7 @@ void main() {
       expect(tool.name, equals(toolName));
       expect(tool.type, equals(toolType));
       expect(tool.enabled, isTrue);
-      verify(mockStorage.saveSetting(any, any)).called(1);
+      verify(mockStorage.saveSetting(any as String, any as String)).called(1);
     });
 
     test('获取所有 Agent 配置', () async {
