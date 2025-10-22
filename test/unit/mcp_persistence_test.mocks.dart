@@ -265,6 +265,97 @@ class MockStorageService extends _i1.Mock implements _i2.StorageService {
           as _i3.Future<List<String>>);
 
   @override
+  _i3.Future<void> saveMcpConfig(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveMcpConfig, [id, data]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<Map<String, dynamic>?> getMcpConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getMcpConfig, [id]),
+            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i3.Future<Map<String, dynamic>?>);
+
+  @override
+  _i3.Future<List<Map<String, dynamic>>> getAllMcpConfigs() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllMcpConfigs, []),
+            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i3.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i3.Future<void> deleteMcpConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteMcpConfig, [id]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> saveAgentConfig(String? id, Map<String, dynamic>? data) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveAgentConfig, [id, data]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<Map<String, dynamic>?> getAgentConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAgentConfig, [id]),
+            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i3.Future<Map<String, dynamic>?>);
+
+  @override
+  _i3.Future<List<Map<String, dynamic>>> getAllAgentConfigs() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllAgentConfigs, []),
+            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i3.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i3.Future<List<Map<String, dynamic>>> getAllAgentTools() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllAgentTools, []),
+            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i3.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i3.Future<void> deleteAgentConfig(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAgentConfig, [id]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> deleteAgentTool(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAgentTool, [id]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
   _i3.Future<void> clearAll() =>
       (super.noSuchMethod(
             Invocation.method(#clearAll, []),

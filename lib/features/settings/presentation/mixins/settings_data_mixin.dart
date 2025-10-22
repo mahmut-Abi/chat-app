@@ -206,7 +206,6 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         print('🔄 Settings: 已刷新 conversationsProvider');
         ref.invalidate(conversationGroupsProvider);
         print('🔄 Settings: 已刷新 conversationGroupsProvider');
-        ref.invalidate(conversationModelsProvider);
         
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);

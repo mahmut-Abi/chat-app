@@ -273,11 +273,11 @@ class HttpMcpClient extends McpClientBase {
         }
         
         if (tools != null) {
-          _log.info('获取到 MCP 工具列表', {'count': tools.length});
-          return tools;
-        }
-      }
-      _log.warning('获取工具列表失败', {'statusCode': response.statusCode, 'dataType': data.runtimeType});
+         _log.info('获取到 MCP 工具列表', {'count': tools.length});
+         return tools;
+       }
+     }
+      _log.warning('获取工具列表失败', {'statusCode': response.statusCode});
       return null;
     } catch (e) {
       _log.error('获取工具列表异常', e);
