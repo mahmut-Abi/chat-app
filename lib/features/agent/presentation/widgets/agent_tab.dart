@@ -54,12 +54,22 @@ class AgentTab extends ConsumerWidget {
       itemCount: agents.length,
       itemBuilder: (context, index) => AgentListItem(
         agent: agents[index],
-        onDelete: () => _deleteAgent(context, ref, agents[index].id),
+        onDelete: () => _deleteAgent(
+          context,
+          ref,
+          agents[index].id,
+          isBuiltIn: agents[index].isBuiltIn,
+        ),
       ),
     );
   }
 
-  void _deleteAgent(BuildContext context, WidgetRef ref, String id) {
+  void _deleteAgent(
+    BuildContext context,
+    WidgetRef ref,
+    String id, {
+    bool isBuiltIn = false,
+  }) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -74,7 +84,7 @@ class AgentTab extends ConsumerWidget {
             onPressed: () async {
               try {
                 final repository = ref.read(agentRepositoryProvider);
-                await repository.deleteAgent(id);
+                await repository.deleteAgentWithPersistence(id, isBuiltIn);
 
                 ref.invalidate(agentConfigsProvider);
 

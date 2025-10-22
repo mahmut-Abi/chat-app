@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/platform_utils.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
+import 'mcp_tools_list_screen.dart';
 import '../../../core/utils/message_utils.dart';
 
 /// MCP 配置界面
@@ -148,14 +150,36 @@ class McpScreen extends ConsumerWidget {
                                 .read(mcpRepositoryProvider)
                                 .disconnect(config.id);
                           } else {
-                            await ref
+                            final success = await ref
                                 .read(mcpRepositoryProvider)
                                 .connect(config);
+                            if (kDebugMode) {
+                              print('[MCP] Connect result: $success');
+                            }
+                            // 等待连接完成并更新状态
+                            await Future.delayed(const Duration(milliseconds: 800));
                           }
+                          // 刷新连接状态
+                          ref.invalidate(mcpConnectionStatusProvider(config.id));
                           ref.invalidate(mcpConfigsProvider);
                         }
                       : null,
                 ),
+                if (connectionStatus == McpConnectionStatus.connected)
+                  IconButton(
+                    icon: const Icon(Icons.build),
+                    tooltip: '查看工具列表',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => McpToolsListScreen(
+                            configId: config.id,
+                            configName: config.name,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () async {

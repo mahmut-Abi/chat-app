@@ -3,6 +3,7 @@ import 'mcp_client_base.dart';
 import 'http_mcp_client.dart';
 import 'stdio_mcp_client.dart';
 import 'enhanced_http_mcp_client.dart';
+import 'mcp_resources_client.dart';
 import '../../../core/services/log_service.dart';
 
 /// MCP 客户端工厂 - 支持增强型客户端和自动端点探测
@@ -22,18 +23,15 @@ class McpClientFactory {
       'enhanced': useEnhancedClient,
     });
 
-    // 对于 HTTP 连接，优先使用增强型客户端
-    if (config.connectionType == McpConnectionType.http && useEnhancedClient) {
-      return EnhancedHttpMcpClient(
-        config: config,
-        customHealthCheckPath: customHealthCheckPath,
-      );
+    // 对于 HTTP 连接，使用资源客户端（支持 tools、prompts、resources）
+    if (config.connectionType == McpConnectionType.http) {
+      return McpResourcesClient(config: config);
     }
 
     // 标准工厂方法
     switch (config.connectionType) {
       case McpConnectionType.http:
-        return HttpMcpClient(config: config);
+        return McpResourcesClient(config: config);
       case McpConnectionType.stdio:
         return StdioMcpClient(config: config);
     }

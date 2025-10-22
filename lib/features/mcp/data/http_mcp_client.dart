@@ -369,6 +369,70 @@ class HttpMcpClient extends McpClientBase {
     }
   }
 
+  /// 获取提示词列表
+  Future<List<Map<String, dynamic>>?> listPrompts() async {
+    _log.debug('获取提示词列表');
+    try {
+      final response = await _dio.get('/prompts');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        
+        List<Map<String, dynamic>>? prompts;
+        if (data is List) {
+          prompts = data.cast<Map<String, dynamic>>();
+        } else if (data is Map<String, dynamic>) {
+          if (data['prompts'] is List) {
+            prompts = (data['prompts'] as List).cast<Map<String, dynamic>>();
+          } else if (data['data'] is List) {
+            prompts = (data['data'] as List).cast<Map<String, dynamic>>();
+          }
+        }
+        
+        if (prompts != null) {
+          _log.info('获取到提示词列表', {'count': prompts.length});
+          return prompts;
+        }
+      }
+      _log.warning('获取提示词列表失败');
+      return null;
+    } catch (e) {
+      _log.error('获取提示词列表异常', e);
+      return null;
+    }
+  }
+
+  /// 获取资源列表
+  Future<List<Map<String, dynamic>>?> listResources() async {
+    _log.debug('获取资源列表');
+    try {
+      final response = await _dio.get('/resources');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        
+        List<Map<String, dynamic>>? resources;
+        if (data is List) {
+          resources = data.cast<Map<String, dynamic>>();
+        } else if (data is Map<String, dynamic>) {
+          if (data['resources'] is List) {
+            resources = (data['resources'] as List).cast<Map<String, dynamic>>();
+          } else if (data['data'] is List) {
+            resources = (data['data'] as List).cast<Map<String, dynamic>>();
+          }
+        }
+        
+        if (resources != null) {
+          _log.info('获取到资源列表', {'count': resources.length});
+          return resources;
+        }
+      }
+      _log.warning('获取资源列表失败');
+      return null;
+    } catch (e) {
+      _log.error('获取资源列表异常', e);
+      return null;
+    }
+  }
+
   @override
   void dispose() {
     _log.debug('HTTP MCP 客户端释放资源', {'endpoint': config.endpoint});

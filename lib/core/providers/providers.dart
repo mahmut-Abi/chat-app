@@ -15,6 +15,9 @@ import '../utils/token_counter.dart';
 import 'package:flutter/foundation.dart';
 import '../../features/mcp/data/mcp_repository.dart';
 import '../../features/mcp/domain/mcp_config.dart';
+import '../../features/mcp/data/mcp_tools_service.dart';
+import '../../features/mcp/data/mcp_unified_resources_service.dart';
+import '../../features/mcp/data/mcp_resources_client.dart';
 import '../../features/agent/data/agent_repository.dart';
 import '../../features/agent/data/tool_executor.dart';
 import '../../features/agent/domain/agent_tool.dart';
@@ -52,11 +55,45 @@ final mcpConfigsProvider = FutureProvider.autoDispose<List<McpConfig>>((
 });
 
 /// MCP 连接状态 Provider
+/// MCP 连接状态 Provider - 实时整合
+/// 使用 FutureProvider 以支持更好的依赖管理
 final mcpConnectionStatusProvider =
-    Provider.family<McpConnectionStatus, String>((ref, configId) {
+    Provider.family.autoDispose<McpConnectionStatus, String>((ref, configId) {
       final repository = ref.watch(mcpRepositoryProvider);
       return repository.getConnectionStatus(configId) ??
           McpConnectionStatus.disconnected;
+    });
+
+/// MCP 工具列表 Provider
+final mcpToolsProvider = FutureProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
+  (ref, configId) async {
+    final repository = ref.watch(mcpRepositoryProvider);
+    final client = repository.getClient(configId);
+    if (client == null) {
+      return [];
+    }
+    try {
+      final tools = await client.listTools();
+      return tools ?? [];
+    } catch (e) {
+      return [];
+    }
+  },
+);
+
+/// MCP 所有工具 Provider
+final mcpAllToolsProvider = FutureProvider.autoDispose<List<McpToolWithConfig>>((ref) async {
+  final repository = ref.watch(mcpRepositoryProvider);
+  final toolsService = McpToolsService(repository);
+  return await toolsService.getAllToolsWithConfig();
+});
+
+/// MCP 所有资源 Provider (工具、提示词、资源)
+final mcpResourcesProvider =
+    FutureProvider.autoDispose.family<MCPAllResources, String>((ref, configId) async {
+      final repository = ref.watch(mcpRepositoryProvider);
+      final service = McpUnifiedResourcesService(repository);
+      return await service.getAllResources(configId);
     });
 
 // ============ Agent Providers ============
