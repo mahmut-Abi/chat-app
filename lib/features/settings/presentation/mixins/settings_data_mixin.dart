@@ -229,6 +229,26 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
           _log.error('Failed to reload conversations after import', e);
         }
 
+        // 🔑 关键修复：强制刷新 Chat 相关的 providers 和 UI
+        // 这确保即使用户还在 Chat 页面，也能立即看到新导入的数据
+        if (mounted) {
+          // 延迟以确保 providers 完全重建
+          await Future.delayed(const Duration(milliseconds: 300));
+          
+          if (mounted) {
+            // 额外刷新 Chat 相关的 providers
+            ref.invalidate(chatRepositoryProvider);
+            ref.invalidate(modelsRepositoryProvider);
+            ref.invalidate(dioClientProvider);
+            ref.invalidate(openAIApiClientProvider);
+            print('🔄 Settings: 已刷新 ChatRepository 相关 providers');
+            
+            // 强制重建整个 widget 树
+            WidgetsBinding.instance.scheduleFrame();
+            print('✅ Settings: 已触发 UI 重建');
+          }
+        }
+
         if (mounted) {
           final msg = '导入成功：';
           final counts = [];
