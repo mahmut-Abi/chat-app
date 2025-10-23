@@ -55,16 +55,16 @@ class TokenUsageScreen extends ConsumerWidget {
         title: const Text('Token 消耗记录'),
       ),
       body: Column(
-          children: [
-            _buildSummaryCard(context, totalTokens, records.length),
-            const Divider(height: 1),
-            Expanded(
-              child: records.isEmpty
-                  ? _buildEmptyState(context)
-                  : _buildRecordsList(context, records),
-            ),
-          ],
-        ),
+        children: [
+          _buildSummaryCard(context, totalTokens, records.length),
+          const Divider(height: 1),
+          Expanded(
+            child: records.isEmpty
+                ? _buildEmptyState(context)
+                : _buildRecordsList(context, records),
+          ),
+        ],
+      ),
     );
   }
 

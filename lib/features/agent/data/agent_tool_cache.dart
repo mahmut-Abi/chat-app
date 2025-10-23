@@ -8,7 +8,7 @@ class AgentToolCache {
   final Duration _defaultDuration;
 
   AgentToolCache({Duration defaultDuration = const Duration(hours: 1)})
-      : _defaultDuration = defaultDuration;
+    : _defaultDuration = defaultDuration;
 
   ToolExecutionResult? get(String toolId, Map<String, dynamic> arguments) {
     final key = _generateKey(toolId, arguments);
@@ -20,14 +20,16 @@ class AgentToolCache {
     return cached.result;
   }
 
-  void set(String toolId, Map<String, dynamic> arguments,
-      ToolExecutionResult result,
-      {Duration? duration}) {
+  void set(
+    String toolId,
+    Map<String, dynamic> arguments,
+    ToolExecutionResult result, {
+    Duration? duration,
+  }) {
     final key = _generateKey(toolId, arguments);
     final actualDuration = duration ?? _defaultDuration;
     _expireTimers[key]?.cancel();
-    _cache[key] = _CachedResult(
-        result, DateTime.now().add(actualDuration));
+    _cache[key] = _CachedResult(result, DateTime.now().add(actualDuration));
     _expireTimers[key] = Timer(actualDuration, () {
       _removeCached(key);
     });

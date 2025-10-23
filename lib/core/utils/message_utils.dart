@@ -40,7 +40,12 @@ class MessageUtils {
 
   /// 显示复制成功提示
   static void showCopied(BuildContext context) {
-    _showSnackBar(context, '已复制到剪贴板', _MessageType.info, const Duration(seconds: 1));
+    _showSnackBar(
+      context,
+      '已复制到剪贴板',
+      _MessageType.info,
+      const Duration(seconds: 1),
+    );
   }
 
   /// 内部方法：显示 SnackBar

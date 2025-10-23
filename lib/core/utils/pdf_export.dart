@@ -27,10 +27,7 @@ class PdfExport {
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        theme: pw.ThemeData.withFont(
-          base: font,
-          bold: fontBold,
-        ),
+        theme: pw.ThemeData.withFont(base: font, bold: fontBold),
         build: (context) => [
           // 标题
           pw.Header(
@@ -184,10 +181,7 @@ class PdfExport {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
-        theme: pw.ThemeData.withFont(
-          base: font,
-          bold: fontBold,
-        ),
+        theme: pw.ThemeData.withFont(base: font, bold: fontBold),
         build: (context) => pw.Center(
           child: pw.Column(
             mainAxisAlignment: pw.MainAxisAlignment.center,
@@ -220,10 +214,7 @@ class PdfExport {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
-          theme: pw.ThemeData.withFont(
-            base: font,
-            bold: fontBold,
-          ),
+          theme: pw.ThemeData.withFont(base: font, bold: fontBold),
           build: (context) => [
             pw.Header(
               level: 0,

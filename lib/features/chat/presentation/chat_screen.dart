@@ -75,7 +75,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       next.whenData((conversations) {
         if (kDebugMode) print('🔍 ChatScreen: 注册 provider 监听器');
         if (mounted) {
-          if (kDebugMode) print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
+          if (kDebugMode)
+            print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
           setState(() {
             _conversations = conversations;
           });
@@ -162,7 +163,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-
   void _scrollToBottom({bool force = false}) {
     // 如果用户手动滚动到历史消息，不自动滚动
     if (!force && _userScrolledUp) {
@@ -206,13 +206,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final allConfigs = await settingsRepo.getAllApiConfigs();
       if (kDebugMode) print('所有 API 配置数量: ${allConfigs.length}');
       for (final config in allConfigs) {
-        if (kDebugMode) print('  配置: ${config.name}, isActive: ${config.isActive}');
+        if (kDebugMode)
+          print('  配置: ${config.name}, isActive: ${config.isActive}');
       }
     }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
     if (kDebugMode) {
       if (kDebugMode) print('ChatScreen: activeApiConfig = $activeApiConfig');
-      );
     }
     if (activeApiConfig == null) {
       if (mounted) {
@@ -283,7 +283,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           if (kDebugMode) print('图片信息: ${imageFile.path}');
           if (kDebugMode) print('  MIME: $mimeType');
           if (kDebugMode) print('  Base64 长度: ${base64Data.length}');
-          );
 
           imageAttachments.add(
             ImageAttachment(
@@ -347,7 +346,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (kDebugMode) {
         if (kDebugMode) print('ChatScreen: 使用模型 = $modelToUse');
         if (kDebugMode) print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
-        if (kDebugMode) print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
+        if (kDebugMode)
+          print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
       }
       final config = ModelConfig(
         model: modelToUse,
@@ -466,7 +466,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       // 刷新侧边栏对话列表（如果这是第一条消息，现在会显示在侧边栏）
       _loadAllConversations();
-
     } catch (e) {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);

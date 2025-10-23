@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
- import '../../../core/utils/platform_utils.dart';
- import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/platform_dialog.dart';
 import '../../../shared/widgets/page_background.dart';
@@ -35,7 +35,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _loadData();
     _initDesktopFeatures();
   }
-
 
   void _initDesktopFeatures() {
     if (DesktopUtils.isDesktop) {
@@ -211,7 +210,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.didChangeDependencies();
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     // 监听 providers 变化，确保导入数据后立即刷新
     ref.listen(conversationsProvider, (previous, next) {
@@ -233,43 +232,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return PageBackground(
       child: Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const Text('Chat App'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: '搜索 (Ctrl+F)',
-            onPressed: _showSearch,
-          ),
-        ],
-      ),
-      body: Row(
-        children: [
-          ModernSidebar(
-            conversations: _conversations,
-            groups: _groups,
-            selectedConversation: _selectedConversation,
-            onConversationSelected: (conversation) {
-              setState(() {
-                _selectedConversation = conversation;
-              });
-              context.go('/chat/${conversation.id}');
-            },
-            onCreateConversation: _createNewConversation,
-            onDeleteConversation: _deleteConversation,
-            onRenameConversation: _showRenameDialog,
-            onUpdateTags: _updateConversationTags,
-            onManageGroups: _showGroupManagement,
-          ),
-          Expanded(
-            child: _selectedConversation == null
-                ? _buildWelcomeScreen()
-                : ChatScreen(conversationId: _selectedConversation!.id),
-          ),
-        ],
-      ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Chat App'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: '搜索 (Ctrl+F)',
+              onPressed: _showSearch,
+            ),
+          ],
+        ),
+        body: Row(
+          children: [
+            ModernSidebar(
+              conversations: _conversations,
+              groups: _groups,
+              selectedConversation: _selectedConversation,
+              onConversationSelected: (conversation) {
+                setState(() {
+                  _selectedConversation = conversation;
+                });
+                context.go('/chat/${conversation.id}');
+              },
+              onCreateConversation: _createNewConversation,
+              onDeleteConversation: _deleteConversation,
+              onRenameConversation: _showRenameDialog,
+              onUpdateTags: _updateConversationTags,
+              onManageGroups: _showGroupManagement,
+            ),
+            Expanded(
+              child: _selectedConversation == null
+                  ? _buildWelcomeScreen()
+                  : ChatScreen(conversationId: _selectedConversation!.id),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -317,81 +316,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) return;
-        // 阻止默认的返回行为，避免 iOS 右划手势触发路由返回
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        drawerScrimColor: Colors.black.withValues(alpha: 0.5),
-        drawerEnableOpenDragGesture: true,
-        endDrawerEnableOpenDragGesture: false,
-        // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
-        onDrawerChanged: PlatformUtils.isIOS
-            ? (isOpened) {
-                // 抽屉打开或关闭时，移除所有焦点防止键盘弹出
-                FocusManager.instance.primaryFocus?.unfocus();
-              }
-            : null,
-        drawer: Drawer(
-          backgroundColor: Theme.of(context).cardColor,
-          child: ModernSidebar(
-            conversations: _conversations,
-            groups: _groups,
-            selectedConversation: _selectedConversation,
-            onConversationSelected: (conversation) {
-              setState(() {
-                _selectedConversation = conversation;
-              });
-              Navigator.of(context).pop();
-              context.go('/chat/${conversation.id}');
-            },
-            onCreateConversation: () {
-              Navigator.of(context).pop();
-              _createNewConversation();
-            },
-            onDeleteConversation: _deleteConversation,
-            onRenameConversation: _showRenameDialog,
-            onUpdateTags: _updateConversationTags,
-            onManageGroups: _showGroupManagement,
-            onSearch: _showSearch,
+          if (didPop) return;
+          // 阻止默认的返回行为，避免 iOS 右划手势触发路由返回
+        },
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          drawerScrimColor: Colors.black.withValues(alpha: 0.5),
+          drawerEnableOpenDragGesture: true,
+          endDrawerEnableOpenDragGesture: false,
+          // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
+          onDrawerChanged: PlatformUtils.isIOS
+              ? (isOpened) {
+                  // 抽屉打开或关闭时，移除所有焦点防止键盘弹出
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
+              : null,
+          drawer: Drawer(
+            backgroundColor: Theme.of(context).cardColor,
+            child: ModernSidebar(
+              conversations: _conversations,
+              groups: _groups,
+              selectedConversation: _selectedConversation,
+              onConversationSelected: (conversation) {
+                setState(() {
+                  _selectedConversation = conversation;
+                });
+                Navigator.of(context).pop();
+                context.go('/chat/${conversation.id}');
+              },
+              onCreateConversation: () {
+                Navigator.of(context).pop();
+                _createNewConversation();
+              },
+              onDeleteConversation: _deleteConversation,
+              onRenameConversation: _showRenameDialog,
+              onUpdateTags: _updateConversationTags,
+              onManageGroups: _showGroupManagement,
+              onSearch: _showSearch,
+            ),
           ),
-        ),
-        body: Stack(
-          children: [
-            _selectedConversation == null
-                ? _buildWelcomeScreen()
-                : ChatScreen(conversationId: _selectedConversation!.id),
-            // 左上角透明菜单按钮 (仅非 iOS 平台显示)
-            if (!PlatformUtils.isIOS)
-              Positioned(
-                top: 60,
-                left: 16,
-                child: Builder(
-                  builder: (context) => Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surface.withValues(alpha: 0.8),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      tooltip: '打开菜单',
+          body: Stack(
+            children: [
+              _selectedConversation == null
+                  ? _buildWelcomeScreen()
+                  : ChatScreen(conversationId: _selectedConversation!.id),
+              // 左上角透明菜单按钮 (仅非 iOS 平台显示)
+              if (!PlatformUtils.isIOS)
+                Positioned(
+                  top: 60,
+                  left: 16,
+                  child: Builder(
+                    builder: (context) => Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surface.withValues(alpha: 0.8),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        tooltip: '打开菜单',
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

@@ -9,7 +9,7 @@ class MonitorDiagnosticResult {
   final String configId;
   final String endpoint;
   final DateTime timestamp;
-  
+
   // 网络层诊断
   late bool dnsResolvable;
   late bool tcpConnectable;
@@ -17,45 +17,50 @@ class MonitorDiagnosticResult {
   String? dnsError;
   String? tcpError;
   String? tlsError;
-  
+
   // HTTP 层诊断
   late bool httpReachable;
   int? httpStatusCode;
   String? httpError;
   final List<String> availableEndpoints = [];
-  
+
   // 应用层诊断
   late bool mcpHealthy;
   late bool toolsAvailable;
   int? toolCount;
   String? mcpError;
-  
+
   // 建议与帮助
   final List<String> recommendations = [];
   final List<String> debugInfo = [];
-  
+
   MonitorDiagnosticResult({
     required this.configId,
     required this.endpoint,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
-  
-  bool get isFullyHealthy => 
-    dnsResolvable && tcpConnectable && httpReachable && mcpHealthy && toolsAvailable;
-  
-  bool get isIrrecoverable => !dnsResolvable || !tcpConnectable || tlsError != null;
-  
+
+  bool get isFullyHealthy =>
+      dnsResolvable &&
+      tcpConnectable &&
+      httpReachable &&
+      mcpHealthy &&
+      toolsAvailable;
+
+  bool get isIrrecoverable =>
+      !dnsResolvable || !tcpConnectable || tlsError != null;
+
   String getSummary() {
     if (isFullyHealthy) return '应用完全健康';
     if (isIrrecoverable) return '不可修复的错误';
-    
+
     final issues = <String>[];
     if (!dnsResolvable) issues.add('DNS解析失败');
     if (!tcpConnectable) issues.add('TCP连接失败');
     if (!httpReachable) issues.add('HTTP不可达');
     if (!mcpHealthy) issues.add('MCP不健康');
     if (!toolsAvailable) issues.add('工具不可用');
-    
+
     return issues.join(', ');
   }
 }
@@ -64,15 +69,15 @@ class MonitorDiagnosticResult {
 class McpMonitorDiagnosticsService {
   final LogService log = LogService();
   final Dio _dio = Dio();
-  
+
   Future<MonitorDiagnosticResult> diagnose(McpConfig config) async {
     log.info('开始 MCP 诊断', {'configId': config.id, 'endpoint': config.endpoint});
-    
+
     final result = MonitorDiagnosticResult(
       configId: config.id,
       endpoint: config.endpoint,
     );
-    
+
     await _checkDnsResolution(config.endpoint, result);
     if (result.dnsResolvable) {
       await _checkTcpConnection(config.endpoint, result);
@@ -85,33 +90,36 @@ class McpMonitorDiagnosticsService {
       await _checkMcpHealth(config, result);
       await _checkToolsAvailability(config, result);
     }
-    
+
     _generateRecommendations(result);
     return result;
   }
-  
+
   Future<void> _checkDnsResolution(
     String endpoint,
     MonitorDiagnosticResult result,
   ) async {
     try {
       final uri = Uri.parse(endpoint);
-      final addresses = await InternetAddress.lookup(uri.host)
-          .timeout(const Duration(seconds: 5));
+      final addresses = await InternetAddress.lookup(
+        uri.host,
+      ).timeout(const Duration(seconds: 5));
       result.dnsResolvable = addresses.isNotEmpty;
     } catch (e) {
       result.dnsResolvable = false;
       result.dnsError = e.toString();
     }
   }
-  
+
   Future<void> _checkTcpConnection(
     String endpoint,
     MonitorDiagnosticResult result,
   ) async {
     try {
       final uri = Uri.parse(endpoint);
-      final port = uri.port == 0 ? (uri.scheme == 'https' ? 443 : 80) : uri.port;
+      final port = uri.port == 0
+          ? (uri.scheme == 'https' ? 443 : 80)
+          : uri.port;
       final socket = await Socket.connect(
         uri.host,
         port,
@@ -124,7 +132,7 @@ class McpMonitorDiagnosticsService {
       result.tcpError = e.toString();
     }
   }
-  
+
   Future<void> _checkTlsHandshake(
     String endpoint,
     MonitorDiagnosticResult result,
@@ -132,7 +140,7 @@ class McpMonitorDiagnosticsService {
     try {
       final uri = Uri.parse(endpoint);
       if (uri.scheme != 'https') return;
-      
+
       final socket = await SecureSocket.connect(
         uri.host,
         uri.port == 0 ? 443 : uri.port,
@@ -144,28 +152,30 @@ class McpMonitorDiagnosticsService {
       result.tlsError = e.toString();
     }
   }
-  
+
   Future<void> _checkHttpReachability(
     McpConfig config,
     MonitorDiagnosticResult result,
   ) async {
     final paths = ['/health', '/api/health', '/ping', '/', '/status'];
-    
+
     for (final path in paths) {
       try {
-        final url = config.endpoint.endsWith('/') 
+        final url = config.endpoint.endsWith('/')
             ? config.endpoint + path.substring(1)
             : config.endpoint + path;
-        
-        final response = await _dio.get(
-          url,
-          options: Options(
-            headers: config.headers,
-            receiveTimeout: const Duration(seconds: 3),
-            validateStatus: (status) => status != null && status < 500,
-          ),
-        ).timeout(const Duration(seconds: 3));
-        
+
+        final response = await _dio
+            .get(
+              url,
+              options: Options(
+                headers: config.headers,
+                receiveTimeout: const Duration(seconds: 3),
+                validateStatus: (status) => status != null && status < 500,
+              ),
+            )
+            .timeout(const Duration(seconds: 3));
+
         if (response.statusCode != null && response.statusCode! < 400) {
           result.httpReachable = true;
           result.httpStatusCode = response.statusCode;
@@ -177,7 +187,7 @@ class McpMonitorDiagnosticsService {
       }
     }
   }
-  
+
   Future<void> _checkMcpHealth(
     McpConfig config,
     MonitorDiagnosticResult result,
@@ -188,9 +198,12 @@ class McpMonitorDiagnosticsService {
         StandardHealthCheckExecutor(),
         ToolsListingHealthCheckExecutor(),
       ];
-      
+
       for (final strategy in strategies) {
-        final healthResult = await strategy.execute(config.endpoint, config.headers?.cast());
+        final healthResult = await strategy.execute(
+          config.endpoint,
+          config.headers?.cast(),
+        );
         if (healthResult.success) {
           result.mcpHealthy = true;
           return;
@@ -203,21 +216,23 @@ class McpMonitorDiagnosticsService {
       result.mcpError = e.toString();
     }
   }
-  
+
   Future<void> _checkToolsAvailability(
     McpConfig config,
     MonitorDiagnosticResult result,
   ) async {
     try {
-      final response = await _dio.get(
-        config.endpoint + '/tools',
-        options: Options(
-          headers: config.headers,
-          receiveTimeout: const Duration(seconds: 5),
-          validateStatus: (status) => status != null && status < 500,
-        ),
-      ).timeout(const Duration(seconds: 5));
-      
+      final response = await _dio
+          .get(
+            config.endpoint + '/tools',
+            options: Options(
+              headers: config.headers,
+              receiveTimeout: const Duration(seconds: 5),
+              validateStatus: (status) => status != null && status < 500,
+            ),
+          )
+          .timeout(const Duration(seconds: 5));
+
       if (response.statusCode == 200) {
         int toolCount = 0;
         if (response.data is List) {
@@ -237,7 +252,7 @@ class McpMonitorDiagnosticsService {
       result.toolsAvailable = false;
     }
   }
-  
+
   void _generateRecommendations(MonitorDiagnosticResult result) {
     if (!result.dnsResolvable) {
       result.recommendations.add('检查网络配置 - DNS 解析失败');

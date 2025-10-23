@@ -11,7 +11,7 @@ class McpClientFactory {
   static final _log = LogService();
 
   /// 根据配置创建相应的 MCP 客户端
-  /// 
+  ///
   /// 优先使用增强型 HTTP 客户端，支持自动端点探测
   static McpClientBase createClient(
     McpConfig config, {

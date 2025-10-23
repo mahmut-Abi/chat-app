@@ -46,7 +46,7 @@ void main() {
           updatedAt: now,
         );
 
-         // Default icon
+        // Default icon
       });
 
       test('should create built-in agent', () {
@@ -238,7 +238,7 @@ void main() {
             'type': 'object',
             'properties': {
               'expression': {'type': 'string'},
-            }
+            },
           },
           enabled: true,
           isBuiltIn: true,
@@ -298,16 +298,10 @@ void main() {
         final params = {
           'type': 'object',
           'properties': {
-            'file_path': {
-              'type': 'string',
-              'description': 'Path to file'
-            },
-            'max_size': {
-              'type': 'integer',
-              'default': 1000
-            }
+            'file_path': {'type': 'string', 'description': 'Path to file'},
+            'max_size': {'type': 'integer', 'default': 1000},
           },
-          'required': ['file_path']
+          'required': ['file_path'],
         };
 
         final tool = AgentTool(

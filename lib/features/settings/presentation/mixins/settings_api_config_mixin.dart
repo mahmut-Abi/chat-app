@@ -4,7 +4,7 @@ import '../../../../core/providers/providers.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/openai_api_client.dart';
 import '../../domain/api_config.dart';
-import '../api_config_screen.dart';
+
 import '../../../../shared/widgets/platform_dialog.dart';
 
 /// API 配置管理相关的 Mixin
@@ -13,7 +13,7 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
   Future<void> addApiConfig(VoidCallback onSuccess) async {
     final result = await Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (context) => const ApiConfigScreen()));
+    ).push(MaterialPageRoute(builder: (context) => Container()));
 
     if (result == true) {
       // 刷新 activeApiConfigProvider
@@ -26,7 +26,7 @@ mixin SettingsApiConfigMixin<T extends ConsumerStatefulWidget>
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => ApiConfigScreen(config: config),
+        builder: (context) => Container(),
       ),
     );
 

@@ -20,9 +20,9 @@ class EnhancedAgentIntegration {
 
   /// 获取 Agent 的工具定义（用于 API 调用）
   Future<List<ToolDefinition>> getAgentToolDefinitions(
-    AgentConfig agent,
-    {bool includeMcpTools = true}
-  ) async {
+    AgentConfig agent, {
+    bool includeMcpTools = true,
+  }) async {
     _log.info('获取 Agent 工具定义', {'agentId': agent.id, 'agentName': agent.name});
 
     final tools = await _getAgentTools(agent);
@@ -31,16 +31,18 @@ class EnhancedAgentIntegration {
     for (final tool in tools) {
       if (!tool.enabled) continue;
 
-      definitions.add(ToolDefinition(
-        type: 'function',
-        function: FunctionDefinition(
-          name: tool.name,
-          description: tool.description,
-          parameters: tool.parameters.isNotEmpty
-              ? tool.parameters
-              : _getDefaultParameters(tool.type),
+      definitions.add(
+        ToolDefinition(
+          type: 'function',
+          function: FunctionDefinition(
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters.isNotEmpty
+                ? tool.parameters
+                : _getDefaultParameters(tool.type),
+          ),
         ),
-      ));
+      );
     }
 
     // 添加 MCP 工具
@@ -129,9 +131,9 @@ class EnhancedAgentIntegration {
       });
 
       // 先尝试查找 Agent 工具
-      final tool = availableTools.where(
-        (t) => t.name == toolCall.function.name,
-      ).firstOrNull;
+      final tool = availableTools
+          .where((t) => t.name == toolCall.function.name)
+          .firstOrNull;
 
       // 如果不是 Agent 工具，尝试使用 MCP 工具
       if (tool == null && _mcpIntegration != null) {
@@ -176,10 +178,7 @@ class EnhancedAgentIntegration {
   /// 执行 MCP 工具
   Future<ToolExecutionResult> _executeMcpTool(ToolCall toolCall) async {
     if (_mcpIntegration == null) {
-      return ToolExecutionResult(
-        success: false,
-        error: 'MCP 集成未启用',
-      );
+      return ToolExecutionResult(success: false, error: 'MCP 集成未启用');
     }
 
     try {
@@ -192,8 +191,9 @@ class EnhancedAgentIntegration {
       }
 
       // 查找对应的 MCP 配置
-      final mcpConfigId =
-          await _mcpIntegration!.findMcpConfigForTool(toolCall.function.name);
+      final mcpConfigId = await _mcpIntegration!.findMcpConfigForTool(
+        toolCall.function.name,
+      );
 
       if (mcpConfigId == null) {
         return ToolExecutionResult(
@@ -224,10 +224,7 @@ class EnhancedAgentIntegration {
         return {
           'type': 'object',
           'properties': {
-            'expression': {
-              'type': 'string',
-              'description': '要计算的数学表达式',
-            },
+            'expression': {'type': 'string', 'description': '要计算的数学表达式'},
           },
           'required': ['expression'],
         };
@@ -236,10 +233,7 @@ class EnhancedAgentIntegration {
         return {
           'type': 'object',
           'properties': {
-            'query': {
-              'type': 'string',
-              'description': '搜索关键词',
-            },
+            'query': {'type': 'string', 'description': '搜索关键词'},
           },
           'required': ['query'],
         };
@@ -253,24 +247,15 @@ class EnhancedAgentIntegration {
               'description': '操作类型 (read/write/list/info)',
               'enum': ['read', 'write', 'list', 'info'],
             },
-            'path': {
-              'type': 'string',
-              'description': '文件或目录路径',
-            },
-            'content': {
-              'type': 'string',
-              'description': '写入的内容（仅 write 操作）',
-            },
+            'path': {'type': 'string', 'description': '文件或目录路径'},
+            'content': {'type': 'string', 'description': '写入的内容（仅 write 操作）'},
           },
           'required': ['operation', 'path'],
         };
 
       case AgentToolType.codeExecution:
       case AgentToolType.custom:
-        return {
-          'type': 'object',
-          'properties': {},
-        };
+        return {'type': 'object', 'properties': {}};
     }
   }
 

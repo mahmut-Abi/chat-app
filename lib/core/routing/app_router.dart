@@ -18,11 +18,8 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const HomeScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const HomeScreen()),
       ),
       GoRoute(
         path: '/chat/:id',
@@ -31,68 +28,44 @@ class AppRouter {
           return _buildPage(
             context,
             state,
-            ChatScreen(
-              key: ValueKey<String>(id),
-              conversationId: id,
-            ),
+            ChatScreen(key: ValueKey<String>(id), conversationId: id),
           );
         },
       ),
       GoRoute(
         path: '/settings',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const ModernSettingsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const ModernSettingsScreen()),
       ),
       GoRoute(
         path: '/models',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const ModelsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const ModelsScreen()),
       ),
       GoRoute(
         path: '/mcp',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const McpScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const McpScreen()),
       ),
       GoRoute(
         path: '/token-usage',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const TokenUsageScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const TokenUsageScreen()),
       ),
       GoRoute(
         path: '/agent',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const AgentScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const AgentScreen()),
       ),
       GoRoute(
         path: '/prompts',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const PromptsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const PromptsScreen()),
       ),
       GoRoute(
         path: '/logs',
-        pageBuilder: (context, state) => _buildPage(
-          context,
-          state,
-          const LogsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildPage(context, state, const LogsScreen()),
       ),
     ],
   );
@@ -109,15 +82,12 @@ class AppRouter {
       'platform': _getPlatformName(),
       'pageKey': state.pageKey.toString(),
     });
-    
+
     // 所有平台统一使用 MaterialPage
     // 通过 Theme 的 pageTransitionsTheme 控制不同平台的转场效果
-    return MaterialPage(
-      key: state.pageKey,
-      child: child,
-    );
+    return MaterialPage(key: state.pageKey, child: child);
   }
-  
+
   /// 获取平台名称（用于日志）
   static String _getPlatformName() {
     if (PlatformUtils.isIOS) return 'iOS';

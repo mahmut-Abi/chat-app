@@ -16,14 +16,14 @@ class PlatformConfig {
 
   /// Check if platform is mobile
   static bool get isMobile =>
-    currentPlatform == PlatformType.ios ||
-    currentPlatform == PlatformType.android;
+      currentPlatform == PlatformType.ios ||
+      currentPlatform == PlatformType.android;
 
   /// Check if platform is desktop
   static bool get isDesktop =>
-    currentPlatform == PlatformType.windows ||
-    currentPlatform == PlatformType.macos ||
-    currentPlatform == PlatformType.linux;
+      currentPlatform == PlatformType.windows ||
+      currentPlatform == PlatformType.macos ||
+      currentPlatform == PlatformType.linux;
 
   /// Check if platform is web
   static bool get isWeb => currentPlatform == PlatformType.web;

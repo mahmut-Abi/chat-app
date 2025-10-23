@@ -15,7 +15,7 @@ import '../utils/token_counter.dart';
 import 'package:flutter/foundation.dart';
 import '../../features/mcp/data/mcp_repository.dart';
 import '../../features/mcp/domain/mcp_config.dart';
-import '../../features/mcp/data/mcp_tools_service.dart';
+
 import '../../features/mcp/data/mcp_unified_resources_service.dart';
 import '../../features/mcp/data/mcp_resources_client.dart';
 import '../../features/agent/data/agent_repository.dart';
@@ -81,13 +81,6 @@ final mcpToolsProvider = FutureProvider.autoDispose
     });
 
 /// MCP 所有工具 Provider
-final mcpAllToolsProvider = FutureProvider.autoDispose<List<McpToolWithConfig>>(
-  (ref) async {
-    final repository = ref.watch(mcpRepositoryProvider);
-    final toolsService = McpToolsService(repository);
-    return await toolsService.getAllToolsWithConfig();
-  },
-);
 
 /// MCP 所有资源 Provider (工具、提示词、资源)
 final mcpResourcesProvider = FutureProvider.autoDispose

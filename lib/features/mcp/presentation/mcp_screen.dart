@@ -5,7 +5,6 @@ import '../../../core/utils/platform_utils.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/providers/providers.dart';
 import 'mcp_config_screen.dart';
-import 'mcp_tools_list_screen.dart';
 import '../../../core/utils/message_utils.dart';
 
 /// MCP 配置界面
@@ -38,8 +37,8 @@ class McpScreen extends ConsumerWidget {
       ),
       body: configsAsync.when(
         data: (configs) => configs.isEmpty
-              ? _buildEmptyState(context)
-              : _buildConfigList(context, ref, configs),
+            ? _buildEmptyState(context)
+            : _buildConfigList(context, ref, configs),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('加载失败: $error')),
       ),
@@ -157,10 +156,14 @@ class McpScreen extends ConsumerWidget {
                               print('[MCP] Connect result: $success');
                             }
                             // 等待连接完成并更新状态
-                            await Future.delayed(const Duration(milliseconds: 800));
+                            await Future.delayed(
+                              const Duration(milliseconds: 800),
+                            );
                           }
                           // 刷新连接状态
-                          ref.invalidate(mcpConnectionStatusProvider(config.id));
+                          ref.invalidate(
+                            mcpConnectionStatusProvider(config.id),
+                          );
                           ref.invalidate(mcpConfigsProvider);
                         }
                       : null,
@@ -169,20 +172,6 @@ class McpScreen extends ConsumerWidget {
                   IconButton(
                     icon: const Icon(Icons.build),
                     tooltip: '查看工具列表',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => McpToolsListScreen(
-                            configId: config.id,
-                            configName: config.name,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
                         fullscreenDialog: true,

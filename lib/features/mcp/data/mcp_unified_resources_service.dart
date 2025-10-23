@@ -16,11 +16,7 @@ class McpUnifiedResourcesService {
       final client = _repository.getClient(configId);
       if (client == null) {
         _log.warning('MCP 客户端未连接', {'configId': configId});
-        return MCPAllResources(
-          tools: [],
-          prompts: [],
-          resources: [],
-        );
+        return MCPAllResources(tools: [], prompts: [], resources: []);
       }
 
       // 尝试是否是 McpResourcesClient
@@ -32,18 +28,10 @@ class McpUnifiedResourcesService {
       _log.info('使用基本客户端获取资源');
       final tools = await client.listTools() ?? [];
 
-      return MCPAllResources(
-        tools: tools,
-        prompts: [],
-        resources: [],
-      );
+      return MCPAllResources(tools: tools, prompts: [], resources: []);
     } catch (e) {
       _log.error('获取 MCP 资源常常', e);
-      return MCPAllResources(
-        tools: [],
-        prompts: [],
-        resources: [],
-      );
+      return MCPAllResources(tools: [], prompts: [], resources: []);
     }
   }
 
@@ -72,8 +60,8 @@ class McpUnifiedResourcesService {
     try {
       final client = _repository.getClient(configId);
       if (client is McpResourcesClient) {
-        final prompts =
-            await (client as McpResourcesClient).listPromptsWithFallback();
+        final prompts = await (client as McpResourcesClient)
+            .listPromptsWithFallback();
         return prompts != null && prompts.isNotEmpty;
       }
       return false;
@@ -87,8 +75,8 @@ class McpUnifiedResourcesService {
     try {
       final client = _repository.getClient(configId);
       if (client is McpResourcesClient) {
-        final resources =
-            await (client as McpResourcesClient).listResourcesWithFallback();
+        final resources = await (client as McpResourcesClient)
+            .listResourcesWithFallback();
         return resources != null && resources.isNotEmpty;
       }
       return false;
@@ -109,15 +97,13 @@ class McpUnifiedResourcesService {
       final tools = await client.listTools() ?? [];
       final lowercaseQuery = query.toLowerCase();
 
-      return tools
-          .where((tool) {
-            final name = (tool['name'] as String? ?? '').toLowerCase();
-            final description =
-                (tool['description'] as String? ?? '').toLowerCase();
-            return name.contains(lowercaseQuery) ||
-                description.contains(lowercaseQuery);
-          })
-          .toList();
+      return tools.where((tool) {
+        final name = (tool['name'] as String? ?? '').toLowerCase();
+        final description = (tool['description'] as String? ?? '')
+            .toLowerCase();
+        return name.contains(lowercaseQuery) ||
+            description.contains(lowercaseQuery);
+      }).toList();
     } catch (e) {
       _log.error('搜索工具常常', e);
       return [];
@@ -137,15 +123,13 @@ class McpUnifiedResourcesService {
           await (client as McpResourcesClient).listPromptsWithFallback() ?? [];
       final lowercaseQuery = query.toLowerCase();
 
-      return prompts
-          .where((prompt) {
-            final name = (prompt['name'] as String? ?? '').toLowerCase();
-            final description =
-                (prompt['description'] as String? ?? '').toLowerCase();
-            return name.contains(lowercaseQuery) ||
-                description.contains(lowercaseQuery);
-          })
-          .toList();
+      return prompts.where((prompt) {
+        final name = (prompt['name'] as String? ?? '').toLowerCase();
+        final description = (prompt['description'] as String? ?? '')
+            .toLowerCase();
+        return name.contains(lowercaseQuery) ||
+            description.contains(lowercaseQuery);
+      }).toList();
     } catch (e) {
       _log.error('搜索提示词常常', e);
       return [];
@@ -163,16 +147,14 @@ class McpUnifiedResourcesService {
 
       final resources =
           await (client as McpResourcesClient).listResourcesWithFallback() ??
-              [];
+          [];
       final lowercaseQuery = query.toLowerCase();
 
-      return resources
-          .where((resource) {
-            final uri = (resource['uri'] as String? ?? '').toLowerCase();
-            final name = (resource['name'] as String? ?? '').toLowerCase();
-            return uri.contains(lowercaseQuery) || name.contains(lowercaseQuery);
-          })
-          .toList();
+      return resources.where((resource) {
+        final uri = (resource['uri'] as String? ?? '').toLowerCase();
+        final name = (resource['name'] as String? ?? '').toLowerCase();
+        return uri.contains(lowercaseQuery) || name.contains(lowercaseQuery);
+      }).toList();
     } catch (e) {
       _log.error('搜索资源常常', e);
       return [];

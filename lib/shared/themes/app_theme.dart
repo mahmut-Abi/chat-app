@@ -187,7 +187,7 @@ class _OpaquePageTransitionsBuilder extends PageTransitionsBuilder {
       color: Theme.of(context).scaffoldBackgroundColor,
       child: child,
     );
-    
+
     // 使用原生转场动画
     return _delegate.buildTransitions(
       route,

@@ -255,19 +255,19 @@ class StorageService {
   }
 
   Future<void> clearAllModels() async {
-   _log.info('清除所有模型');
-   await _modelsBoxInstance.clear();
- }
+    _log.info('清除所有模型');
+    await _modelsBoxInstance.clear();
+  }
 
- // Get all keys from settings box
- Future<List<String>> getAllKeys() async {
-   final keys = _settingsBoxInstance.keys.map((k) => k.toString()).toList();
-   if (kDebugMode) {
-     print('[StorageService] getAllKeys: 总共 ${keys.length} 个键');
-     print('[StorageService] 键列表: $keys');
-   }
-   return keys;
- }
+  // Get all keys from settings box
+  Future<List<String>> getAllKeys() async {
+    final keys = _settingsBoxInstance.keys.map((k) => k.toString()).toList();
+    if (kDebugMode) {
+      print('[StorageService] getAllKeys: 总共 ${keys.length} 个键');
+      print('[StorageService] 键列表: $keys');
+    }
+    return keys;
+  }
 
   // MCP Configs
   Future<void> saveMcpConfig(String id, Map<String, dynamic> data) async {
@@ -311,7 +311,8 @@ class StorageService {
   Future<List<Map<String, dynamic>>> getAllAgentConfigs() async {
     final agents = <Map<String, dynamic>>[];
     for (final key in _settingsBoxInstance.keys) {
-      if (key.toString().startsWith('agent_') && !key.toString().contains('tool')) {
+      if (key.toString().startsWith('agent_') &&
+          !key.toString().contains('tool')) {
         final data = _settingsBoxInstance.get(key);
         if (data != null) {
           agents.add(jsonDecode(data as String) as Map<String, dynamic>);

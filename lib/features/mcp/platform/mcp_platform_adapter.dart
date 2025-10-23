@@ -64,6 +64,8 @@ class McpPlatformAdapter {
 
   /// Get recommended connection type for current platform
   static McpConnectionType getRecommendedConnectionType() {
-    return PlatformConfig.isDesktop ? McpConnectionType.stdio : McpConnectionType.http;
+    return PlatformConfig.isDesktop
+        ? McpConnectionType.stdio
+        : McpConnectionType.http;
   }
 }

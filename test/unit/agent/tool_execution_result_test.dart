@@ -150,10 +150,7 @@ void main() {
       });
 
       test('should handle edge case: success without result', () {
-        final result = ToolExecutionResult(
-          success: true,
-          result: null,
-        );
+        final result = ToolExecutionResult(success: true, result: null);
 
         expect(result.success, true);
         expect(result.result, null);
@@ -163,10 +160,7 @@ void main() {
     group('Large Result Handling', () {
       test('should handle large text result', () {
         final largeText = 'A' * 10000; // 10KB text
-        final result = ToolExecutionResult(
-          success: true,
-          result: largeText,
-        );
+        final result = ToolExecutionResult(success: true, result: largeText);
 
         expect(result.result?.length, 10000);
       });

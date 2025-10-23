@@ -53,12 +53,12 @@ class Message extends Equatable {
     this.metadata,
     this.tokenCount,
     this.images,
-  this.responseDurationMs,
-  this.model,
-  this.promptTokens,
-  this.completionTokens,
-  this.toolCalls,
-});
+    this.responseDurationMs,
+    this.model,
+    this.promptTokens,
+    this.completionTokens,
+    this.toolCalls,
+  });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
@@ -74,15 +74,15 @@ class Message extends Equatable {
     bool? hasError,
     String? errorMessage,
     Map<String, dynamic>? metadata,
-  int? responseDurationMs,
+    int? responseDurationMs,
     int? tokenCount,
     List<ImageAttachment>? images,
-  String? model,
-  int? promptTokens,
-  int? completionTokens,
-  List<ToolCall>? toolCalls,
-}) {
-  return Message(
+    String? model,
+    int? promptTokens,
+    int? completionTokens,
+    List<ToolCall>? toolCalls,
+  }) {
+    return Message(
       id: id ?? this.id,
       role: role ?? this.role,
       content: content ?? this.content,
@@ -93,13 +93,13 @@ class Message extends Equatable {
       metadata: metadata ?? this.metadata,
       tokenCount: tokenCount ?? this.tokenCount,
       images: images ?? this.images,
-  model: model ?? this.model,
-  promptTokens: promptTokens ?? this.promptTokens,
-  completionTokens: completionTokens ?? this.completionTokens,
-  responseDurationMs: responseDurationMs ?? this.responseDurationMs,
-  toolCalls: toolCalls ?? this.toolCalls,
-);
-}
+      model: model ?? this.model,
+      promptTokens: promptTokens ?? this.promptTokens,
+      completionTokens: completionTokens ?? this.completionTokens,
+      responseDurationMs: responseDurationMs ?? this.responseDurationMs,
+      toolCalls: toolCalls ?? this.toolCalls,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -113,12 +113,12 @@ class Message extends Equatable {
     metadata,
     tokenCount,
     images,
-  model,
-  promptTokens,
-  responseDurationMs,
-  completionTokens,
-  toolCalls,
-];
+    model,
+    promptTokens,
+    responseDurationMs,
+    completionTokens,
+    toolCalls,
+  ];
 }
 
 @JsonSerializable()

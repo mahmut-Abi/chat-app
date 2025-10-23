@@ -119,10 +119,10 @@ final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
 /// 初始化默认 Agent
 final initializeDefaultAgentsProvider = FutureProvider<void>((ref) async {
   final repository = ref.watch(agentRepositoryProvider);
-  
+
   // 先确保工具已初始化
   await ref.watch(initializeDefaultToolsProvider.future);
-  
+
   // 初始化默认 Agent
   await DefaultAgents.initializeDefaultAgents(repository);
 });

@@ -27,19 +27,15 @@ class AgentSelectorDialog extends ConsumerWidget {
           children: [
             // 标题栏
             _buildHeader(context),
-            
+
             const Divider(height: 1),
-            
+
             // Agent 列表
             Flexible(
               child: agentsAsync.when(
                 data: (agents) => _buildAgentList(context, agents),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                error: (error, stack) => Center(
-                  child: Text('加载失败: $error'),
-                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text('加载失败: $error')),
               ),
             ),
           ],
@@ -57,10 +53,7 @@ class AgentSelectorDialog extends ConsumerWidget {
           const SizedBox(width: 12),
           const Text(
             '选择 Agent',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           IconButton(
@@ -98,31 +91,35 @@ class AgentSelectorDialog extends ConsumerWidget {
           Icons.chat_bubble_outline,
           false,
         ),
-        
+
         if (builtInAgents.isNotEmpty) ...[
           const Divider(),
           _buildSectionHeader('内置 Agent'),
-          ...builtInAgents.map((agent) => _buildAgentTile(
-                context,
-                agent,
-                agent.name,
-                agent.description ?? '',
-                _getAgentIcon(agent.iconName),
-                true,
-              )),
+          ...builtInAgents.map(
+            (agent) => _buildAgentTile(
+              context,
+              agent,
+              agent.name,
+              agent.description ?? '',
+              _getAgentIcon(agent.iconName),
+              true,
+            ),
+          ),
         ],
-        
+
         if (customAgents.isNotEmpty) ...[
           const Divider(),
           _buildSectionHeader('自定义 Agent'),
-          ...customAgents.map((agent) => _buildAgentTile(
-                context,
-                agent,
-                agent.name,
-                agent.description ?? '',
-                _getAgentIcon(agent.iconName),
-                false,
-              )),
+          ...customAgents.map(
+            (agent) => _buildAgentTile(
+              context,
+              agent,
+              agent.name,
+              agent.description ?? '',
+              _getAgentIcon(agent.iconName),
+              false,
+            ),
+          ),
         ],
       ],
     );
@@ -202,10 +199,7 @@ class AgentSelectorDialog extends ConsumerWidget {
         description,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey.shade600,
-        ),
+        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
       ),
       trailing: isSelected
           ? Icon(

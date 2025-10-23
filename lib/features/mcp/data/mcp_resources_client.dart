@@ -115,7 +115,11 @@ class McpResourcesClient extends HttpMcpClient {
       }
 
       // 帮尝试其他常见端点
-      final altEndpoints = ['/api/resources', '/v1/resources', '/resources/list'];
+      final altEndpoints = [
+        '/api/resources',
+        '/v1/resources',
+        '/resources/list',
+      ];
       for (final endpoint in altEndpoints) {
         try {
           final response = await dio.get(endpoint);
@@ -124,7 +128,8 @@ class McpResourcesClient extends HttpMcpClient {
             if (data is List) {
               resources = data.cast<Map<String, dynamic>>();
             } else if (data is Map && data['resources'] is List) {
-              resources = (data['resources'] as List).cast<Map<String, dynamic>>();
+              resources = (data['resources'] as List)
+                  .cast<Map<String, dynamic>>();
             }
             if (resources != null && resources.isNotEmpty) {
               return resources;
@@ -183,11 +188,7 @@ class McpResourcesClient extends HttpMcpClient {
       );
     } catch (e) {
       _log.error('获取所有 MCP 资源失败', e);
-      return MCPAllResources(
-        tools: [],
-        prompts: [],
-        resources: [],
-      );
+      return MCPAllResources(tools: [], prompts: [], resources: []);
     }
   }
 

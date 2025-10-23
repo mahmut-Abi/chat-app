@@ -28,7 +28,8 @@ void main() {
     group('会话上下文增强', () {
       test('应该成功为会话添加 MCP 上下文', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,
@@ -63,7 +64,8 @@ void main() {
 
       test('应该在客户端未连接时抛出异常', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,
@@ -81,7 +83,8 @@ void main() {
 
       test('应该在无上下文时返回原会话', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,
@@ -105,7 +108,8 @@ void main() {
       test('应该保留原有的 system prompt', () async {
         // Arrange
         final originalPrompt = '你是一个助手';
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           systemPrompt: originalPrompt,
@@ -133,7 +137,8 @@ void main() {
 
       test('应该正确格式化 MCP 上下文', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,
@@ -175,11 +180,11 @@ void main() {
           timestamp: testTime,
         );
 
-         when(mockRepository.getClient('mcp_1')).thenReturn(mockClient);
-         when(mockClient.pushContext(any, any)).thenAnswer((_) async => true);
- 
-         // Act
-         await integration.syncMessageToMcp(message, 'conv_1', 'mcp_1');
+        when(mockRepository.getClient('mcp_1')).thenReturn(mockClient);
+        when(mockClient.pushContext(any, any)).thenAnswer((_) async => true);
+
+        // Act
+        await integration.syncMessageToMcp(message, 'conv_1', 'mcp_1');
 
         // Assert
         verify(mockRepository.getClient('mcp_1')).called(1);
@@ -401,7 +406,8 @@ void main() {
     group('边界情况', () {
       test('应该处理空的 MCP 上下文', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,
@@ -423,7 +429,8 @@ void main() {
 
       test('应该处理包含特殊字符的上下文', () async {
         // Arrange
-        final conversation = Conversation(messages: const [], 
+        final conversation = Conversation(
+          messages: const [],
           id: 'conv_1',
           title: '测试会话',
           createdAt: testTime,

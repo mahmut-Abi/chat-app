@@ -8,16 +8,16 @@ import '../../../../core/services/log_service.dart';
 import '../../../../core/utils/message_utils.dart';
 
 /// 改进的背景设置页面
-class ImprovedBackgroundSettingsScreen extends ConsumerStatefulWidget {
-  const ImprovedBackgroundSettingsScreen({super.key});
+class BackgroundSettingsScreen extends ConsumerStatefulWidget {
+  const BackgroundSettingsScreen({super.key});
 
   @override
-  ConsumerState<ImprovedBackgroundSettingsScreen> createState() =>
-      _ImprovedBackgroundSettingsScreenState();
+  ConsumerState<BackgroundSettingsScreen> createState() =>
+      _BackgroundSettingsScreenState();
 }
 
-class _ImprovedBackgroundSettingsScreenState
-    extends ConsumerState<ImprovedBackgroundSettingsScreen> {
+class _BackgroundSettingsScreenState
+    extends ConsumerState<BackgroundSettingsScreen> {
   final LogService _log = LogService();
 
   // 默认背景图片

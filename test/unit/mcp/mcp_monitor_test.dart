@@ -38,7 +38,7 @@ void main() {
 
     test('Monitor should track health check history', () async {
       final result = await monitor.performHealthCheck();
-      
+
       final history = monitor.getHealthCheckHistory();
       expect(history.length, greaterThan(0));
       expect(history.last.strategy, HealthCheckStrategy.networkOnly);
@@ -47,7 +47,7 @@ void main() {
     test('Monitor should calculate success rate correctly', () async {
       await monitor.performHealthCheck();
       await monitor.performHealthCheck();
-      
+
       final rate = monitor.getSuccessRate();
       expect(rate, greaterThanOrEqualTo(0.0));
       expect(rate, lessThanOrEqualTo(1.0));
@@ -55,7 +55,7 @@ void main() {
 
     test('Monitor should get latest health check result', () async {
       await monitor.performHealthCheck();
-      
+
       final latest = monitor.getLatestHealthCheck();
       expect(latest, isNotNull);
       expect(latest!.timestamp, isNotNull);
@@ -63,21 +63,21 @@ void main() {
 
     test('Monitor should switch strategies', () async {
       expect(monitor.strategy, HealthCheckStrategy.networkOnly);
-      
+
       await monitor.switchStrategy(HealthCheckStrategy.probe);
       expect(monitor.strategy, HealthCheckStrategy.probe);
     });
 
     test('Monitor should emit events', (WidgetTester tester) async {
       final events = <McpMonitorEvent>[];
-      
+
       monitor.events.listen((event) {
         events.add(event);
       });
 
       await monitor.start();
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       expect(events, isNotEmpty);
       await monitor.stop();
     });
@@ -86,7 +86,7 @@ void main() {
       for (int i = 0; i < 150; i++) {
         await monitor.performHealthCheck();
       }
-      
+
       final history = monitor.getHealthCheckHistory();
       expect(history.length, lessThanOrEqualTo(100));
     });

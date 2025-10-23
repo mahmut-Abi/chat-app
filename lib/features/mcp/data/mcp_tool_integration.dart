@@ -13,9 +13,7 @@ class McpToolIntegration {
   McpToolIntegration(this._repository);
 
   /// 将 MCP 工具转换为 Agent 工具定义
-  Future<List<ToolDefinition>> getMcpToolDefinitions(
-    String mcpConfigId,
-  ) async {
+  Future<List<ToolDefinition>> getMcpToolDefinitions(String mcpConfigId) async {
     _log.info('获取 MCP 工具定义', {'mcpConfigId': mcpConfigId});
 
     final client = _repository.getClient(mcpConfigId);
@@ -59,19 +57,13 @@ class McpToolIntegration {
     final client = _repository.getClient(mcpConfigId);
     if (client == null) {
       _log.warning('MCP 客户端未连接');
-      return ToolExecutionResult(
-        success: false,
-        error: 'MCP 客户端未连接',
-      );
+      return ToolExecutionResult(success: false, error: 'MCP 客户端未连接');
     }
 
     try {
       final result = await client.callTool(toolName, parameters);
       if (result == null) {
-        return ToolExecutionResult(
-          success: false,
-          error: '工具执行返回空结果',
-        );
+        return ToolExecutionResult(success: false, error: '工具执行返回空结果');
       }
 
       _log.info('MCP 工具执行成功', {'toolName': toolName});
@@ -151,9 +143,7 @@ class McpToolIntegration {
         final tools = await client.listTools();
         if (tools == null) continue;
 
-        final hasTool = tools.any(
-          (t) => t['name'] == toolName,
-        );
+        final hasTool = tools.any((t) => t['name'] == toolName);
         if (hasTool) {
           return config.id;
         }

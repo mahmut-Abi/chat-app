@@ -1,5 +1,5 @@
- import 'platform_utils.dart';
- import 'package:flutter/material.dart';
+import 'platform_utils.dart';
+import 'package:flutter/material.dart';
 
 /// 键盘管理工具类
 class KeyboardUtils {

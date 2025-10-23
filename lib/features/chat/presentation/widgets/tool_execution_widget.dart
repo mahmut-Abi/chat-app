@@ -5,22 +5,24 @@ import '../../../../core/utils/message_utils.dart';
 /// 工具执行结果显示组件
 class ToolExecutionWidget extends StatefulWidget {
   final List<Map<String, dynamic>> toolResults;
-  
+
   const ToolExecutionWidget({super.key, required this.toolResults});
-  
+
   @override
   State<ToolExecutionWidget> createState() => _ToolExecutionWidgetState();
 }
 
 class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
   bool _isExpanded = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 8, bottom: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
@@ -64,13 +66,13 @@ class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
       ),
     );
   }
-  
+
   List<Widget> _buildExpandedContent(BuildContext context) {
     return widget.toolResults.asMap().entries.map((entry) {
       final index = entry.key;
       final result = entry.value;
       final isSuccess = result['success'] == true;
-      
+
       return Container(
         margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
         padding: const EdgeInsets.all(12),
@@ -122,22 +124,24 @@ class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: SelectableText(
                   result['result'].toString(),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontFamily: 'monospace',
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
                 ),
               ),
             ] else if (!isSuccess && result['error'] != null) ...[
               Text(
                 '错误:',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.red,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: Colors.red),
               ),
               const SizedBox(height: 4),
               Container(
@@ -171,12 +175,14 @@ class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
       );
     }).toList();
   }
-  
+
   Widget _buildMetadata(BuildContext context, Map<String, dynamic> metadata) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
@@ -209,12 +215,12 @@ class _ToolExecutionWidgetState extends State<ToolExecutionWidget> {
       ),
     );
   }
-  
+
   void _copyResult(BuildContext context, Map<String, dynamic> result) {
     final text = result['success'] == true
         ? result['result']?.toString() ?? ''
         : result['error']?.toString() ?? '';
-    
+
     Clipboard.setData(ClipboardData(text: text));
     MessageUtils.showCopied(context);
   }

@@ -101,15 +101,27 @@ class EnhancedHttpMcpClient extends McpClientBase {
 
   Future<bool> _detectEndpoints() async {
     final baseUrl = _extractBaseUrl(config.endpoint);
-    final paths = ['/health', '/api/health', '/ping', '/api/kubernetes/sse', '/sse', '/api/v1/health'];
-    
+    final paths = [
+      '/health',
+      '/api/health',
+      '/ping',
+      '/api/kubernetes/sse',
+      '/sse',
+      '/api/v1/health',
+    ];
+
     for (final path in paths) {
       try {
         final url = _buildUrl(baseUrl, path);
-        final response = await _dio.get(url, options: Options(
-          receiveTimeout: const Duration(seconds: 3),
-          validateStatus: (status) => status != null && status < 500,
-        )).timeout(const Duration(seconds: 3));
+        final response = await _dio
+            .get(
+              url,
+              options: Options(
+                receiveTimeout: const Duration(seconds: 3),
+                validateStatus: (status) => status != null && status < 500,
+              ),
+            )
+            .timeout(const Duration(seconds: 3));
 
         if (response.statusCode == 200 || response.statusCode == 101) {
           _detectedHealthCheckPath = path;
@@ -127,9 +139,13 @@ class EnhancedHttpMcpClient extends McpClientBase {
   @override
   Future<bool> healthCheck() async {
     try {
-      final path = customHealthCheckPath ?? _detectedHealthCheckPath ?? '/health';
+      final path =
+          customHealthCheckPath ?? _detectedHealthCheckPath ?? '/health';
       final url = _buildUrl(_extractBaseUrl(config.endpoint), path);
-      final response = await _dio.get(url, options: Options(receiveTimeout: const Duration(seconds: 5)));
+      final response = await _dio.get(
+        url,
+        options: Options(receiveTimeout: const Duration(seconds: 5)),
+      );
       final isHealthy = response.statusCode == 200;
       if (isHealthy) {
         lastHealthCheck = DateTime.now();
@@ -154,18 +170,29 @@ class EnhancedHttpMcpClient extends McpClientBase {
   @override
   Future<Map<String, dynamic>?> getContext(String contextId) async {
     try {
-      final url = _buildUrl(_extractBaseUrl(config.endpoint), '/context/' + contextId);
+      final url = _buildUrl(
+        _extractBaseUrl(config.endpoint),
+        '/context/' + contextId,
+      );
       final response = await _dio.get(url);
-      return response.statusCode == 200 ? response.data as Map<String, dynamic>? : null;
+      return response.statusCode == 200
+          ? response.data as Map<String, dynamic>?
+          : null;
     } catch (e) {
       return null;
     }
   }
 
   @override
-  Future<bool> pushContext(String contextId, Map<String, dynamic> context) async {
+  Future<bool> pushContext(
+    String contextId,
+    Map<String, dynamic> context,
+  ) async {
     try {
-      final url = _buildUrl(_extractBaseUrl(config.endpoint), '/context/' + contextId);
+      final url = _buildUrl(
+        _extractBaseUrl(config.endpoint),
+        '/context/' + contextId,
+      );
       final response = await _dio.post(url, data: context);
       return response.statusCode == 200;
     } catch (e) {
@@ -174,11 +201,19 @@ class EnhancedHttpMcpClient extends McpClientBase {
   }
 
   @override
-  Future<Map<String, dynamic>?> callTool(String toolName, Map<String, dynamic> params) async {
+  Future<Map<String, dynamic>?> callTool(
+    String toolName,
+    Map<String, dynamic> params,
+  ) async {
     try {
-      final url = _buildUrl(_extractBaseUrl(config.endpoint), '/tools/' + toolName);
+      final url = _buildUrl(
+        _extractBaseUrl(config.endpoint),
+        '/tools/' + toolName,
+      );
       final response = await _dio.post(url, data: params);
-      return response.statusCode == 200 ? response.data as Map<String, dynamic>? : null;
+      return response.statusCode == 200
+          ? response.data as Map<String, dynamic>?
+          : null;
     } catch (e) {
       return null;
     }
@@ -193,8 +228,10 @@ class EnhancedHttpMcpClient extends McpClientBase {
         final data = response.data;
         if (data is List) return data.cast<Map<String, dynamic>>();
         if (data is Map<String, dynamic>) {
-          if (data['tools'] is List) return (data['tools'] as List).cast<Map<String, dynamic>>();
-          if (data['data'] is List) return (data['data'] as List).cast<Map<String, dynamic>>();
+          if (data['tools'] is List)
+            return (data['tools'] as List).cast<Map<String, dynamic>>();
+          if (data['data'] is List)
+            return (data['data'] as List).cast<Map<String, dynamic>>();
         }
       }
       return null;

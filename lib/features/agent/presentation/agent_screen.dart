@@ -22,8 +22,8 @@ class AgentScreen extends ConsumerWidget {
               Tab(text: '工具', icon: Icon(Icons.build)),
             ],
           ),
-      ),
-      body: const TabBarView(children: [AgentTab(), ToolsTab()]),
+        ),
+        body: const TabBarView(children: [AgentTab(), ToolsTab()]),
       ),
     );
   }

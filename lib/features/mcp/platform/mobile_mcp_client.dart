@@ -46,7 +46,8 @@ class MobileMcpClient extends McpClientBase {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await _dio.get('/health')
+      final response = await _dio
+          .get('/health')
           .timeout(const Duration(seconds: 5));
       final isHealthy = response.statusCode == 200;
       if (isHealthy) {
@@ -80,7 +81,10 @@ class MobileMcpClient extends McpClientBase {
   }
 
   @override
-  Future<bool> pushContext(String contextId, Map<String, dynamic> context) async {
+  Future<bool> pushContext(
+    String contextId,
+    Map<String, dynamic> context,
+  ) async {
     if (_connectionLost) return false;
     try {
       await _dio.post('/context/\$contextId', data: context);

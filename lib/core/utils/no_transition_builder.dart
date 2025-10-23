@@ -18,7 +18,10 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
     if (secondaryAnimation.status == AnimationStatus.forward ||
         secondaryAnimation.status == AnimationStatus.completed) {
       return FadeTransition(
-        opacity: Tween<double>(begin: 1.0, end: 0.0).animate(secondaryAnimation),
+        opacity: Tween<double>(
+          begin: 1.0,
+          end: 0.0,
+        ).animate(secondaryAnimation),
         child: child,
       );
     }

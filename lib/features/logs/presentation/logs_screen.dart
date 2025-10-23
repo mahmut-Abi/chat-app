@@ -300,9 +300,20 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
       await Clipboard.setData(ClipboardData(text: content));
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Row(children: [Icon(Icons.check_circle, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('日志已复制'))], ), backgroundColor: Colors.green.shade600, behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 1)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(child: Text('日志已复制')),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 1),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

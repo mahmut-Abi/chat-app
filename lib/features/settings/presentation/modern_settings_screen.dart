@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
- import '../../../core/utils/platform_utils.dart';
- import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/platform_utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
 import '../../../shared/widgets/page_background.dart';
 import '../../../core/services/log_service.dart';
@@ -132,15 +132,15 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(_tabs[_selectedIndex].title),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
+            backgroundColor: Colors.transparent,
+            title: Text(_tabs[_selectedIndex].title),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.pop(),
+            ),
+            elevation: 0,
           ),
-          elevation: 0,
-        ),
-        body: SafeArea(
+          body: SafeArea(
             child: Column(
               children: [
                 _buildMobileTabBar(context),
@@ -152,8 +152,8 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
                       : _buildTabView(),
                 ),
               ],
+            ),
           ),
-        ),
         ),
       );
     }
@@ -174,7 +174,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
           ],
         ),
       ),
-      );
+    );
   }
 
   Widget _buildMobileTabBar(BuildContext context) {

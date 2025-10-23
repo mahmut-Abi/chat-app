@@ -60,7 +60,8 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
     }
 
     // 使用内容和配置创建缓存键
-    final cacheKey = '$content-$enableLatex-$enableCodeHighlight-$selectable-$isDarkMode-$isMobile';
+    final cacheKey =
+        '$content-$enableLatex-$enableCodeHighlight-$selectable-$isDarkMode-$isMobile';
 
     // 尝试从缓存获取
     final cached = _MarkdownCache.get(cacheKey);
@@ -106,7 +107,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
   ) {
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black87;
-    final codeBackgroundColor = isDarkMode 
+    final codeBackgroundColor = isDarkMode
         ? const Color(0xFF2D2D2D)
         : const Color(0xFFF6F8FA);
 
@@ -118,7 +119,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
     final h4Size = isMobile ? 16.0 : 18.0;
     final h5Size = isMobile ? 15.0 : 16.0;
     final h6Size = isMobile ? 14.0 : 15.0;
-    
+
     final pPaddingVertical = isMobile ? 6.0 : 8.0;
     final h1PaddingTop = isMobile ? 16.0 : 24.0;
     final h1PaddingBottom = isMobile ? 12.0 : 16.0;
@@ -146,7 +147,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         letterSpacing: -0.5,
       ),
       h1Padding: EdgeInsets.only(top: h1PaddingTop, bottom: h1PaddingBottom),
-      
+
       h2: TextStyle(
         fontSize: h2Size,
         fontWeight: FontWeight.bold,
@@ -155,7 +156,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         letterSpacing: -0.3,
       ),
       h2Padding: EdgeInsets.only(top: h2PaddingTop, bottom: h2PaddingBottom),
-      
+
       h3: TextStyle(
         fontSize: h3Size,
         fontWeight: FontWeight.w600,
@@ -166,7 +167,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         top: isMobile ? 12.0 : 16.0,
         bottom: isMobile ? 8.0 : 10.0,
       ),
-      
+
       h4: TextStyle(
         fontSize: h4Size,
         fontWeight: FontWeight.w600,
@@ -177,7 +178,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         top: isMobile ? 10.0 : 12.0,
         bottom: isMobile ? 6.0 : 8.0,
       ),
-      
+
       h5: TextStyle(
         fontSize: h5Size,
         fontWeight: FontWeight.w600,
@@ -188,7 +189,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         top: isMobile ? 10.0 : 12.0,
         bottom: isMobile ? 6.0 : 8.0,
       ),
-      
+
       h6: TextStyle(
         fontSize: h6Size,
         fontWeight: FontWeight.w600,
@@ -217,7 +218,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         height: 1.6,
       ),
       blockquoteDecoration: BoxDecoration(
-        color: isDarkMode 
+        color: isDarkMode
             ? Colors.white.withValues(alpha: 0.03)
             : Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(isMobile ? 6.0 : 8.0),
@@ -264,14 +265,8 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       ),
 
       // 强调和加粗样式
-      em: TextStyle(
-        fontStyle: FontStyle.italic,
-        color: textColor,
-      ),
-      strong: TextStyle(
-        fontWeight: FontWeight.bold,
-        color: textColor,
-      ),
+      em: TextStyle(fontStyle: FontStyle.italic, color: textColor),
+      strong: TextStyle(fontWeight: FontWeight.bold, color: textColor),
 
       // 删除线样式
       del: TextStyle(
@@ -285,10 +280,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         fontSize: isMobile ? 14.0 : 15.0,
         color: textColor,
       ),
-      tableBody: TextStyle(
-        fontSize: isMobile ? 13.0 : 14.0,
-        color: textColor,
-      ),
+      tableBody: TextStyle(fontSize: isMobile ? 13.0 : 14.0, color: textColor),
       tableBorder: TableBorder.all(
         color: textColor.withValues(alpha: 0.2),
         width: 1,
@@ -361,20 +353,20 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
     final language = element.attributes['class']?.split('-').last ?? 'text';
 
     // 根据主题选择颜色
-    final backgroundColor = isDarkMode 
-        ? const Color(0xFF1E1E1E) 
+    final backgroundColor = isDarkMode
+        ? const Color(0xFF1E1E1E)
         : const Color(0xFFF6F8FA);
-    final headerColor = isDarkMode 
-        ? const Color(0xFF2D2D2D) 
+    final headerColor = isDarkMode
+        ? const Color(0xFF2D2D2D)
         : const Color(0xFFE1E4E8);
-    final textColor = isDarkMode 
-        ? const Color(0xFFD4D4D4) 
+    final textColor = isDarkMode
+        ? const Color(0xFFD4D4D4)
         : const Color(0xFF24292E);
-    final languageTagColor = isDarkMode 
-        ? const Color(0xFF007ACC) 
+    final languageTagColor = isDarkMode
+        ? const Color(0xFF007ACC)
         : const Color(0xFF0366D6);
-    final copyButtonColor = isDarkMode 
-        ? const Color(0xFFCCCCCC) 
+    final copyButtonColor = isDarkMode
+        ? const Color(0xFFCCCCCC)
         : const Color(0xFF586069);
 
     // 移动端使用更小的边距和字号
@@ -394,7 +386,7 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: isDarkMode 
+          color: isDarkMode
               ? Colors.white.withValues(alpha: 0.1)
               : Colors.black.withValues(alpha: 0.1),
           width: 1,
@@ -423,7 +415,7 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
               ),
               border: Border(
                 bottom: BorderSide(
-                  color: isDarkMode 
+                  color: isDarkMode
                       ? Colors.white.withValues(alpha: 0.1)
                       : Colors.black.withValues(alpha: 0.1),
                   width: 1,
@@ -592,10 +584,10 @@ class _CopyButtonState extends State<_CopyButton> {
             vertical: verticalPadding,
           ),
           decoration: BoxDecoration(
-            color: _copied 
-                ? (widget.isDarkMode 
-                    ? Colors.green.withValues(alpha: 0.2)
-                    : Colors.green.withValues(alpha: 0.1))
+            color: _copied
+                ? (widget.isDarkMode
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.green.withValues(alpha: 0.1))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),

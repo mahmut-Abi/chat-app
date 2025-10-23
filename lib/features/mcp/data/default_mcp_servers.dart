@@ -8,15 +8,15 @@ class DefaultMcpServers {
   static final _log = LogService();
 
   /// 初始化示例 MCP 服务器
-  static Future<void> initializeExampleServers(
-    McpRepository repository,
-  ) async {
+  static Future<void> initializeExampleServers(McpRepository repository) async {
     _log.info('开始初始化示例 MCP 服务器');
 
     try {
       // 检查是否已经初始化过
       final existingConfigs = await repository.getAllConfigs();
-      final hasExamples = existingConfigs.any((c) => c.description?.contains('示例') ?? false);
+      final hasExamples = existingConfigs.any(
+        (c) => c.description?.contains('示例') ?? false,
+      );
 
       if (hasExamples) {
         _log.info('示例 MCP 服务器已存在，跳过初始化');
@@ -33,9 +33,7 @@ class DefaultMcpServers {
           connectionType: McpConnectionType.http,
           endpoint: 'https://api.weatherapi.com/v1',
           description: '示例：天气查询 API（需要配置 API Key）',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: {'Content-Type': 'application/json'},
         ),
       );
 
@@ -61,9 +59,7 @@ class DefaultMcpServers {
           endpoint: '/usr/bin/node',
           args: ['mcp-server.js'],
           description: '示例：Node.js MCP 服务器（需要创建 mcp-server.js）',
-          env: {
-            'NODE_ENV': 'production',
-          },
+          env: {'NODE_ENV': 'production'},
         ),
       );
 
@@ -75,9 +71,7 @@ class DefaultMcpServers {
           endpoint: '/usr/bin/python3',
           args: ['-m', 'mcp_server'],
           description: '示例：Python MCP 服务器（需要安装 mcp_server 模块）',
-          env: {
-            'PYTHONPATH': '.',
-          },
+          env: {'PYTHONPATH': '.'},
         ),
       );
 
@@ -98,7 +92,7 @@ class DefaultMcpServers {
 
     try {
       final existingConfigs = await repository.getAllConfigs();
-      
+
       // 如果已有配置，跳过
       if (existingConfigs.isNotEmpty) {
         _log.info('已存在 MCP 服务器配置，跳过快速开始初始化');
@@ -121,9 +115,7 @@ class DefaultMcpServers {
 3. 在聊天中使用 MCP 工具
 
 更多信息请参考文档：docs/mcp-integration.md''',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         enabled: false, // 默认禁用，需要用户手动启用
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -138,9 +130,7 @@ class DefaultMcpServers {
   }
 
   /// 重置 MCP 服务器配置
-  static Future<void> resetMcpServers(
-    McpRepository repository,
-  ) async {
+  static Future<void> resetMcpServers(McpRepository repository) async {
     _log.info('重置 MCP 服务器配置');
 
     try {

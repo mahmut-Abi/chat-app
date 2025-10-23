@@ -16,10 +16,7 @@ class AgentChatService {
   final _uuid = const Uuid();
   final _log = LogService();
 
-  AgentChatService(
-    this._apiClient,
-    this._agentIntegration,
-  );
+  AgentChatService(this._apiClient, this._agentIntegration);
 
   /// 使用 Agent 发送消息
   Future<Message> sendMessageWithAgent({
@@ -37,8 +34,9 @@ class AgentChatService {
       });
 
       // 获取 Agent 的工具定义
-      final toolDefinitions =
-          await _agentIntegration.getAgentToolDefinitions(agent);
+      final toolDefinitions = await _agentIntegration.getAgentToolDefinitions(
+        agent,
+      );
 
       // 构建消息列表
       final messages = _buildMessages(agent, conversationHistory, content);
@@ -100,10 +98,7 @@ class AgentChatService {
 
     // 添加 system prompt
     if (agent.systemPrompt != null && agent.systemPrompt!.isNotEmpty) {
-      messages.add({
-        'role': 'system',
-        'content': agent.systemPrompt!,
-      });
+      messages.add({'role': 'system', 'content': agent.systemPrompt!});
     }
 
     // 添加历史消息
@@ -116,8 +111,9 @@ class AgentChatService {
 
         // 如果有工具调用，添加到消息中
         if (msg.toolCalls != null && msg.toolCalls!.isNotEmpty) {
-          msgData['tool_calls'] =
-              msg.toolCalls!.map((tc) => tc.toJson()).toList();
+          msgData['tool_calls'] = msg.toolCalls!
+              .map((tc) => tc.toJson())
+              .toList();
         }
 
         messages.add(msgData);
@@ -125,10 +121,7 @@ class AgentChatService {
     }
 
     // 添加用户消息
-    messages.add({
-      'role': 'user',
-      'content': content,
-    });
+    messages.add({'role': 'user', 'content': content});
 
     return messages;
   }
@@ -174,9 +167,7 @@ class AgentChatService {
       }
 
       // 执行工具调用
-      _log.info('检测到工具调用', {
-        'count': messageData.toolCalls!.length,
-      });
+      _log.info('检测到工具调用', {'count': messageData.toolCalls!.length});
 
       final toolCallMessage = Message(
         id: _uuid.v4(),
@@ -187,8 +178,10 @@ class AgentChatService {
       );
 
       // 处理工具调用
-      final processedMessage =
-          await _agentIntegration.processToolCallResponse(toolCallMessage, agent);
+      final processedMessage = await _agentIntegration.processToolCallResponse(
+        toolCallMessage,
+        agent,
+      );
 
       // 获取工具执行结果
       final toolResults = (processedMessage.metadata?['toolResults'] as List?)
@@ -203,8 +196,7 @@ class AgentChatService {
       currentMessages.add({
         'role': 'assistant',
         'content': messageData.content,
-        'tool_calls':
-            messageData.toolCalls!.map((tc) => tc.toJson()).toList(),
+        'tool_calls': messageData.toolCalls!.map((tc) => tc.toJson()).toList(),
       });
 
       // 添加工具结果消息

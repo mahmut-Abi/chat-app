@@ -8,19 +8,19 @@ import 'dart:io';
 enum HealthCheckStrategy {
   /// 标准 HTTP GET 请求到 /health 端点
   standard,
-  
+
   /// 对多个端点进行探测（自动发现）
   probe,
-  
+
   /// 通过工具列表端点检查
   toolsListing,
-  
+
   /// 只检查网络连通性
   networkOnly,
-  
+
   /// 自定义检查（由使用者提供）
   custom,
-  
+
   /// 禁用健康检查
   disabled,
 }
@@ -46,12 +46,16 @@ class HealthCheckResult {
   }) : timestamp = timestamp ?? DateTime.now();
 
   @override
-  String toString() => 'HealthCheckResult(success=\$success, strategy=\$strategy, duration=\${duration.inMilliseconds}ms, message=\$message)';
+  String toString() =>
+      'HealthCheckResult(success=\$success, strategy=\$strategy, duration=\${duration.inMilliseconds}ms, message=\$message)';
 }
 
 /// MCP 健康检查执行器基类
 abstract class HealthCheckExecutor {
-  Future<HealthCheckResult> execute(String endpoint, Map<String, String>? headers);
+  Future<HealthCheckResult> execute(
+    String endpoint,
+    Map<String, String>? headers,
+  );
 }
 
 /// 标准 HTTP 健康检查
@@ -60,26 +64,29 @@ class StandardHealthCheckExecutor implements HealthCheckExecutor {
   final LogService log = LogService();
   final String healthPath;
 
-  StandardHealthCheckExecutor({
-    Dio? dio,
-    this.healthPath = '/health',
-  }) : dio = dio ?? Dio();
+  StandardHealthCheckExecutor({Dio? dio, this.healthPath = '/health'})
+    : dio = dio ?? Dio();
 
   @override
-  Future<HealthCheckResult> execute(String endpoint, Map<String, String>? headers) async {
+  Future<HealthCheckResult> execute(
+    String endpoint,
+    Map<String, String>? headers,
+  ) async {
     final startTime = DateTime.now();
     try {
       final url = _buildUrl(endpoint, healthPath);
       log.debug('执行标准健康检查', {'url': url});
 
-      final response = await dio.get(
-        url,
-        options: Options(
-          headers: headers,
-          receiveTimeout: const Duration(seconds: 5),
-          validateStatus: (status) => status != null && status < 500,
-        ),
-      ).timeout(const Duration(seconds: 5));
+      final response = await dio
+          .get(
+            url,
+            options: Options(
+              headers: headers,
+              receiveTimeout: const Duration(seconds: 5),
+              validateStatus: (status) => status != null && status < 500,
+            ),
+          )
+          .timeout(const Duration(seconds: 5));
 
       final duration = DateTime.now().difference(startTime);
       final success = response.statusCode == 200;
@@ -138,11 +145,14 @@ class ProbeHealthCheckExecutor implements HealthCheckExecutor {
   }) : dio = dio ?? Dio();
 
   @override
-  Future<HealthCheckResult> execute(String endpoint, Map<String, String>? headers) async {
+  Future<HealthCheckResult> execute(
+    String endpoint,
+    Map<String, String>? headers,
+  ) async {
     final startTime = DateTime.now();
     String? successfulPath;
     int? lastStatusCode;
-    
+
     try {
       final baseUrl = _extractBaseUrl(endpoint);
 
@@ -150,20 +160,25 @@ class ProbeHealthCheckExecutor implements HealthCheckExecutor {
         try {
           log.debug('探测端点', {'path': path});
           final url = '\$baseUrl\$path';
-          
-          final response = await dio.get(
-            url,
-            options: Options(
-              headers: headers,
-              receiveTimeout: const Duration(seconds: 3),
-              validateStatus: (status) => status != null && status < 500,
-            ),
-          ).timeout(const Duration(seconds: 3));
+
+          final response = await dio
+              .get(
+                url,
+                options: Options(
+                  headers: headers,
+                  receiveTimeout: const Duration(seconds: 3),
+                  validateStatus: (status) => status != null && status < 500,
+                ),
+              )
+              .timeout(const Duration(seconds: 3));
 
           lastStatusCode = response.statusCode;
           if (response.statusCode == 200 || response.statusCode == 101) {
             successfulPath = path;
-            log.info('探测到有效端点', {'path': path, 'statusCode': response.statusCode});
+            log.info('探测到有效端点', {
+              'path': path,
+              'statusCode': response.statusCode,
+            });
             break;
           }
         } catch (e) {
@@ -173,14 +188,17 @@ class ProbeHealthCheckExecutor implements HealthCheckExecutor {
       }
 
       final duration = DateTime.now().difference(startTime);
-      
+
       if (successfulPath != null) {
         return HealthCheckResult(
           success: true,
           message: '探测到有效端点: \$successfulPath',
           duration: duration,
           strategy: HealthCheckStrategy.probe,
-          details: {'probeCount': probePaths.length, 'successfulPath': successfulPath},
+          details: {
+            'probeCount': probePaths.length,
+            'successfulPath': successfulPath,
+          },
           detectedEndpoint: successfulPath,
         );
       } else {
@@ -189,7 +207,10 @@ class ProbeHealthCheckExecutor implements HealthCheckExecutor {
           message: '未找到有效的健康检查端点 (尝试了\${probePaths.length}个)',
           duration: duration,
           strategy: HealthCheckStrategy.probe,
-          details: {'probeCount': probePaths.length, 'lastStatusCode': lastStatusCode},
+          details: {
+            'probeCount': probePaths.length,
+            'lastStatusCode': lastStatusCode,
+          },
         );
       }
     } catch (e) {
@@ -223,19 +244,24 @@ class ToolsListingHealthCheckExecutor implements HealthCheckExecutor {
   ToolsListingHealthCheckExecutor({Dio? dio}) : dio = dio ?? Dio();
 
   @override
-  Future<HealthCheckResult> execute(String endpoint, Map<String, String>? headers) async {
+  Future<HealthCheckResult> execute(
+    String endpoint,
+    Map<String, String>? headers,
+  ) async {
     final startTime = DateTime.now();
     try {
       log.debug('通过工具列表检查健康状态', {'endpoint': endpoint});
 
-      final response = await dio.get(
-        '\$endpoint/tools',
-        options: Options(
-          headers: headers,
-          receiveTimeout: const Duration(seconds: 5),
-          validateStatus: (status) => status != null && status < 500,
-        ),
-      ).timeout(const Duration(seconds: 5));
+      final response = await dio
+          .get(
+            '\$endpoint/tools',
+            options: Options(
+              headers: headers,
+              receiveTimeout: const Duration(seconds: 5),
+              validateStatus: (status) => status != null && status < 500,
+            ),
+          )
+          .timeout(const Duration(seconds: 5));
 
       final duration = DateTime.now().difference(startTime);
       final success = response.statusCode == 200;
@@ -285,7 +311,10 @@ class NetworkOnlyHealthCheckExecutor implements HealthCheckExecutor {
   final LogService log = LogService();
 
   @override
-  Future<HealthCheckResult> execute(String endpoint, Map<String, String>? headers) async {
+  Future<HealthCheckResult> execute(
+    String endpoint,
+    Map<String, String>? headers,
+  ) async {
     final startTime = DateTime.now();
     try {
       log.debug('检查网络连通性', {'endpoint': endpoint});

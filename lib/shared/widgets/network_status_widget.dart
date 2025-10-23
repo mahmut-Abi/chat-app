@@ -56,7 +56,11 @@ class _NetworkStatusWidgetState extends State<NetworkStatusWidget> {
   void _showNoConnectionSnackBar() {
     if (!mounted) return;
 
-    MessageUtils.showWarning(context, '网络连接中断，请检查网络设置', duration: const Duration(seconds: 5));
+    MessageUtils.showWarning(
+      context,
+      '网络连接中断，请检查网络设置',
+      duration: const Duration(seconds: 5),
+    );
   }
 
   @override

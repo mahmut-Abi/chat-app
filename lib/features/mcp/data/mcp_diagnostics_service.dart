@@ -19,7 +19,11 @@ class McpDiagnosticsService {
   Future<bool> _checkNetworkConnectivity(String endpoint) async {
     try {
       final uri = Uri.parse(endpoint);
-      final socket = await Socket.connect(uri.host, uri.port ?? 80, timeout: const Duration(seconds: 5));
+      final socket = await Socket.connect(
+        uri.host,
+        uri.port ?? 80,
+        timeout: const Duration(seconds: 5),
+      );
       socket.destroy();
       return true;
     } catch (e) {
@@ -39,9 +43,12 @@ class McpDiagnosticsService {
 
   Future<bool> _checkHttpConnection(String endpoint) async {
     try {
-      final response = await _dio.get(endpoint, 
-        options: Options(receiveTimeout: const Duration(seconds: 5))
-      ).timeout(const Duration(seconds: 5));
+      final response = await _dio
+          .get(
+            endpoint,
+            options: Options(receiveTimeout: const Duration(seconds: 5)),
+          )
+          .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -51,18 +58,34 @@ class McpDiagnosticsService {
   Future<List<EndpointStatus>> _scanEndpoints(String endpoint) async {
     final uri = Uri.parse(endpoint);
     final baseUrl = uri.scheme + '://' + uri.host + ':' + uri.port.toString();
-    final endpoints = ['/health', '/api/health', '/ping', '/api/kubernetes/sse', '/sse', '/tools'];
+    final endpoints = [
+      '/health',
+      '/api/health',
+      '/ping',
+      '/api/kubernetes/sse',
+      '/sse',
+      '/tools',
+    ];
     final results = <EndpointStatus>[];
-    
+
     for (final path in endpoints) {
       try {
-        final response = await _dio.get(baseUrl + path,
-          options: Options(
-            receiveTimeout: const Duration(seconds: 3),
-            validateStatus: (status) => status != null && status < 500,
-          )
-        ).timeout(const Duration(seconds: 3));
-        results.add(EndpointStatus(path: path, statusCode: response.statusCode, available: response.statusCode! < 400));
+        final response = await _dio
+            .get(
+              baseUrl + path,
+              options: Options(
+                receiveTimeout: const Duration(seconds: 3),
+                validateStatus: (status) => status != null && status < 500,
+              ),
+            )
+            .timeout(const Duration(seconds: 3));
+        results.add(
+          EndpointStatus(
+            path: path,
+            statusCode: response.statusCode,
+            available: response.statusCode! < 400,
+          ),
+        );
       } catch (e) {
         results.add(EndpointStatus(path: path, available: false));
       }
@@ -105,5 +128,9 @@ class EndpointStatus {
   final String path;
   final int? statusCode;
   final bool available;
-  EndpointStatus({required this.path, this.statusCode, required this.available});
+  EndpointStatus({
+    required this.path,
+    this.statusCode,
+    required this.available,
+  });
 }

@@ -1,6 +1,6 @@
- import 'dart:io' if (dart.library.html) 'dart:html' as platform_io;
- import 'platform_utils.dart';
- import 'package:flutter/foundation.dart';
+import 'dart:io' if (dart.library.html) 'dart:html' as platform_io;
+import 'platform_utils.dart';
+import 'package:flutter/foundation.dart';
 
 // 条件导入：仅在桌面平台导入实际实现，否则导入 stub
 import 'desktop_utils_stub.dart' if (dart.library.io) 'desktop_utils_io.dart';
@@ -8,7 +8,10 @@ import 'desktop_utils_stub.dart' if (dart.library.io) 'desktop_utils_io.dart';
 /// 桌面端工具类
 class DesktopUtils {
   static bool get isDesktop =>
-      !kIsWeb && (PlatformUtils.isWindows || PlatformUtils.isMacOS || PlatformUtils.isLinux);
+      !kIsWeb &&
+      (PlatformUtils.isWindows ||
+          PlatformUtils.isMacOS ||
+          PlatformUtils.isLinux);
 
   /// 初始化窗口管理
   static Future<void> initWindowManager() async {

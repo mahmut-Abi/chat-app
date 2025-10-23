@@ -8,56 +8,61 @@ import 'package:flutter/foundation.dart';
 
 /// Agent 仓库
 class AgentRepository {
- final StorageService _storage;
- final ToolExecutorManager _executorManager;
- final _log = LogService();
+  final StorageService _storage;
+  final ToolExecutorManager _executorManager;
+  final _log = LogService();
 
- AgentRepository(this._storage, this._executorManager);
- /// 获取被删除的内置 Agent ID 列表
- Future<List<String>> getDeletedBuiltInAgentIds() async {
-   try {
-     final data = _storage.getSetting('deleted_builtin_agents');
-     if (data == null) return [];
-     
-     final List<dynamic> decodedList;
-     if (data is String) {
-       decodedList = jsonDecode(data) as List<dynamic>;
-     } else if (data is List<dynamic>) {
-       decodedList = data;
-     } else {
-       return [];
-     }
-     
-     return decodedList.map((e) => e.toString()).toList();
-   } catch (e) {
-     _log.warning('获取已删除的内置 Agent ID 失败', {'error': e.toString()});
-     return [];
-   }
- }
- 
- /// 标记内置 Agent 为已删除（用于持久化删除）
- Future<void> markBuiltInAgentAsDeleted(String agentId) async {
-   try {
-     final deletedIds = await getDeletedBuiltInAgentIds();
-     if (!deletedIds.contains(agentId)) {
-       deletedIds.add(agentId);
-       await _storage.saveSetting('deleted_builtin_agents', jsonEncode(deletedIds));
-       _log.info('已标记内置 Agent 为删除', {'agentId': agentId});
-     }
-   } catch (e) {
-     _log.error('标记内置 Agent 为删除失败', e);
-   }
- }
- /// 清除已删除的内置 Agent ID 列表
- Future<void> clearDeletedBuiltInAgents() async {
-   try {
-     await _storage.deleteSetting('deleted_builtin_agents');
-     _log.info('已清除已删除的内置 Agent ID 列表');
-   } catch (e) {
-     _log.error('清除已删除的内置 Agent ID 列表失败', e);
-   }
- }
-  
+  AgentRepository(this._storage, this._executorManager);
+
+  /// 获取被删除的内置 Agent ID 列表
+  Future<List<String>> getDeletedBuiltInAgentIds() async {
+    try {
+      final data = _storage.getSetting('deleted_builtin_agents');
+      if (data == null) return [];
+
+      final List<dynamic> decodedList;
+      if (data is String) {
+        decodedList = jsonDecode(data) as List<dynamic>;
+      } else if (data is List<dynamic>) {
+        decodedList = data;
+      } else {
+        return [];
+      }
+
+      return decodedList.map((e) => e.toString()).toList();
+    } catch (e) {
+      _log.warning('获取已删除的内置 Agent ID 失败', {'error': e.toString()});
+      return [];
+    }
+  }
+
+  /// 标记内置 Agent 为已删除（用于持久化删除）
+  Future<void> markBuiltInAgentAsDeleted(String agentId) async {
+    try {
+      final deletedIds = await getDeletedBuiltInAgentIds();
+      if (!deletedIds.contains(agentId)) {
+        deletedIds.add(agentId);
+        await _storage.saveSetting(
+          'deleted_builtin_agents',
+          jsonEncode(deletedIds),
+        );
+        _log.info('已标记内置 Agent 为删除', {'agentId': agentId});
+      }
+    } catch (e) {
+      _log.error('标记内置 Agent 为删除失败', e);
+    }
+  }
+
+  /// 清除已删除的内置 Agent ID 列表
+  Future<void> clearDeletedBuiltInAgents() async {
+    try {
+      await _storage.deleteSetting('deleted_builtin_agents');
+      _log.info('已清除已删除的内置 Agent ID 列表');
+    } catch (e) {
+      _log.error('清除已删除的内置 Agent ID 列表失败', e);
+    }
+  }
+
   /// 创建 Agent 配置
   Future<AgentConfig> createAgent({
     required String name,
@@ -265,20 +270,21 @@ class AgentRepository {
   }
 
   /// 删除 Agent
- Future<void> deleteAgent(String id) async {
-   _log.info('删除 Agent: id=$id');
-   await _storage.deleteSetting('agent_$id');
- }
- /// 删除 Agent (带有内置 Agent 持久化)
- Future<void> deleteAgentWithPersistence(String id, bool isBuiltIn) async {
-   _log.info('删除 Agent: id=$id, isBuiltIn=$isBuiltIn');
-   await _storage.deleteSetting('agent_$id');
-   
-   if (isBuiltIn) {
-     await markBuiltInAgentAsDeleted(id);
-   }
- }
-  
+  Future<void> deleteAgent(String id) async {
+    _log.info('删除 Agent: id=$id');
+    await _storage.deleteSetting('agent_$id');
+  }
+
+  /// 删除 Agent (带有内置 Agent 持久化)
+  Future<void> deleteAgentWithPersistence(String id, bool isBuiltIn) async {
+    _log.info('删除 Agent: id=$id, isBuiltIn=$isBuiltIn');
+    await _storage.deleteSetting('agent_$id');
+
+    if (isBuiltIn) {
+      await markBuiltInAgentAsDeleted(id);
+    }
+  }
+
   /// 更新工具
   Future<void> updateTool(AgentTool tool) async {
     await _storage.saveSetting(

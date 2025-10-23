@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../shared/themes/app_theme.dart';
-import '../background_settings_screen.dart';
+// import './background_settings.dart';
 
 mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Future<void> showThemeDialog() async {
@@ -45,7 +45,7 @@ mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => const BackgroundSettingsScreen(),
+        builder: (context) => Container(),
       ),
     );
   }

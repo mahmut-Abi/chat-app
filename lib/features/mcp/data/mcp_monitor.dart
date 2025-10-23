@@ -20,13 +20,13 @@ enum McpMonitorEvent {
 class McpMonitor {
   final McpConfig config;
   final LogService log = LogService();
-  
+
   // 监控配置
   HealthCheckStrategy strategy = HealthCheckStrategy.probe;
   Duration healthCheckInterval = const Duration(seconds: 30);
   int maxRetries = 3;
   Duration retryDelay = const Duration(seconds: 5);
-  
+
   // 内部状态
   McpConnectionStatus status = McpConnectionStatus.disconnected;
   Timer? _healthCheckTimer;
@@ -35,11 +35,11 @@ class McpMonitor {
   int _recoveryAttempts = 0;
   final List<HealthCheckResult> _healthCheckHistory = [];
   final _eventController = StreamController<McpMonitorEvent>.broadcast();
-  
+
   // 执行器与业会
   Map<HealthCheckStrategy, HealthCheckExecutor> executors = {};
   HealthCheckExecutor? _customExecutor;
-  
+
   McpMonitor({
     required this.config,
     this.strategy = HealthCheckStrategy.probe,
@@ -49,7 +49,7 @@ class McpMonitor {
   }) {
     _initializeExecutors();
   }
-  
+
   void _initializeExecutors() {
     executors = {
       HealthCheckStrategy.standard: StandardHealthCheckExecutor(),
@@ -58,23 +58,26 @@ class McpMonitor {
       HealthCheckStrategy.networkOnly: NetworkOnlyHealthCheckExecutor(),
     };
   }
-  
+
   /// 设置自定义执行器
   void setCustomExecutor(HealthCheckExecutor executor) {
     _customExecutor = executor;
   }
-  
+
   /// 获取事件流
   Stream<McpMonitorEvent> get events => _eventController.stream;
-  
+
   /// 启动监控
   Future<void> start() async {
-    log.info('启动 MCP 监控', {'configId': config.id, 'strategy': strategy.toString()});
+    log.info('启动 MCP 监控', {
+      'configId': config.id,
+      'strategy': strategy.toString(),
+    });
     status = McpConnectionStatus.connecting;
-    
+
     // 执行初始化健康检查（带自动降级）
     final result = await performHealthCheckWithFallback();
-    
+
     if (result.success) {
       status = McpConnectionStatus.connected;
       _failureCount = 0;
@@ -87,7 +90,7 @@ class McpMonitor {
       await attemptRecovery();
     }
   }
-  
+
   /// 停止监控
   Future<void> stop() async {
     log.info('停止 MCP 监控');
@@ -96,46 +99,52 @@ class McpMonitor {
     status = McpConnectionStatus.disconnected;
     _eventController.add(McpMonitorEvent.disconnected);
   }
-  
+
   /// 执行健康检查並自动下预
   Future<HealthCheckResult> performHealthCheckWithFallback() async {
     // 首先尝试当前配置的策略
     var result = await performHealthCheck();
-    
+
     // 如果失败，自动尝试帮推策略
-    if (!result.success && strategy != HealthCheckStrategy.disabled && strategy != HealthCheckStrategy.custom) {
-      log.info('当前策略失败，尝试帮推策略', {
-        'failedStrategy': strategy.toString(),
-      });
-      
+    if (!result.success &&
+        strategy != HealthCheckStrategy.disabled &&
+        strategy != HealthCheckStrategy.custom) {
+      log.info('当前策略失败，尝试帮推策略', {'failedStrategy': strategy.toString()});
+
       final fallbackStrategies = [
         HealthCheckStrategy.networkOnly,
         HealthCheckStrategy.toolsListing,
         HealthCheckStrategy.standard,
       ];
-      
+
       for (final fallback in fallbackStrategies) {
         if (fallback == strategy) continue;
         log.debug('尝试帮推策略', {'strategy': fallback.toString()});
-        
+
         final tempExecutor = executors[fallback];
         if (tempExecutor != null) {
           try {
-            final fallbackResult = await tempExecutor.execute(config.endpoint, config.headers?.cast());
+            final fallbackResult = await tempExecutor.execute(
+              config.endpoint,
+              config.headers?.cast(),
+            );
             if (fallbackResult.success) {
               log.info('帮推策略成功', {'strategy': fallback.toString()});
               return fallbackResult;
             }
           } catch (e) {
-            log.debug('帮推策略错误', {'strategy': fallback.toString(), 'error': e.toString()});
+            log.debug('帮推策略错误', {
+              'strategy': fallback.toString(),
+              'error': e.toString(),
+            });
           }
         }
       }
     }
-    
+
     return result;
   }
-  
+
   /// 基于设置的策略执行一次健康检查
   Future<HealthCheckResult> performHealthCheck() async {
     if (strategy == HealthCheckStrategy.disabled) {
@@ -146,11 +155,11 @@ class McpMonitor {
         strategy: HealthCheckStrategy.disabled,
       );
     }
-    
+
     final executor = strategy == HealthCheckStrategy.custom
         ? _customExecutor
         : executors[strategy];
-    
+
     if (executor == null) {
       return HealthCheckResult(
         success: false,
@@ -159,16 +168,19 @@ class McpMonitor {
         strategy: strategy,
       );
     }
-    
+
     try {
-      final result = await executor.execute(config.endpoint, config.headers?.cast());
+      final result = await executor.execute(
+        config.endpoint,
+        config.headers?.cast(),
+      );
       _healthCheckHistory.add(result);
-      
+
       // 保持历史记录最多 100 条
       if (_healthCheckHistory.length > 100) {
         _healthCheckHistory.removeAt(0);
       }
-      
+
       if (result.success) {
         _failureCount = 0;
         _eventController.add(McpMonitorEvent.healthCheckPassed);
@@ -176,7 +188,7 @@ class McpMonitor {
         _failureCount++;
         _eventController.add(McpMonitorEvent.healthCheckFailed);
       }
-      
+
       log.info('执行健康检查', {'result': result.toString()});
       return result;
     } catch (e) {
@@ -191,19 +203,19 @@ class McpMonitor {
       return result;
     }
   }
-  
+
   /// 尝试恢复连接
   Future<void> attemptRecovery() async {
     log.warning('尝试恢复 MCP 连接', {
       'failureCount': _failureCount,
       'maxRetries': maxRetries,
     });
-    
+
     _eventController.add(McpMonitorEvent.recoveryAttempt);
     _recoveryAttempts = 0;
     _startRecoveryTimer();
   }
-  
+
   /// 不同策略阶段恢复
   Future<bool> _tryFallbackStrategies() async {
     final strategies = [
@@ -212,28 +224,28 @@ class McpMonitor {
       HealthCheckStrategy.networkOnly,
       HealthCheckStrategy.standard,
     ];
-    
+
     for (final fallback in strategies) {
       if (fallback == strategy) continue; // 跳过当前策略
-      
+
       log.info('氝试恢复策略', {'strategy': fallback.toString()});
       final tempStrategy = strategy;
       strategy = fallback;
       _eventController.add(McpMonitorEvent.strategyChanged);
-      
+
       final result = await performHealthCheckWithFallback();
       if (result.success) {
         log.info('恢复成功', {'strategy': fallback.toString()});
         _eventController.add(McpMonitorEvent.recoverySuccess);
         return true;
       }
-      
+
       strategy = tempStrategy;
     }
-    
+
     return false;
   }
-  
+
   /// 启动恢复定时器
   void _startRecoveryTimer() {
     _stopRecoveryTimer();
@@ -245,10 +257,13 @@ class McpMonitor {
         status = McpConnectionStatus.error;
         return;
       }
-      
+
       _recoveryAttempts++;
-      log.info('恢复尝试', {'attempt': _recoveryAttempts, 'maxRetries': maxRetries});
-      
+      log.info('恢复尝试', {
+        'attempt': _recoveryAttempts,
+        'maxRetries': maxRetries,
+      });
+
       // 先尝试当前策略
       final result = await performHealthCheck();
       if (result.success) {
@@ -260,7 +275,7 @@ class McpMonitor {
         _startHealthCheckTimer();
         return;
       }
-      
+
       // 如果当前策略失败，不轮换法
       if (_recoveryAttempts >= maxRetries ~/ 2) {
         final recovered = await _tryFallbackStrategies();
@@ -274,19 +289,19 @@ class McpMonitor {
       }
     });
   }
-  
+
   /// 停止恢复定时器
   void _stopRecoveryTimer() {
     _recoveryTimer?.cancel();
     _recoveryTimer = null;
   }
-  
+
   /// 启动健康检查定时器
   void _startHealthCheckTimer() {
     _stopHealthCheckTimer();
     _healthCheckTimer = Timer.periodic(healthCheckInterval, (_) async {
       final result = await performHealthCheck();
-      
+
       if (!result.success && _failureCount >= 3) {
         status = McpConnectionStatus.error;
         _stopHealthCheckTimer();
@@ -294,46 +309,49 @@ class McpMonitor {
       }
     });
   }
-  
+
   /// 停止健康检查定时器
   void _stopHealthCheckTimer() {
     _healthCheckTimer?.cancel();
     _healthCheckTimer = null;
   }
-  
+
   /// 变更检查策略
   Future<void> switchStrategy(HealthCheckStrategy newStrategy) async {
     if (strategy == newStrategy) return;
-    
-    log.info('切换检查策略', {'from': strategy.toString(), 'to': newStrategy.toString()});
+
+    log.info('切换检查策略', {
+      'from': strategy.toString(),
+      'to': newStrategy.toString(),
+    });
     strategy = newStrategy;
     _failureCount = 0;
     _eventController.add(McpMonitorEvent.strategyChanged);
-    
+
     // 执行一次检查验证
     final result = await performHealthCheck();
     if (result.success) {
       _startHealthCheckTimer();
     }
   }
-  
+
   /// 获取健康检查历史
   List<HealthCheckResult> getHealthCheckHistory() {
     return List.unmodifiable(_healthCheckHistory);
   }
-  
+
   /// 获取最汚的健康检查结果
   HealthCheckResult? getLatestHealthCheck() {
     return _healthCheckHistory.isEmpty ? null : _healthCheckHistory.last;
   }
-  
+
   /// 获取成功率
   double getSuccessRate() {
     if (_healthCheckHistory.isEmpty) return 0.0;
     final successful = _healthCheckHistory.where((r) => r.success).length;
     return successful / _healthCheckHistory.length;
   }
-  
+
   /// 释放资源
   void dispose() {
     _stopHealthCheckTimer();

@@ -15,31 +15,31 @@ class DataExportImport {
     final agentTools = await _storage.getAllAgentTools();
 
     final data = {
-    'version': '1.0.0',
-    'exportDate': DateTime.now().toIso8601String(),
-    'conversations': conversations,
-    'apiConfigs': apiConfigs,
-    'appSettings': appSettings,
-    'mcpConfigs': mcpConfigs,
-    'agentConfigs': agentConfigs,
-    'agentTools': agentTools,
-    'groups': _storage.getAllGroups(),
-    'promptTemplates': _storage.getAllPromptTemplates(),
-    'models': _storage.getAllModels(),
+      'version': '1.0.0',
+      'exportDate': DateTime.now().toIso8601String(),
+      'conversations': conversations,
+      'apiConfigs': apiConfigs,
+      'appSettings': appSettings,
+      'mcpConfigs': mcpConfigs,
+      'agentConfigs': agentConfigs,
+      'agentTools': agentTools,
+      'groups': _storage.getAllGroups(),
+      'promptTemplates': _storage.getAllPromptTemplates(),
+      'models': _storage.getAllModels(),
     };
 
     return jsonEncode(data);
   }
 
   Future<Map<String, dynamic>> importData(String jsonData) async {
-   try {
-     final data = jsonDecode(jsonData) as Map<String, dynamic>;
-      
+    try {
+      final data = jsonDecode(jsonData) as Map<String, dynamic>;
+
       // 验证数据的有效性
       if (data.isEmpty) {
         return {'success': false, 'error': 'Empty import data'};
       }
-      
+
       // 验证版本不積容
       final version = data['version'];
       if (version != null && version != '1.0.0') {
@@ -108,9 +108,12 @@ class DataExportImport {
       if (data.containsKey('agentTools')) {
         final agentTools = data['agentTools'] as List;
         for (final tool in agentTools) {
-         final toolMap = tool as Map<String, dynamic>;
-         // 使用 saveSetting 因为工具使用 agent_tool_ 前缀
-         await _storage.saveSetting('agent_tool_' + (toolMap['id'] as String), jsonEncode(toolMap));
+          final toolMap = tool as Map<String, dynamic>;
+          // 使用 saveSetting 因为工具使用 agent_tool_ 前缀
+          await _storage.saveSetting(
+            'agent_tool_' + (toolMap['id'] as String),
+            jsonEncode(toolMap),
+          );
           agentToolsCount += 1;
         }
       }
@@ -130,7 +133,10 @@ class DataExportImport {
         final templates = data['promptTemplates'] as List;
         for (final template in templates) {
           final templateMap = template as Map<String, dynamic>;
-          await _storage.savePromptTemplate(templateMap['id'] as String, templateMap);
+          await _storage.savePromptTemplate(
+            templateMap['id'] as String,
+            templateMap,
+          );
           promptTemplatesCount++;
         }
       }

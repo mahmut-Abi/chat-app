@@ -17,20 +17,16 @@ void main() {
 
     test('StandardHealthCheckExecutor should succeed on 200 status', () async {
       final executor = StandardHealthCheckExecutor(dio: mockDio);
-      
-      when(mockDio.get(
-        any,
-        options: anyNamed('options'),
-      )).thenAnswer((_) async => Response(
-        requestOptions: RequestOptions(path: ''),
-        statusCode: 200,
-        data: {'status': 'ok'},
-      ));
 
-      final result = await executor.execute(
-        'http://localhost:8000',
-        null,
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          statusCode: 200,
+          data: {'status': 'ok'},
+        ),
       );
+
+      final result = await executor.execute('http://localhost:8000', null);
 
       expect(result.success, true);
       expect(result.strategy, HealthCheckStrategy.standard);
@@ -39,19 +35,13 @@ void main() {
 
     test('StandardHealthCheckExecutor should fail on non-200 status', () async {
       final executor = StandardHealthCheckExecutor(dio: mockDio);
-      
-      when(mockDio.get(
-        any,
-        options: anyNamed('options'),
-      )).thenAnswer((_) async => Response(
-        requestOptions: RequestOptions(path: ''),
-        statusCode: 503,
-      ));
 
-      final result = await executor.execute(
-        'http://localhost:8000',
-        null,
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer(
+        (_) async =>
+            Response(requestOptions: RequestOptions(path: ''), statusCode: 503),
       );
+
+      final result = await executor.execute('http://localhost:8000', null);
 
       expect(result.success, false);
       expect(result.strategy, HealthCheckStrategy.standard);
@@ -59,11 +49,10 @@ void main() {
 
     test('ProbeHealthCheckExecutor should find valid endpoint', () async {
       final executor = ProbeHealthCheckExecutor(dio: mockDio);
-      
-      when(mockDio.get(
-        any,
-        options: anyNamed('options'),
-      )).thenAnswer((invocation) async {
+
+      when(mockDio.get(any, options: anyNamed('options'))).thenAnswer((
+        invocation,
+      ) async {
         final url = invocation.positionalArguments[0] as String;
         if (url.endsWith('/health')) {
           return Response(
@@ -77,39 +66,35 @@ void main() {
         );
       });
 
-      final result = await executor.execute(
-        'http://localhost:8000',
-        null,
-      );
+      final result = await executor.execute('http://localhost:8000', null);
 
       expect(result.success, true);
       expect(result.strategy, HealthCheckStrategy.probe);
       expect(result.detectedEndpoint, '/health');
     });
 
-    test('ToolsListingHealthCheckExecutor should parse tools correctly', () async {
-      final executor = ToolsListingHealthCheckExecutor(dio: mockDio);
-      
-      when(mockDio.get(
-        any,
-        options: anyNamed('options'),
-      )).thenAnswer((_) async => Response(
-        requestOptions: RequestOptions(path: ''),
-        statusCode: 200,
-        data: [
-          {'name': 'tool1', 'description': 'Tool 1'},
-          {'name': 'tool2', 'description': 'Tool 2'},
-        ],
-      ));
+    test(
+      'ToolsListingHealthCheckExecutor should parse tools correctly',
+      () async {
+        final executor = ToolsListingHealthCheckExecutor(dio: mockDio);
 
-      final result = await executor.execute(
-        'http://localhost:8000',
-        null,
-      );
+        when(mockDio.get(any, options: anyNamed('options'))).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: ''),
+            statusCode: 200,
+            data: [
+              {'name': 'tool1', 'description': 'Tool 1'},
+              {'name': 'tool2', 'description': 'Tool 2'},
+            ],
+          ),
+        );
 
-      expect(result.success, true);
-      expect(result.strategy, HealthCheckStrategy.toolsListing);
-      expect(result.details?['toolCount'], 2);
-    });
+        final result = await executor.execute('http://localhost:8000', null);
+
+        expect(result.success, true);
+        expect(result.strategy, HealthCheckStrategy.toolsListing);
+        expect(result.details?['toolCount'], 2);
+      },
+    );
   });
 }

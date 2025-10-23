@@ -32,9 +32,10 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
     return settingsAsync.when(
       data: (settings) {
         // 仅在背景相关设置变化时更新状态
-        final needsRebuild = _currentBackgroundImage != settings.backgroundImage ||
+        final needsRebuild =
+            _currentBackgroundImage != settings.backgroundImage ||
             _currentOpacity != settings.backgroundOpacity;
-        
+
         if (needsRebuild) {
           LogService().debug('BackgroundContainer rebuild', {
             'hasImage': settings.backgroundImage != null,
@@ -44,7 +45,7 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
           _currentOpacity = settings.backgroundOpacity;
           _cachedBackgroundStack = null; // 清除缓存
         }
-        
+
         return _buildWithBackground(context);
       },
       loading: () => widget.child,
@@ -95,9 +96,9 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
         // 内容遮罩层（用于调节背景可见度）
         if (contentOverlayOpacity > 0)
           Container(
-            color: Theme.of(context).scaffoldBackgroundColor.withValues(
-              alpha: contentOverlayOpacity,
-            ),
+            color: Theme.of(
+              context,
+            ).scaffoldBackgroundColor.withValues(alpha: contentOverlayOpacity),
           ),
       ],
     );

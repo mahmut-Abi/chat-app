@@ -49,7 +49,8 @@ class WebMcpClient extends McpClientBase {
   @override
   Future<bool> healthCheck() async {
     try {
-      final response = await _dio.get('/health')
+      final response = await _dio
+          .get('/health')
           .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (_) {
@@ -75,7 +76,10 @@ class WebMcpClient extends McpClientBase {
   }
 
   @override
-  Future<bool> pushContext(String contextId, Map<String, dynamic> context) async {
+  Future<bool> pushContext(
+    String contextId,
+    Map<String, dynamic> context,
+  ) async {
     try {
       await _dio.post('/context/\$contextId', data: context);
       return true;
@@ -90,7 +94,8 @@ class WebMcpClient extends McpClientBase {
     Map<String, dynamic> params,
   ) async {
     try {
-      final response = await _dio.post('/tools/\$toolName', data: params)
+      final response = await _dio
+          .post('/tools/\$toolName', data: params)
           .timeout(const Duration(seconds: 30));
       return response.data as Map<String, dynamic>?;
     } catch (e) {

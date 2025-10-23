@@ -50,19 +50,19 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final filePath = '${tempDir.path}/$fileName';
       final file = File(filePath);
       await file.writeAsString(jsonData);
-      
+
       // iOS 需要提供 sharePositionOrigin 以支持 iPad
       final box = context.findRenderObject() as RenderBox?;
       final sharePositionOrigin = box != null
           ? box.localToGlobal(Offset.zero) & box.size
           : null;
-      
+
       await Share.shareXFiles(
         [XFile(filePath)],
         subject: 'Chat Export',
         sharePositionOrigin: sharePositionOrigin,
       );
-      
+
       if (mounted) {
         MessageUtils.showSuccess(context, 'Export successful');
       }
@@ -70,7 +70,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _log.error('iOS share failed', e, stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Export failed: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }
@@ -84,12 +87,9 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final filePath = '${tempDir.path}/$fileName';
       final file = File(filePath);
       await file.writeAsString(jsonData);
-      
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        subject: 'Chat Export',
-      );
-      
+
+      await Share.shareXFiles([XFile(filePath)], subject: 'Chat Export');
+
       if (mounted) {
         MessageUtils.showSuccess(context, 'Export successful');
       }
@@ -97,7 +97,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _log.error('Android share failed', e, stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Export failed: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }
@@ -116,7 +119,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         await file.writeAsString(jsonData);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Export successful'), duration: Duration(seconds: 2)),
+            const SnackBar(
+              content: Text('Export successful'),
+              duration: Duration(seconds: 2),
+            ),
           );
         }
       }
@@ -124,19 +130,21 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _log.error('Desktop save failed', e, stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Export failed: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }
   }
-
 
   Future<void> exportToPdf() async {
     _log.info('Export to PDF');
     try {
       final chatRepo = ref.read(chatRepositoryProvider);
       final conversations = chatRepo.getAllConversations();
-      
+
       if (conversations.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -148,10 +156,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         }
         return;
       }
-      
+
       // 导出所有对话为 PDF
       await PdfExport.exportConversationsToPdf(conversations);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -194,7 +202,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       if (!mounted) return;
       if (importResult['success'] == true) {
         _log.info('Import successful', importResult);
-        
+
         // 刷新所有相关的 provider 以立即生效
         ref.invalidate(appSettingsProvider);
         ref.invalidate(activeApiConfigProvider);
@@ -206,39 +214,52 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         print('🔄 Settings: 已刷新 conversationsProvider');
         ref.invalidate(conversationGroupsProvider);
         print('🔄 Settings: 已刷新 conversationGroupsProvider');
-        
+
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);
         final settings = await settingsRepo.getSettings();
         await ref.read(appSettingsProvider.notifier).updateSettings(settings);
-        
+
         // 等待 conversations 提供程序完成重建，确保导入的数据立即可用
         try {
           await ref.read(conversationsProvider.future);
-         await ref.read(conversationGroupsProvider.future);
-         print('✅ Settings: 对话列表已重新加载完成');
+          await ref.read(conversationGroupsProvider.future);
+          print('✅ Settings: 对话列表已重新加载完成');
         } catch (e) {
           _log.error('Failed to reload conversations after import', e);
         }
-        
+
         if (mounted) {
           final msg = '导入成功：';
           final counts = [];
-          if (importResult['conversationsCount'] ?? 0 > 0) counts.add('${importResult['conversationsCount']} 对话');
-          if (importResult['apiConfigsCount'] ?? 0 > 0) counts.add('${importResult['apiConfigsCount']} API');
-          if (importResult['mcpConfigsCount'] ?? 0 > 0) counts.add('${importResult['mcpConfigsCount']} MCP');
-          if (importResult['agentConfigsCount'] ?? 0 > 0) counts.add('${importResult['agentConfigsCount']} Agent');
-          if (importResult['groupsCount'] ?? 0 > 0) counts.add('${importResult['groupsCount']} 分组');
-          if (importResult['promptTemplatesCount'] ?? 0 > 0) counts.add('${importResult['promptTemplatesCount']} 模板');
+          if (importResult['conversationsCount'] ?? 0 > 0)
+            counts.add('${importResult['conversationsCount']} 对话');
+          if (importResult['apiConfigsCount'] ?? 0 > 0)
+            counts.add('${importResult['apiConfigsCount']} API');
+          if (importResult['mcpConfigsCount'] ?? 0 > 0)
+            counts.add('${importResult['mcpConfigsCount']} MCP');
+          if (importResult['agentConfigsCount'] ?? 0 > 0)
+            counts.add('${importResult['agentConfigsCount']} Agent');
+          if (importResult['groupsCount'] ?? 0 > 0)
+            counts.add('${importResult['groupsCount']} 分组');
+          if (importResult['promptTemplatesCount'] ?? 0 > 0)
+            counts.add('${importResult['promptTemplatesCount']} 模板');
           final message = msg + counts.join(', ');
-          MessageUtils.showSuccess(context, message, duration: const Duration(seconds: 4));
+          MessageUtils.showSuccess(
+            context,
+            message,
+            duration: const Duration(seconds: 4),
+          );
         }
       }
     } catch (e, stack) {
       _log.error('Import failed', e, stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Import failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Import failed: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     } finally {
@@ -263,7 +284,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       final storageService = ref.read(storageServiceProvider);
       await storageService.clearAll();
       _log.info('Data cleared');
-      
+
       // 清空数据后也需要刷新 provider
       ref.invalidate(appSettingsProvider);
       ref.invalidate(activeApiConfigProvider);
@@ -273,7 +294,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       ref.invalidate(promptTemplatesProvider);
       ref.invalidate(conversationsProvider);
       ref.invalidate(conversationGroupsProvider);
-      
+
       // 等待 providers 重建完成
       try {
         await ref.read(conversationsProvider.future);
@@ -281,7 +302,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       } catch (e) {
         _log.error('Failed to reload after clear', e);
       }
-      
+
       if (mounted) {
         MessageUtils.showSuccess(context, 'Data cleared');
       }
@@ -289,7 +310,10 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _log.error('Clear failed', e, stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Clear failed: ${e.toString()}'), duration: const Duration(seconds: 3)),
+          SnackBar(
+            content: Text('Clear failed: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }

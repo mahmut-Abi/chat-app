@@ -23,10 +23,12 @@ class DefaultAgents {
         _log.info('默认 Agent 已存在，跳过初始化');
         return;
       }
-      
+
       // 如果有被删除的内置 Agent，不重新创建它们
       if (deletedBuiltInIds.isNotEmpty) {
-        _log.info('检测到用户已删除的内置 Agent，跳过初始化', {'deletedCount': deletedBuiltInIds.length});
+        _log.info('检测到用户已删除的内置 Agent，跳过初始化', {
+          'deletedCount': deletedBuiltInIds.length,
+        });
         return;
       }
 
@@ -180,9 +182,7 @@ class DefaultAgents {
   }
 
   /// 重置默认 Agent（删除并重新创建）
-  static Future<void> resetDefaultAgents(
-    AgentRepository repository,
-  ) async {
+  static Future<void> resetDefaultAgents(AgentRepository repository) async {
     _log.info('重置默认 Agent');
 
     try {
@@ -193,7 +193,7 @@ class DefaultAgents {
           await repository.deleteAgent(agent.id);
         }
       }
-      
+
       // 清除已删除的内置 Agent ID 列表
       await repository.clearDeletedBuiltInAgents();
 

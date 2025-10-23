@@ -25,11 +25,7 @@ class AgentSelector extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.info_outline,
-              color: Colors.amber[700],
-              size: 18,
-            ),
+            Icon(Icons.info_outline, color: Colors.amber[700], size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -47,9 +43,9 @@ class AgentSelector extends StatelessWidget {
       children: [
         Text(
           'Agent',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         DropdownButton<AgentConfig>(
@@ -57,42 +53,38 @@ class AgentSelector extends StatelessWidget {
           isExpanded: true,
           hint: const Text('选择 Agent...'),
           items: [
-            const DropdownMenuItem(
-              value: null,
-              child: Text('没有 Agent'),
-            ),
-            ...agents.map(
-              (agent) => DropdownMenuItem(
-                value: agent,
-                child: Row(
-                  children: [
-                    if (agent.iconName != null)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.build,
-                          size: 16,
+            const DropdownMenuItem(value: null, child: Text('没有 Agent')),
+            ...agents
+                .map(
+                  (agent) => DropdownMenuItem(
+                    value: agent,
+                    child: Row(
+                      children: [
+                        if (agent.iconName != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Icon(Icons.build, size: 16),
+                          ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(agent.name),
+                              if (agent.description != null)
+                                Text(
+                                  agent.description!,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(agent.name),
-                          if (agent.description != null)
-                            Text(
-                              agent.description!,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ).toList(),
+                  ),
+                )
+                .toList(),
           ],
           onChanged: onChanged,
         ),
@@ -107,10 +99,9 @@ class AgentSelector extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceVariant
-              .withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceVariant.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Column(
@@ -118,9 +109,9 @@ class AgentSelector extends StatelessWidget {
           children: [
             Text(
               '配置信息',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             if (selectedAgent!.description != null)

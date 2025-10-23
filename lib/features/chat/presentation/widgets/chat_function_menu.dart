@@ -92,9 +92,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
                     : null,
               ),
               const SizedBox(width: 12),
-              Text(
-                widget.enableWebSearch ? '网络搜索: 开启' : '网络搜索: 关闭',
-              ),
+              Text(widget.enableWebSearch ? '网络搜索: 开启' : '网络搜索: 关闭'),
               const Spacer(),
               Switch(
                 value: widget.enableWebSearch,
@@ -119,9 +117,7 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
                     : null,
               ),
               const SizedBox(width: 12),
-              Text(
-                widget.enableModelThinking ? '模型思考: 开启' : '模型思考: 关闭',
-              ),
+              Text(widget.enableModelThinking ? '模型思考: 开启' : '模型思考: 关闭'),
               const Spacer(),
               Switch(
                 value: widget.enableModelThinking,

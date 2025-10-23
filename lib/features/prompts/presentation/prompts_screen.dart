@@ -41,38 +41,38 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
         ],
       ),
       body: templatesAsync.when(
-          data: (templates) {
-            var filteredTemplates = templates;
+        data: (templates) {
+          var filteredTemplates = templates;
 
-            if (_showOnlyFavorites) {
-              filteredTemplates = filteredTemplates
-                  .where((t) => t.isFavorite)
-                  .toList();
-            }
+          if (_showOnlyFavorites) {
+            filteredTemplates = filteredTemplates
+                .where((t) => t.isFavorite)
+                .toList();
+          }
 
-            if (_selectedCategory != '全部') {
-              filteredTemplates = filteredTemplates
-                  .where((t) => t.category == _selectedCategory)
-                  .toList();
-            }
+          if (_selectedCategory != '全部') {
+            filteredTemplates = filteredTemplates
+                .where((t) => t.category == _selectedCategory)
+                .toList();
+          }
 
-            final categories =
-                ['全部'] + templates.map((t) => t.category).toSet().toList();
+          final categories =
+              ['全部'] + templates.map((t) => t.category).toSet().toList();
 
-            return Column(
-              children: [
-                _buildCategoryFilter(categories),
-                Expanded(
-                  child: filteredTemplates.isEmpty
-                      ? _buildEmptyState()
-                      : _buildTemplatesList(filteredTemplates),
-                ),
-              ],
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('加载失败: $error')),
-        ),
+          return Column(
+            children: [
+              _buildCategoryFilter(categories),
+              Expanded(
+                child: filteredTemplates.isEmpty
+                    ? _buildEmptyState()
+                    : _buildTemplatesList(filteredTemplates),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('加载失败: $error')),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreate,
         child: const Icon(Icons.add),
@@ -258,9 +258,20 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     if (result == true) {
       ref.invalidate(promptTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Row(children: [Icon(Icons.check_circle, color: Colors.white), SizedBox(width: 8), Expanded(child: Text('模板已创建'))], ), backgroundColor: Colors.green.shade600, behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 1)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(child: Text('模板已创建')),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 1),
+          ),
+        );
       }
     }
   }

@@ -1,6 +1,6 @@
 import 'dart:io';
- import '../../core/utils/platform_utils.dart';
- import 'package:flutter/cupertino.dart';
+import '../../core/utils/platform_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// 根据平台自动选择 Material 或 Cupertino 风格的 Dialog
@@ -31,7 +31,7 @@ class PlatformDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
+    if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
       return _buildCupertinoDialog(context);
     }
     return _buildMaterialDialog(context);

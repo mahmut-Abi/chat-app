@@ -1,7 +1,7 @@
 // Desktop implementation using window_manager and tray_manager
 import 'package:flutter/material.dart';
- import 'platform_utils.dart';
- import 'package:window_manager/window_manager.dart';
+import 'platform_utils.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 /// 初始化原生菜单栏
