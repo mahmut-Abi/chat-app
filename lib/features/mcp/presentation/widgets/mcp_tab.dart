@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/agent_tool.dart';
-import '../../../../core/providers/providers.dart';
-import '../agent_config_screen.dart';
-import 'agent_list_item.dart';
+import '../../../core/providers/providers.dart';
+import '../../domain/mcp_config.dart';
+import '../mcp_config_screen.dart';
+import 'mcp_list_item.dart';
 import '../../../../../shared/widgets/loading_widget.dart';
 
-/// Agent 标签页
-class AgentTab extends ConsumerWidget {
-  const AgentTab({super.key});
+/// MCP 列表标签页
+class McpTab extends ConsumerWidget {
+  const McpTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final agentsAsync = ref.watch(agentConfigsProvider);
+    final configsAsync = ref.watch(mcpConfigsProvider);
 
     return Column(
       children: [
@@ -23,20 +23,20 @@ class AgentTab extends ConsumerWidget {
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   fullscreenDialog: true,
-                  builder: (context) => const AgentConfigScreen(),
+                  builder: (context) => const McpConfigScreen(),
                 ),
               );
-              if (result == true) ref.invalidate(agentConfigsProvider);
+              if (result == true) ref.invalidate(mcpConfigsProvider);
             },
             icon: const Icon(Icons.add),
-            label: const Text('创建 Agent'),
+            label: const Text('添加 MCP 服务器'),
           ),
         ),
         Expanded(
-          child: agentsAsync.when(
-            data: (agents) => agents.isEmpty
-                ? const EmptyStateWidget(message: '暂无 Agent')
-                : _buildAgentList(context, ref, agents),
+          child: configsAsync.when(
+            data: (configs) => configs.isEmpty
+                ? const EmptyStateWidget(message: '暂无 MCP 服务器')
+                : _buildConfigList(context, ref, configs),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stack) => Center(child: Text('加载失败: $error')),
           ),
@@ -45,36 +45,30 @@ class AgentTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildAgentList(
+  Widget _buildConfigList(
     BuildContext context,
     WidgetRef ref,
-    List<AgentConfig> agents,
+    List<McpConfig> configs,
   ) {
     return ListView.builder(
-      itemCount: agents.length,
-      itemBuilder: (context, index) => AgentListItem(
-        agent: agents[index],
-        onDelete: () => _deleteAgent(
+      itemCount: configs.length,
+      itemBuilder: (context, index) => McpListItem(
+        config: configs[index],
+        onDelete: () => _deleteConfig(
           context,
           ref,
-          agents[index].id,
-          isBuiltIn: agents[index].isBuiltIn,
+          configs[index].id,
         ),
       ),
     );
   }
 
-  void _deleteAgent(
-    BuildContext context,
-    WidgetRef ref,
-    String id, {
-    bool isBuiltIn = false,
-  }) {
+  void _deleteConfig(BuildContext context, WidgetRef ref, String id) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('确认删除'),
-        content: const Text('确定要删除该 Agent 吗？'),
+        content: const Text('确定要删除该 MCP 配置吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -83,10 +77,10 @@ class AgentTab extends ConsumerWidget {
           ElevatedButton(
             onPressed: () async {
               try {
-                final repository = ref.read(agentRepositoryProvider);
-                await repository.deleteAgentWithPersistence(id, isBuiltIn);
+                final repository = ref.read(mcpRepositoryProvider);
+                await repository.deleteConfig(id);
 
-                ref.invalidate(agentConfigsProvider);
+                ref.invalidate(mcpConfigsProvider);
 
                 if (context.mounted) {
                   Navigator.of(context).pop();
