@@ -162,10 +162,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  @Deprecated("Moved to token_usage module")
-  void _calculateTokens() {
-    // Token 统计已移至 token_usage 功能模块
-  }
 
   void _scrollToBottom({bool force = false}) {
     // 如果用户手动滚动到历史消息，不自动滚动
