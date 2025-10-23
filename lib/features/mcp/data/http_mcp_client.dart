@@ -70,7 +70,7 @@ class HttpMcpClient extends McpClientBase {
     try {
       final response = await _dio.get(
         '/health',
-        options: Options(receiveTimeout: const Duration(seconds: 5)),
+        options: Options(receiveTimeout: const Duration(seconds: 30)),
       );
       final isHealthy = response.statusCode == 200;
       if (isHealthy) {
@@ -110,11 +110,11 @@ class HttpMcpClient extends McpClientBase {
             .get(
               path,
               options: Options(
-                receiveTimeout: const Duration(seconds: 8), // iOS 需要更长的超时时间
+                receiveTimeout: const Duration(seconds: 30), // iOS 需要更长的超时时间
                 validateStatus: (status) => status != null && status < 500,
               ),
             )
-            .timeout(const Duration(seconds: 10)) // iOS 需要更长的超时时间;
+            .timeout(const Duration(seconds: 30)); // iOS 需要更长的超时时间
 
         if (response.statusCode == 200) {
           _log.info('健康检查成功', {'path': path});
@@ -134,11 +134,11 @@ class HttpMcpClient extends McpClientBase {
           .get(
             '',
             options: Options(
-              receiveTimeout: const Duration(seconds: 3),
+              receiveTimeout: const Duration(seconds: 30),
               validateStatus: (status) => status != null,
             ),
           )
-          .timeout(const Duration(seconds: 3));
+          .timeout(const Duration(seconds: 30));
       lastHealthCheck = DateTime.now();
       lastError = null;
       return true;
@@ -156,7 +156,7 @@ class HttpMcpClient extends McpClientBase {
       final response = await _dio.get(
         '/api/kubernetes/sse',
         options: Options(
-          receiveTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 30),
           followRedirects: true,
         ),
       );
@@ -189,7 +189,7 @@ class HttpMcpClient extends McpClientBase {
       try {
         final response = await _dio.get(
           endpoint,
-          options: Options(receiveTimeout: const Duration(seconds: 3)),
+          options: Options(receiveTimeout: const Duration(seconds: 30)),
         );
         if (response.statusCode == 200) {
           _log.info('替代健康检查拓扑成功', {'endpoint': endpoint});

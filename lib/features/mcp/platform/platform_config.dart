@@ -45,7 +45,7 @@ class PlatformConfig {
   }
 
   /// Get default timeout in milliseconds
-  static int get defaultTimeoutMs => isMobile ? 15000 : 30000;
+  static int get defaultTimeoutMs => 30000; // 30 seconds for all platforms
 
   /// Get maximum concurrent connections
   static int get maxConcurrentConnections => isWeb ? 3 : 10;

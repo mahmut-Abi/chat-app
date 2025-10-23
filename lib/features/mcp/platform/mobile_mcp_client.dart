@@ -19,8 +19,8 @@ class MobileMcpClient extends McpClientBase {
     try {
       status = McpConnectionStatus.connecting;
       _dio.options.baseUrl = config.endpoint;
-      _dio.options.connectTimeout = const Duration(seconds: 8);
-      _dio.options.receiveTimeout = const Duration(seconds: 8);
+      _dio.options.connectTimeout = const Duration(seconds: 30);
+      _dio.options.receiveTimeout = const Duration(seconds: 30);
       if (config.headers != null) {
         _dio.options.headers.addAll(config.headers!);
       }
