@@ -1,13 +1,13 @@
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart' if (dart.library.html) 'dart:html' as ph;
 import '../utils/platform_utils.dart';
 import 'log_service.dart';
+import 'package:flutter/foundation.dart';
 
 class PermissionService {
   final _log = LogService();
 
-  // 检查并请求所有必要的权限
   Future<Map<Permission, PermissionStatus>> checkAndRequestPermissions() async {
-    if (!PlatformUtils.isIOS && !PlatformUtils.isAndroid) {
+    if (kIsWeb || (!PlatformUtils.isIOS && !PlatformUtils.isAndroid)) {
       _log.info('非移动平台，跳过权限检查');
       return {};
     }
