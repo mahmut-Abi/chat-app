@@ -58,7 +58,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _loadAllConversations();
     _initScrollListener();
     Future.microtask(() {
-      _calculateTokens();
       _initializeDefaultModel();
     });
   }
@@ -74,9 +73,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
-        print('🔍 ChatScreen: 注册 provider 监听器');
+        if (kDebugMode) print('🔍 ChatScreen: 注册 provider 监听器');
         if (mounted) {
-          print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
+          if (kDebugMode) print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
           setState(() {
             _conversations = conversations;
           });
@@ -87,7 +86,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.listen(conversationGroupsProvider, (previous, next) {
       next.whenData((groups) {
         if (mounted) {
-          print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
+          if (kDebugMode) print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
           setState(() {
             _groups = groups;
           });
@@ -121,7 +120,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           }
         }
       } catch (e) {
-        print('初始化默认模型失败: $e');
+        if (kDebugMode) print('初始化默认模型失败: $e');
       }
     }
   }
@@ -163,6 +162,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  @Deprecated("Moved to token_usage module")
   void _calculateTokens() {
     // Token 统计已移至 token_usage 功能模块
   }
@@ -199,25 +199,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     // 检查是否配置了 API
     if (kDebugMode) {
-      print('ChatScreen: 检查 API 配置...');
+      if (kDebugMode) print('ChatScreen: 检查 API 配置...');
     }
     // 打印调试信息
     final storage = ref.read(storageServiceProvider);
     final settingsRepo = ref.read(settingsRepositoryProvider);
     if (kDebugMode) {
       final allKeys = await storage.getAllKeys();
-      print('所有存储的 keys: $allKeys');
+      if (kDebugMode) print('所有存储的 keys: $allKeys');
       final allConfigs = await settingsRepo.getAllApiConfigs();
-      print('所有 API 配置数量: ${allConfigs.length}');
+      if (kDebugMode) print('所有 API 配置数量: ${allConfigs.length}');
       for (final config in allConfigs) {
-        print('  配置: ${config.name}, isActive: ${config.isActive}');
+        if (kDebugMode) print('  配置: ${config.name}, isActive: ${config.isActive}');
       }
     }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
     if (kDebugMode) {
-      print('ChatScreen: activeApiConfig = $activeApiConfig');
-      print(
-        'ChatScreen: activeApiConfig.isActive = ${activeApiConfig?.isActive}',
+      if (kDebugMode) print('ChatScreen: activeApiConfig = $activeApiConfig');
       );
     }
     if (activeApiConfig == null) {
@@ -286,11 +284,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           final mimeType = ImageUtils.getImageMimeType(imageFile.path);
 
           // 记录图片信息
-          print('图片信息: ${imageFile.path}');
-          print('  MIME: $mimeType');
-          print('  Base64 长度: ${base64Data.length}');
-          print(
-            '  Base64 大小: ${(base64Data.length / 1024 / 1024).toStringAsFixed(2)} MB',
+          if (kDebugMode) print('图片信息: ${imageFile.path}');
+          if (kDebugMode) print('  MIME: $mimeType');
+          if (kDebugMode) print('  Base64 长度: ${base64Data.length}');
           );
 
           imageAttachments.add(
@@ -353,9 +349,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
       final modelToUse = _selectedModel?.id ?? activeApiConfig.defaultModel;
       if (kDebugMode) {
-        print('ChatScreen: 使用模型 = $modelToUse');
-        print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
-        print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
+        if (kDebugMode) print('ChatScreen: 使用模型 = $modelToUse');
+        if (kDebugMode) print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
+        if (kDebugMode) print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
       }
       final config = ModelConfig(
         model: modelToUse,
@@ -475,7 +471,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 刷新侧边栏对话列表（如果这是第一条消息，现在会显示在侧边栏）
       _loadAllConversations();
 
-      _calculateTokens();
     } catch (e) {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
@@ -619,7 +614,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await chatRepo.saveConversation(
         conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
       );
-      _calculateTokens();
     } catch (e) {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
@@ -663,7 +657,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     await chatRepo.saveConversation(
       conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
     );
-    _calculateTokens();
   }
 
   Future<void> _editMessage(int messageIndex, String newContent) async {
@@ -698,7 +691,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     await chatRepo.saveConversation(
       conversation.copyWith(messages: _messages, updatedAt: DateTime.now()),
     );
-    _calculateTokens();
   }
 
   @override
