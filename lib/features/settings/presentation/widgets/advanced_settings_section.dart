@@ -11,7 +11,7 @@ class AdvancedSettingsSection extends StatelessWidget {
       children: [
         _buildSettingTile(
           context: context,
-          icon: Icons.cloud,
+          icon: Icons.cloud_outlined,
           iconColor: Theme.of(context).colorScheme.primary,
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           title: 'MCP 配置',
@@ -20,7 +20,7 @@ class AdvancedSettingsSection extends StatelessWidget {
         ),
         _buildSettingTile(
           context: context,
-          icon: Icons.bar_chart,
+          icon: Icons.bar_chart_outlined,
           iconColor: Theme.of(context).colorScheme.secondary,
           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           title: 'Token 消耗记录',

@@ -31,7 +31,7 @@ class ImprovedDataManagementSection extends StatelessWidget {
         const SizedBox(height: 8),
         _buildActionTile(
           context: context,
-          icon: Icons.download,
+          icon: Icons.download_outlined,
           iconColor: colorScheme.primary,
           backgroundColor: colorScheme.primaryContainer,
           title: '导出数据',
@@ -46,7 +46,7 @@ class ImprovedDataManagementSection extends StatelessWidget {
         ),
         _buildActionTile(
           context: context,
-          icon: Icons.picture_as_pdf,
+          icon: Icons.picture_as_pdf_outlined,
           iconColor: colorScheme.secondary,
           backgroundColor: colorScheme.secondaryContainer,
           title: '导出为 PDF',
@@ -58,7 +58,7 @@ class ImprovedDataManagementSection extends StatelessWidget {
         ),
         _buildActionTile(
           context: context,
-          icon: Icons.upload,
+          icon: Icons.upload_outlined,
           iconColor: colorScheme.tertiary,
           backgroundColor: colorScheme.tertiaryContainer,
           title: '导入数据',
@@ -77,7 +77,7 @@ class ImprovedDataManagementSection extends StatelessWidget {
         ),
         _buildDangerTile(
           context: context,
-          icon: Icons.delete_forever,
+          icon: Icons.delete_outline,
           title: '清除所有数据',
           subtitle: '警告：此操作不可恢复',
           onTap: () {
