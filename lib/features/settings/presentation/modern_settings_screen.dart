@@ -423,7 +423,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       padding: const EdgeInsets.all(32),
       children: [
         _buildCard(
-          child: ApiConfigSection(
+          child: ImprovedApiConfigSection(
             apiConfigs: _apiConfigs,
             onAddConfig: () => addApiConfig(_loadApiConfigs),
             onEditConfig: (config) => editApiConfig(config, _loadApiConfigs),
@@ -441,7 +441,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       padding: const EdgeInsets.all(32),
       children: [
         _buildCard(
-          child: ThemeSettingsSection(
+          child: ImprovedThemeSettingsSection(
             onShowThemeDialog: showThemeDialog,
             onShowThemeColorDialog: showThemeColorDialog,
             onFontSizeChange: updateFontSize,
@@ -592,7 +592,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       padding: const EdgeInsets.all(32),
       children: [
         _buildCard(
-          child: DataManagementSection(
+          child: ImprovedDataManagementSection(
             onExportData: exportData,
             onExportPdf: exportToPdf,
             onImportData: importData,

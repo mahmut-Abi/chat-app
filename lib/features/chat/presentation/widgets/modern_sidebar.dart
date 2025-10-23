@@ -125,7 +125,7 @@ class _ModernSidebarState extends State<ModernSidebar>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colorScheme.primaryContainer.withValues(alpha: 0.5),
+            colorScheme.primaryContainer.withOpacity(0.5),
             colorScheme.surface,
           ],
         ),
@@ -186,10 +186,10 @@ class _ModernSidebarState extends State<ModernSidebar>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
           bottom: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+            color: colorScheme.outlineVariant.withOpacity(0.5),
           ),
         ),
       ),
@@ -261,7 +261,7 @@ class _ModernSidebarState extends State<ModernSidebar>
             Icon(
               Icons.chat_bubble_outline_rounded,
               size: 80,
-              color: colorScheme.outline.withValues(alpha: 0.5),
+              color: colorScheme.outline.withOpacity(0.5),
             ),
             const SizedBox(height: 24),
             Text(
@@ -314,7 +314,7 @@ class _ModernSidebarState extends State<ModernSidebar>
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: isSelected
-            ? colorScheme.primaryContainer.withValues(alpha: 0.8)
+            ? colorScheme.primaryContainer.withOpacity(0.8)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -354,8 +354,8 @@ class _ModernSidebarState extends State<ModernSidebar>
               _formatDate(conversation.updatedAt),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: isSelected
-                    ? colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
-                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ? colorScheme.onPrimaryContainer.withOpacity(0.7)
+                    : colorScheme.onSurfaceVariant.withOpacity(0.7),
               ),
             ),
             if (conversation.tags.isNotEmpty) ...[
@@ -371,7 +371,7 @@ class _ModernSidebarState extends State<ModernSidebar>
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? colorScheme.primary.withValues(alpha: 0.2)
+                          ? colorScheme.primary.withOpacity(0.2)
                           : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -456,27 +456,24 @@ class _ModernSidebarState extends State<ModernSidebar>
           end: Alignment.bottomCenter,
           colors: isDark
               ? [
-                  colorScheme.surface.withValues(alpha: 0.7),
-                  colorScheme.surface.withValues(alpha: 0.85),
+                  colorScheme.surface.withOpacity(0.7),
+                  colorScheme.surface.withOpacity(0.85),
                 ]
-              : [
-                  Colors.white.withValues(alpha: 0.7),
-                  Colors.white.withValues(alpha: 0.85),
-                ],
+              : [Colors.white.withOpacity(0.7), Colors.white.withOpacity(0.85)],
         ),
         // 顶部微妙分割线
         border: Border(
           top: BorderSide(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.black.withValues(alpha: 0.05),
+                ? Colors.white.withOpacity(0.1)
+                : Colors.black.withOpacity(0.05),
             width: 0.5,
           ),
         ),
         // 柔和阴影
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -490,8 +487,8 @@ class _ModernSidebarState extends State<ModernSidebar>
             decoration: BoxDecoration(
               // 半透明叠加层
               color: isDark
-                  ? colorScheme.surface.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.5),
+                  ? colorScheme.surface.withOpacity(0.5)
+                  : Colors.white.withOpacity(0.5),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -574,22 +571,22 @@ class _ModernSidebarState extends State<ModernSidebar>
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        splashColor: colorScheme.primary.withValues(alpha: 0.1),
-        highlightColor: colorScheme.primary.withValues(alpha: 0.05),
+        splashColor: colorScheme.primary.withOpacity(0.1),
+        highlightColor: colorScheme.primary.withOpacity(0.05),
         child: Container(
           constraints: const BoxConstraints(minWidth: 56, minHeight: 68),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             // 半透明背景
             color: isDark
-                ? Colors.white.withValues(alpha: 0.05)
-                : Colors.black.withValues(alpha: 0.03),
+                ? Colors.white.withOpacity(0.05)
+                : Colors.black.withOpacity(0.03),
             borderRadius: BorderRadius.circular(12),
             // 微妙边框
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.06),
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.06),
               width: 0.5,
             ),
           ),
@@ -604,8 +601,8 @@ class _ModernSidebarState extends State<ModernSidebar>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      colorScheme.primary.withValues(alpha: 0.15),
-                      colorScheme.primary.withValues(alpha: 0.08),
+                      colorScheme.primary.withOpacity(0.15),
+                      colorScheme.primary.withOpacity(0.08),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(8),
@@ -617,7 +614,7 @@ class _ModernSidebarState extends State<ModernSidebar>
                 label,
                 style: TextStyle(
                   fontSize: 11,
-                  color: colorScheme.onSurface.withValues(alpha: 0.8),
+                  color: colorScheme.onSurface.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.2,
                 ),

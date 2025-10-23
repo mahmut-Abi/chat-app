@@ -321,7 +321,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         },
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          drawerScrimColor: Colors.black.withValues(alpha: 0.5),
+          drawerScrimColor: Colors.black.withOpacity(0.5),
           drawerEnableOpenDragGesture: true,
           endDrawerEnableOpenDragGesture: false,
           // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
@@ -370,11 +370,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       decoration: BoxDecoration(
                         color: Theme.of(
                           context,
-                        ).colorScheme.surface.withValues(alpha: 0.8),
+                        ).colorScheme.surface.withOpacity(0.8),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: Colors.black.withOpacity(0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),

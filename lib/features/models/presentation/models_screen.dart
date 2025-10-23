@@ -330,7 +330,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
 
   Widget _buildModelCard(AiModel model, ColorScheme colorScheme) {
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(

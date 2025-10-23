@@ -140,7 +140,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
           Icon(
             Icons.article_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text('暂无日志记录', style: Theme.of(context).textTheme.titleMedium),
@@ -163,7 +163,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     final dateFormat = DateFormat('HH:mm:ss');
 
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ExpansionTile(

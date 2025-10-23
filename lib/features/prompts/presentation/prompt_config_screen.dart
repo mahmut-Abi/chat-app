@@ -89,7 +89,7 @@ class _PromptConfigScreenState extends ConsumerState<PromptConfigScreen> {
 
   Widget _buildBasicSection() {
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -131,7 +131,7 @@ class _PromptConfigScreenState extends ConsumerState<PromptConfigScreen> {
 
   Widget _buildContentSection() {
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -176,7 +176,7 @@ class _PromptConfigScreenState extends ConsumerState<PromptConfigScreen> {
 
   Widget _buildMetadataSection() {
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),

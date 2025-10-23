@@ -52,7 +52,7 @@ class ChatMessageList extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(
           context,
-        ).scaffoldBackgroundColor.withValues(alpha: 0.0), // 完全透明，让背景图片显示出来
+        ).scaffoldBackgroundColor.withOpacity(0.0), // 完全透明，让背景图片显示出来
       ),
       child: ListView.builder(
         controller: scrollController,

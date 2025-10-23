@@ -74,7 +74,7 @@ class TokenUsageScreen extends ConsumerWidget {
     int recordCount,
   ) {
     return Card(
-      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+      color: Theme.of(context).cardColor.withOpacity(0.7),
       elevation: 2,
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -138,7 +138,7 @@ class TokenUsageScreen extends ConsumerWidget {
           Icon(
             Icons.history,
             size: 64,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text('暂无 Token 消耗记录', style: Theme.of(context).textTheme.titleMedium),

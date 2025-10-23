@@ -234,7 +234,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         if (mounted) {
           // 延迟以确保 providers 完全重建
           await Future.delayed(const Duration(milliseconds: 300));
-          
+
           if (mounted) {
             // 额外刷新 Chat 相关的 providers
             ref.invalidate(chatRepositoryProvider);
@@ -242,7 +242,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
             ref.invalidate(dioClientProvider);
             ref.invalidate(openAIApiClientProvider);
             print('🔄 Settings: 已刷新 ChatRepository 相关 providers');
-            
+
             // 强制重建整个 widget 树
             WidgetsBinding.instance.scheduleFrame();
             print('✅ Settings: 已触发 UI 重建');

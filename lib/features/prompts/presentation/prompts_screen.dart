@@ -115,7 +115,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
           Icon(
             Icons.note_add_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
           Text('暂无提示词模板', style: Theme.of(context).textTheme.titleLarge),
@@ -133,7 +133,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       itemBuilder: (context, index) {
         final template = templates[index];
         return Card(
-          color: Theme.of(context).cardColor.withValues(alpha: 0.7),
+          color: Theme.of(context).cardColor.withOpacity(0.7),
           elevation: 2,
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(

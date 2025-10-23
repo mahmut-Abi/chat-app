@@ -159,7 +159,7 @@ class MessageBubble extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        ).colorScheme.onSurfaceVariant.withOpacity(0.6),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -177,7 +177,7 @@ class MessageBubble extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        ).colorScheme.onSurfaceVariant.withOpacity(0.6),
                       ),
                     ),
                     const SizedBox(width: 8),

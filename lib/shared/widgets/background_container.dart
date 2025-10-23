@@ -98,7 +98,7 @@ class _BackgroundContainerState extends ConsumerState<BackgroundContainer> {
           Container(
             color: Theme.of(
               context,
-            ).scaffoldBackgroundColor.withValues(alpha: contentOverlayOpacity),
+            ).scaffoldBackgroundColor.withOpacity(contentOverlayOpacity),
           ),
       ],
     );
