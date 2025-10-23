@@ -340,7 +340,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     // Store the model being used for this message
     Message assistantMessageWithModel = assistantMessage.copyWith(
-      model: modelToUse,
+      model: _selectedModel?.id ?? activeApiConfig.defaultModel,
     );
 
     setState(() {
@@ -497,6 +497,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final userMessage = _messages[messageIndex - 1];
     if (userMessage.role != MessageRole.user) return;
 
+    // Get the active API config first to determine model BEFORE creating message
+    final activeApiConfigForRegenerate = await ref.read(
+      activeApiConfigProvider.future,
+    );
+    if (activeApiConfigForRegenerate == null) return;
+
+    // Determine which model to use BEFORE creating the message
+    final modelToUseForRegenerate =
+        _selectedModel?.id ?? activeApiConfigForRegenerate.defaultModel;
+
     setState(() {
       _messages.removeAt(messageIndex);
       _isLoading = true;
@@ -510,7 +520,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       isStreaming: true,
     );
     // Store the model being used for regeneration
-    Message assistantMessageWithModel = assistantMessage.copyWith(
+    final assistantMessageWithModel = assistantMessage.copyWith(
       model: modelToUseForRegenerate,
     );
 
@@ -525,15 +535,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           .sublist(0, messageIndex)
           .where((m) => !m.isStreaming)
           .toList();
-      // 获取活动的 API 配置
-      final activeApiConfigForRegenerate = await ref.read(
-        activeApiConfigProvider.future,
-      );
-      if (activeApiConfigForRegenerate == null) return;
-
-      // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
-      final modelToUseForRegenerate =
-          _selectedModel?.id ?? activeApiConfigForRegenerate.defaultModel;
       final configForRegenerate = ModelConfig(
         model: modelToUseForRegenerate,
         temperature: activeApiConfigForRegenerate.temperature,
