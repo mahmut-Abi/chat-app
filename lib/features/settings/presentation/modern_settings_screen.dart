@@ -463,54 +463,23 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Material(
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: colorScheme.primary, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: colorScheme.primaryContainer,
+          child: Icon(icon, color: colorScheme.primary, size: 22),
+        ),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
           ),
         ),
-      ),
+        subtitle: Text(description),
+        trailing: const Icon(Icons.chevron_right, size: 20),
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
@@ -548,35 +517,30 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
           description: '管理和使用提示词模板',
           onTap: () => context.push('/prompts'),
         ),
-        const SizedBox(height: 16),
         _buildToolCard(
-          icon: Icons.memory,
+          icon: Icons.memory_outlined,
           title: '模型管理',
           description: '查看和管理 AI 模型',
           onTap: () => context.push('/models'),
         ),
-        const SizedBox(height: 16),
         _buildToolCard(
-          icon: Icons.cloud,
+          icon: Icons.cloud_outlined,
           title: 'MCP 配置',
           description: '配置 Model Context Protocol 服务器',
           onTap: () => context.push('/mcp'),
         ),
-        const SizedBox(height: 16),
         _buildToolCard(
           icon: Icons.smart_toy_outlined,
           title: 'Agent 管理',
           description: '配置和管理 AI Agent 代理',
           onTap: () => context.push('/agent'),
         ),
-        const SizedBox(height: 16),
         _buildToolCard(
-          icon: Icons.bar_chart,
+          icon: Icons.bar_chart_outlined,
           title: 'Token 统计',
           description: '查看 Token 使用情况',
           onTap: () => context.push('/token-usage'),
         ),
-        const SizedBox(height: 16),
         _buildToolCard(
           icon: Icons.description_outlined,
           title: '日志查看',
