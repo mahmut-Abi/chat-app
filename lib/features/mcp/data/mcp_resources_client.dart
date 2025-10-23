@@ -37,13 +37,13 @@ class McpResourcesClient extends HttpMcpClient {
             }
           }
         } catch (e) {
-          _log.debug('尝试端点 $endpoint 失败', e);
+          _log.debug('尝试端点 $endpoint 失败: $e');
         }
       }
 
       return tools ?? [];
     } catch (e) {
-      _log.error('获取工具列表常常', e);
+      _log.error('获取工具列表失败', e);
       return null;
     }
   }
@@ -74,13 +74,13 @@ class McpResourcesClient extends HttpMcpClient {
             }
           }
         } catch (e) {
-          _log.debug('尝试端点 $endpoint 失败', e);
+          _log.debug('尝试端点 $endpoint 失败: $e');
         }
       }
 
       return prompts ?? [];
     } catch (e) {
-      _log.error('获取提示词列表常常', e);
+      _log.error('获取提示词列表失败', e);
       return null;
     }
   }
@@ -131,13 +131,13 @@ class McpResourcesClient extends HttpMcpClient {
             }
           }
         } catch (e) {
-          _log.debug('尝试端点 $endpoint 失败', e);
+          _log.debug('尝试端点 $endpoint 失败: $e');
         }
       }
 
       return resources ?? [];
     } catch (e) {
-      _log.error('获取资源列表常常', e);
+      _log.error('获取资源列表失败', e);
       return null;
     }
   }
@@ -163,7 +163,7 @@ class McpResourcesClient extends HttpMcpClient {
   }
 
   /// 获取所有资源
-  Future<MCP AllResources> getAllResources() async {
+  Future<MCPAllResources> getAllResources() async {
     _log.debug('获取所有 MCP 资源');
     try {
       final toolsFuture = listToolsWithFallback();
@@ -182,7 +182,7 @@ class McpResourcesClient extends HttpMcpClient {
         resources: (results[2] as List<Map<String, dynamic>>?) ?? [],
       );
     } catch (e) {
-      _log.error('获取所有 MCP 资源常常', e);
+      _log.error('获取所有 MCP 资源失败', e);
       return MCPAllResources(
         tools: [],
         prompts: [],
@@ -192,7 +192,6 @@ class McpResourcesClient extends HttpMcpClient {
   }
 
   /// 获取 Dio 客户端
-  Dio get dio => _dio;
 }
 
 /// MCP 所有资源

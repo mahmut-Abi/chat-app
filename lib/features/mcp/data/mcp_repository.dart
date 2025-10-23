@@ -161,8 +161,17 @@ class McpRepository {
     if (success) {
       _clients[config.id] = client;
       _log.info('MCP 连接成功: name=${config.name}');
+      // 验证连接成功 - 检查一下实际状态
+      if (kDebugMode) {
+        final status = _clients[config.id]?.status;
+        print('[McpRepository] 验证连接成功: status=$status');
+      }
     } else {
       _log.warning('MCP 连接失败: name=${config.name}');
+      // 突出打印失败信息
+      if (kDebugMode) {
+        print('[McpRepository] 连接失败 - 简介: ${config.endpoint}');
+      }
     }
 
     return success;
@@ -180,6 +189,9 @@ class McpRepository {
       await client.disconnect();
       client.dispose();
       _clients.remove(configId);
+      if (kDebugMode) {
+        print('[McpRepository] 客户端实例已离惧清理');
+      }
     }
   }
 
@@ -190,7 +202,11 @@ class McpRepository {
 
   /// 获取连接状态
   McpConnectionStatus? getConnectionStatus(String configId) {
-    return _clients[configId]?.status;
+    final status = _clients[configId]?.status;
+    if (kDebugMode && status != null) {
+      print('[McpRepository.getConnectionStatus] id=$configId, status=$status');
+    }
+    return status;
   }
 
   void dispose() {

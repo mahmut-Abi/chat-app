@@ -16,6 +16,8 @@ class HttpMcpClient extends McpClientBase {
 
   HttpMcpClient({required super.config, Dio? dio}) : _dio = dio ?? Dio();
 
+  Dio get dio => _dio;
+
   /// 调整 URL 路径（移除开头的 /）
   String _normalizePath(String path) {
     String normalized = path;
@@ -42,8 +44,8 @@ class HttpMcpClient extends McpClientBase {
         _dio.options.headers.addAll(config.headers!);
       }
 
-      // 执行健康检查
-      final isHealthy = await healthCheck();
+      // 执行健康检查（带自动降级方案）
+      final isHealthy = await healthCheckWithFallback();
       if (isHealthy) {
         status = McpConnectionStatus.connected;
         _log.info('HTTP MCP 客户端连接成功', {'endpoint': config.endpoint});
@@ -90,6 +92,62 @@ class HttpMcpClient extends McpClientBase {
     }
   }
 
+  /// 健康检查改进版本：带自动降级路径检测
+  Future<bool> healthCheckWithFallback() async {
+    final paths = [
+      '/health',
+      '/ping',
+      '/status',
+      '/tools',
+      '/api/health',
+      '/api/ping',
+    ];
+    _log.info('执行健康检查（带自动降级）');
+
+    for (final path in paths) {
+      try {
+        final response = await _dio
+            .get(
+              path,
+              options: Options(
+                receiveTimeout: const Duration(seconds: 4),
+                validateStatus: (status) => status != null && status < 500,
+              ),
+            )
+            .timeout(const Duration(seconds: 5));
+
+        if (response.statusCode == 200) {
+          _log.info('健康检查成功', {'path': path});
+          lastHealthCheck = DateTime.now();
+          lastError = null;
+          return true;
+        }
+      } catch (e) {
+        // 继续尝试下一个路径
+      }
+    }
+
+    // 所有路径都失败，尝试网络连接检查
+    _log.debug('健康检查路径失败，尝试网络连接');
+    try {
+      final response = await _dio
+          .get(
+            '',
+            options: Options(
+              receiveTimeout: const Duration(seconds: 3),
+              validateStatus: (status) => status != null,
+            ),
+          )
+          .timeout(const Duration(seconds: 3));
+      lastHealthCheck = DateTime.now();
+      lastError = null;
+      return true;
+    } catch (e) {
+      lastError = '无法连接服务器';
+      return false;
+    }
+  }
+
   /// 为 Kubernetes SSE 服务器优化的健康检查
   Future<bool> healthCheckForSSEServer() async {
     _log.debug('Kubernetes SSE 服务器健康检查', {'endpoint': config.endpoint});
@@ -102,7 +160,7 @@ class HttpMcpClient extends McpClientBase {
           followRedirects: true,
         ),
       );
-      
+
       // SSE 端点返回 200 表示正常
       if (response.statusCode == 200) {
         lastHealthCheck = DateTime.now();
@@ -126,7 +184,7 @@ class HttpMcpClient extends McpClientBase {
   /// 尝试其他健康检查端点
   Future<bool> _tryAlternativeHealthChecks() async {
     final endpoints = ['health', 'api/health', 'ping', 'api/ping', 'tools'];
-    
+
     for (final endpoint in endpoints) {
       try {
         final response = await _dio.get(
@@ -254,10 +312,10 @@ class HttpMcpClient extends McpClientBase {
       final response = await _dio.get('/tools');
       if (response.statusCode == 200) {
         final data = response.data;
-        
+
         // 众加处理哬各 API 哬各的哬各形式
         List<Map<String, dynamic>>? tools;
-        
+
         if (data is List) {
           // 直接返回列表
           tools = data.cast<Map<String, dynamic>>();
@@ -271,12 +329,12 @@ class HttpMcpClient extends McpClientBase {
             tools = (data['items'] as List).cast<Map<String, dynamic>>();
           }
         }
-        
+
         if (tools != null) {
-         _log.info('获取到 MCP 工具列表', {'count': tools.length});
-         return tools;
-       }
-     }
+          _log.info('获取到 MCP 工具列表', {'count': tools.length});
+          return tools;
+        }
+      }
       _log.warning('获取工具列表失败', {'statusCode': response.statusCode});
       return null;
     } catch (e) {
@@ -376,7 +434,7 @@ class HttpMcpClient extends McpClientBase {
       final response = await _dio.get('/prompts');
       if (response.statusCode == 200) {
         final data = response.data;
-        
+
         List<Map<String, dynamic>>? prompts;
         if (data is List) {
           prompts = data.cast<Map<String, dynamic>>();
@@ -387,7 +445,7 @@ class HttpMcpClient extends McpClientBase {
             prompts = (data['data'] as List).cast<Map<String, dynamic>>();
           }
         }
-        
+
         if (prompts != null) {
           _log.info('获取到提示词列表', {'count': prompts.length});
           return prompts;
@@ -408,18 +466,19 @@ class HttpMcpClient extends McpClientBase {
       final response = await _dio.get('/resources');
       if (response.statusCode == 200) {
         final data = response.data;
-        
+
         List<Map<String, dynamic>>? resources;
         if (data is List) {
           resources = data.cast<Map<String, dynamic>>();
         } else if (data is Map<String, dynamic>) {
           if (data['resources'] is List) {
-            resources = (data['resources'] as List).cast<Map<String, dynamic>>();
+            resources = (data['resources'] as List)
+                .cast<Map<String, dynamic>>();
           } else if (data['data'] is List) {
             resources = (data['data'] as List).cast<Map<String, dynamic>>();
           }
         }
-        
+
         if (resources != null) {
           _log.info('获取到资源列表', {'count': resources.length});
           return resources;

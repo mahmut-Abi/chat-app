@@ -54,43 +54,44 @@ final mcpConfigsProvider = FutureProvider.autoDispose<List<McpConfig>>((
   return await repository.getAllConfigs();
 });
 
-/// MCP 连接状态 Provider
-/// MCP 连接状态 Provider - 实时整合
-/// 使用 FutureProvider 以支持更好的依赖管理
+/// MCP 连接状态 Provider - 改进的單次检查
+/// 帧控制不会自动刷新，配置刐拒无效的供应商优化
+/// 改版本：每次不会缓存，始终从仓库获取实時状态
 final mcpConnectionStatusProvider =
-    Provider.family.autoDispose<McpConnectionStatus, String>((ref, configId) {
+    Provider.family<McpConnectionStatus, String>((ref, configId) {
       final repository = ref.watch(mcpRepositoryProvider);
-      return repository.getConnectionStatus(configId) ??
-          McpConnectionStatus.disconnected;
+      final status = repository.getConnectionStatus(configId);
+      return status ?? McpConnectionStatus.disconnected;
     });
 
 /// MCP 工具列表 Provider
-final mcpToolsProvider = FutureProvider.autoDispose.family<List<Map<String, dynamic>>, String>(
-  (ref, configId) async {
+final mcpToolsProvider = FutureProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>((ref, configId) async {
+      final repository = ref.watch(mcpRepositoryProvider);
+      final client = repository.getClient(configId);
+      if (client == null) {
+        return [];
+      }
+      try {
+        final tools = await client.listTools();
+        return tools ?? [];
+      } catch (e) {
+        return [];
+      }
+    });
+
+/// MCP 所有工具 Provider
+final mcpAllToolsProvider = FutureProvider.autoDispose<List<McpToolWithConfig>>(
+  (ref) async {
     final repository = ref.watch(mcpRepositoryProvider);
-    final client = repository.getClient(configId);
-    if (client == null) {
-      return [];
-    }
-    try {
-      final tools = await client.listTools();
-      return tools ?? [];
-    } catch (e) {
-      return [];
-    }
+    final toolsService = McpToolsService(repository);
+    return await toolsService.getAllToolsWithConfig();
   },
 );
 
-/// MCP 所有工具 Provider
-final mcpAllToolsProvider = FutureProvider.autoDispose<List<McpToolWithConfig>>((ref) async {
-  final repository = ref.watch(mcpRepositoryProvider);
-  final toolsService = McpToolsService(repository);
-  return await toolsService.getAllToolsWithConfig();
-});
-
 /// MCP 所有资源 Provider (工具、提示词、资源)
-final mcpResourcesProvider =
-    FutureProvider.autoDispose.family<MCPAllResources, String>((ref, configId) async {
+final mcpResourcesProvider = FutureProvider.autoDispose
+    .family<MCPAllResources, String>((ref, configId) async {
       final repository = ref.watch(mcpRepositoryProvider);
       final service = McpUnifiedResourcesService(repository);
       return await service.getAllResources(configId);
@@ -239,13 +240,22 @@ final tokenUsageRepositoryProvider = Provider<TokenUsageRepository>((ref) {
 });
 
 // Conversations Provider
-final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>((ref) async {
+final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>((
+  ref,
+) async {
   final chatRepo = ref.watch(chatRepositoryProvider);
+  if (kDebugMode) {
+    print('🔄 conversationsProvider: 重新获取数据');
+  }
   return chatRepo.getAllConversations();
 });
 
-// Conversation Groups Provider  
-final conversationGroupsProvider = FutureProvider.autoDispose<List<ConversationGroup>>((ref) async {
-  final chatRepo = ref.watch(chatRepositoryProvider);
-  return chatRepo.getAllGroups();
-});
+// Conversation Groups Provider
+final conversationGroupsProvider =
+    FutureProvider.autoDispose<List<ConversationGroup>>((ref) async {
+      final chatRepo = ref.watch(chatRepositoryProvider);
+      if (kDebugMode) {
+        print('🔄 conversationGroupsProvider: 重新获取数据');
+      }
+      return chatRepo.getAllGroups();
+    });

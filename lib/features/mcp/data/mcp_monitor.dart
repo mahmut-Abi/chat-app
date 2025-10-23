@@ -72,14 +72,14 @@ class McpMonitor {
     log.info('启动 MCP 监控', {'configId': config.id, 'strategy': strategy.toString()});
     status = McpConnectionStatus.connecting;
     
-    // 执行初始化健康检查
-    final result = await performHealthCheck();
+    // 执行初始化健康检查（带自动降级）
+    final result = await performHealthCheckWithFallback();
     
     if (result.success) {
       status = McpConnectionStatus.connected;
       _failureCount = 0;
       _eventController.add(McpMonitorEvent.connected);
-      log.info('MCP 监控则停炫特', {'strategy': strategy.toString()});
+      log.info('MCP 连接成功，已启动监控', {'strategy': strategy.toString()});
       _startHealthCheckTimer();
     } else {
       status = McpConnectionStatus.error;
@@ -95,6 +95,45 @@ class McpMonitor {
     _stopRecoveryTimer();
     status = McpConnectionStatus.disconnected;
     _eventController.add(McpMonitorEvent.disconnected);
+  }
+  
+  /// 执行健康检查並自动下预
+  Future<HealthCheckResult> performHealthCheckWithFallback() async {
+    // 首先尝试当前配置的策略
+    var result = await performHealthCheck();
+    
+    // 如果失败，自动尝试帮推策略
+    if (!result.success && strategy != HealthCheckStrategy.disabled && strategy != HealthCheckStrategy.custom) {
+      log.info('当前策略失败，尝试帮推策略', {
+        'failedStrategy': strategy.toString(),
+      });
+      
+      final fallbackStrategies = [
+        HealthCheckStrategy.networkOnly,
+        HealthCheckStrategy.toolsListing,
+        HealthCheckStrategy.standard,
+      ];
+      
+      for (final fallback in fallbackStrategies) {
+        if (fallback == strategy) continue;
+        log.debug('尝试帮推策略', {'strategy': fallback.toString()});
+        
+        final tempExecutor = executors[fallback];
+        if (tempExecutor != null) {
+          try {
+            final fallbackResult = await tempExecutor.execute(config.endpoint, config.headers?.cast());
+            if (fallbackResult.success) {
+              log.info('帮推策略成功', {'strategy': fallback.toString()});
+              return fallbackResult;
+            }
+          } catch (e) {
+            log.debug('帮推策略错误', {'strategy': fallback.toString(), 'error': e.toString()});
+          }
+        }
+      }
+    }
+    
+    return result;
   }
   
   /// 基于设置的策略执行一次健康检查
@@ -182,7 +221,7 @@ class McpMonitor {
       strategy = fallback;
       _eventController.add(McpMonitorEvent.strategyChanged);
       
-      final result = await performHealthCheck();
+      final result = await performHealthCheckWithFallback();
       if (result.success) {
         log.info('恢复成功', {'strategy': fallback.toString()});
         _eventController.add(McpMonitorEvent.recoverySuccess);
