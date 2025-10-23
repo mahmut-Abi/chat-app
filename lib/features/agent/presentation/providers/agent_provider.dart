@@ -62,66 +62,9 @@ final agentToolDefinitionsProvider =
       return integration.getAgentToolDefinitions(agent);
     });
 
-/// 创建默认工具
-final initializeDefaultToolsProvider = FutureProvider<void>((ref) async {
-  final repository = ref.watch(agentRepositoryProvider);
-  final existingTools = await repository.getAllTools();
-
-  // 如果已经有工具，则不重复创建
-  if (existingTools.isNotEmpty) return;
-
-  // 创建默认工具
-  await repository.createTool(
-    name: 'calculator',
-    type: AgentToolType.calculator,
-    isBuiltIn: true,
-    parameters: {
-      'type': 'object',
-      'properties': {
-        'expression': {'type': 'string', 'description': '要计算的数学表达式'},
-      },
-      'required': ['expression'],
-    },
-  );
-
-  await repository.createTool(
-    name: 'search',
-    type: AgentToolType.search,
-    isBuiltIn: true,
-    parameters: {
-      'type': 'object',
-      'properties': {
-        'query': {'type': 'string', 'description': '搜索关键词'},
-      },
-      'required': ['query'],
-    },
-  );
-
-  await repository.createTool(
-    name: 'file_reader',
-    type: AgentToolType.fileOperation,
-    isBuiltIn: true,
-    parameters: {
-      'type': 'object',
-      'properties': {
-        'operation': {
-          'type': 'string',
-          'description': '操作类型',
-          'enum': ['read', 'write', 'list', 'info'],
-        },
-        'path': {'type': 'string', 'description': '文件路径'},
-      },
-      'required': ['operation', 'path'],
-    },
-  );
-});
-
 /// 初始化默认 Agent
 final initializeDefaultAgentsProvider = FutureProvider<void>((ref) async {
   final repository = ref.watch(agentRepositoryProvider);
-
-  // 先确保工具已初始化
-  await ref.watch(initializeDefaultToolsProvider.future);
 
   // 初始化默认 Agent
   await DefaultAgents.initializeDefaultAgents(repository);

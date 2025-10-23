@@ -110,19 +110,16 @@ class ImprovedApiConfigSection extends StatelessWidget {
   Widget _buildProviderAvatar(BuildContext context, String provider) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return CircleAvatar(
+      backgroundColor: colorScheme.primaryContainer,
       child: Icon(
         _getProviderIcon(provider),
         color: colorScheme.primary,
-        size: 24,
+        size: 22,
       ),
     );
   }
+
 
   Widget _buildActions(BuildContext context, ApiConfig config) {
     return Row(

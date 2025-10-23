@@ -52,58 +52,8 @@ class AppInitializationService {
         return;
       }
 
-      // 创建计算器工具
-      await repository.createTool(
-        name: 'calculator',
-        description: '数学计算器，支持基本运算和复杂表达式',
-        type: AgentToolType.calculator,
-        parameters: {
-          'type': 'object',
-          'properties': {
-            'expression': {
-              'type': 'string',
-              'description': '要计算的数学表达式，例如: (2+3)*4',
-            },
-          },
-          'required': ['expression'],
-        },
-      );
-
-      // 创建搜索工具
-      await repository.createTool(
-        name: 'search',
-        description: '网络搜索工具，帮助查找相关信息',
-        type: AgentToolType.search,
-        parameters: {
-          'type': 'object',
-          'properties': {
-            'query': {'type': 'string', 'description': '搜索关键词或问题'},
-          },
-          'required': ['query'],
-        },
-      );
-
-      // 创建文件操作工具
-      await repository.createTool(
-        name: 'file_reader',
-        description: '文件和目录操作工具，支持读取、写入、列出、查看信息',
-        type: AgentToolType.fileOperation,
-        parameters: {
-          'type': 'object',
-          'properties': {
-            'operation': {
-              'type': 'string',
-              'description': '操作类型',
-              'enum': ['read', 'write', 'list', 'info'],
-            },
-            'path': {'type': 'string', 'description': '文件或目录路径'},
-            'content': {'type': 'string', 'description': '要写入的内容（仅write操作需要）'},
-          },
-          'required': ['operation', 'path'],
-        },
-      );
-
-      _log.info('默认工具初始化完成', {'count': 3});
+      _log.info('默认工具创建已禁用');
+      return;
     } catch (e, stackTrace) {
       _log.error('默认工具初始化失败', e, stackTrace);
       rethrow;
