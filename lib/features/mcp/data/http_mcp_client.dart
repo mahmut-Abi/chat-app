@@ -110,11 +110,11 @@ class HttpMcpClient extends McpClientBase {
             .get(
               path,
               options: Options(
-                receiveTimeout: const Duration(seconds: 4),
+                receiveTimeout: const Duration(seconds: 8), // iOS 需要更长的超时时间
                 validateStatus: (status) => status != null && status < 500,
               ),
             )
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 10)) // iOS 需要更长的超时时间;
 
         if (response.statusCode == 200) {
           _log.info('健康检查成功', {'path': path});
