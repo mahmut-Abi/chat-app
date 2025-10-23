@@ -515,73 +515,73 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
   }
 
   Widget _buildAdvancedTab() {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return ListView(
       padding: const EdgeInsets.all(32),
+      children: [_buildCard(child: _buildAdvancedContent())],
+    );
+  }
+
+  Widget _buildAdvancedContent() {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '工具与功能',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '快速访问应用的各项功能',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _buildToolCard(
-                icon: Icons.lightbulb_outline,
-                title: '提示词模板',
-                description: '管理和使用提示词模板',
-                onTap: () => context.push('/prompts'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.memory,
-                title: '模型管理',
-                description: '查看和管理 AI 模型',
-                onTap: () => context.push('/models'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.cloud,
-                title: 'MCP 配置',
-                description: '配置 Model Context Protocol 服务器',
-                onTap: () => context.push('/mcp'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.smart_toy_outlined,
-                title: 'Agent 管理',
-                description: '配置和管理 AI Agent 代理',
-                onTap: () => context.push('/agent'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.bar_chart,
-                title: 'Token 统计',
-                description: '查看 Token 使用情况',
-                onTap: () => context.push('/token-usage'),
-              ),
-              const SizedBox(height: 16),
-              _buildToolCard(
-                icon: Icons.description_outlined,
-                title: '日志查看',
-                description: '查看应用运行日志',
-                onTap: () => context.push('/logs'),
-              ),
-            ],
+        Text(
+          '工具与功能',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.primary,
           ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '快速访问应用的各项功能',
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 24),
+        _buildToolCard(
+          icon: Icons.lightbulb_outline,
+          title: '提示词模板',
+          description: '管理和使用提示词模板',
+          onTap: () => context.push('/prompts'),
+        ),
+        const SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icons.memory,
+          title: '模型管理',
+          description: '查看和管理 AI 模型',
+          onTap: () => context.push('/models'),
+        ),
+        const SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icons.cloud,
+          title: 'MCP 配置',
+          description: '配置 Model Context Protocol 服务器',
+          onTap: () => context.push('/mcp'),
+        ),
+        const SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icons.smart_toy_outlined,
+          title: 'Agent 管理',
+          description: '配置和管理 AI Agent 代理',
+          onTap: () => context.push('/agent'),
+        ),
+        const SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icons.bar_chart,
+          title: 'Token 统计',
+          description: '查看 Token 使用情况',
+          onTap: () => context.push('/token-usage'),
+        ),
+        const SizedBox(height: 16),
+        _buildToolCard(
+          icon: Icons.description_outlined,
+          title: '日志查看',
+          description: '查看应用运行日志',
+          onTap: () => context.push('/logs'),
         ),
       ],
     );
