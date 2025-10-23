@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class PermissionService {
   final _log = LogService();
 
-  Future<Map<Permission, PermissionStatus>> checkAndRequestPermissions() async {
+  Future<Map<ph.Permission, ph.PermissionStatus>> checkAndRequestPermissions() async {
     if (kIsWeb || (!PlatformUtils.isIOS && !PlatformUtils.isAndroid)) {
       _log.info('非移动平台，跳过权限检查');
       return {};
@@ -38,31 +38,31 @@ class PermissionService {
   }
 
   // 获取需要的权限列表
-  List<Permission> _getRequiredPermissions() {
+  List<ph.Permission> _getRequiredPermissions() {
     if (PlatformUtils.isIOS) {
       return [
         // iOS 不需要网络权限（网络是默认的）
         // 但需要本地网络权限（iOS 14+）
-        Permission.photos, // 相册权限（可选）
-        Permission.camera, // 相机权限（可选）
-        Permission.notification, // 通知权限（可选）
+        ph.Permission.photos, // 相册权限（可选）
+        ph.Permission.camera, // 相机权限（可选）
+        ph.Permission.notification, // 通知权限（可选）
       ];
     } else if (PlatformUtils.isAndroid) {
       return [
-        Permission.storage, // 存储权限
-        Permission.photos, // 相册权限
-        Permission.camera, // 相机权限
-        Permission.notification, // 通知权限
+        ph.Permission.storage, // 存储权限
+        ph.Permission.photos, // 相册权限
+        ph.Permission.camera, // 相机权限
+        ph.Permission.notification, // 通知权限
       ];
     }
     return [];
   }
 
   // 检查权限状态
-  Future<Map<Permission, PermissionStatus>> _checkPermissions(
-    List<Permission> permissions,
+  Future<Map<ph.Permission, ph.PermissionStatus>> _checkPermissions(
+    List<ph.Permission> permissions,
   ) async {
-    final statuses = <Permission, PermissionStatus>{};
+    final statuses = <ph.Permission, ph.PermissionStatus>{};
     for (final permission in permissions) {
       try {
         statuses[permission] = await permission.status;
@@ -71,15 +71,15 @@ class PermissionService {
           'permission': permission.toString(),
           'error': e.toString(),
         });
-        statuses[permission] = PermissionStatus.denied;
+        statuses[permission] = ph.PermissionStatus.denied;
       }
     }
     return statuses;
   }
 
   // 请求权限
-  Future<Map<Permission, PermissionStatus>> _requestPermissions(
-    List<Permission> permissions,
+  Future<Map<ph.Permission, ph.PermissionStatus>> _requestPermissions(
+    List<ph.Permission> permissions,
   ) async {
     _log.info('开始请求权限', {
       'permissions': permissions.map((p) => p.toString()).toList(),
@@ -117,7 +117,7 @@ class PermissionService {
   }
 
   // 检查单个权限
-  Future<bool> checkPermission(Permission permission) async {
+  Future<bool> checkPermission(ph.Permission permission) async {
     try {
       final status = await permission.status;
       _log.debug('检查权限', {
@@ -135,7 +135,7 @@ class PermissionService {
   }
 
   // 请求单个权限
-  Future<PermissionStatus> requestPermission(Permission permission) async {
+  Future<ph.PermissionStatus> requestPermission(ph.Permission permission) async {
     try {
       _log.info('请求权限', {'permission': permission.toString()});
       final status = await permission.request();
@@ -149,39 +149,39 @@ class PermissionService {
         'permission': permission.toString(),
         'error': e.toString(),
       });
-      return PermissionStatus.denied;
+      return ph.PermissionStatus.denied;
     }
   }
 
   // 打开应用设置
   Future<bool> openSettings() async {
     _log.info('打开应用设置');
-    return await openAppSettings();
+    return await ph.openAppSettings();
   }
 
   // 获取权限描述（用于UI显示）
-  String getPermissionDescription(Permission permission) {
-    if (permission == Permission.photos) {
+  String getPermissionDescription(ph.Permission permission) {
+    if (permission == ph.Permission.photos) {
       return '相册访问权限用于选择和分享图片';
-    } else if (permission == Permission.camera) {
+    } else if (permission == ph.Permission.camera) {
       return '相机权限用于拍摄照片';
-    } else if (permission == Permission.notification) {
+    } else if (permission == ph.Permission.notification) {
       return '通知权限用于接收重要消息提醒';
-    } else if (permission == Permission.storage) {
+    } else if (permission == ph.Permission.storage) {
       return '存储权限用于保存和读取文件';
     }
     return '此权限用于应用正常运行';
   }
 
   // 获取权限名称
-  String getPermissionName(Permission permission) {
-    if (permission == Permission.photos) {
+  String getPermissionName(ph.Permission permission) {
+    if (permission == ph.Permission.photos) {
       return '相册';
-    } else if (permission == Permission.camera) {
+    } else if (permission == ph.Permission.camera) {
       return '相机';
-    } else if (permission == Permission.notification) {
+    } else if (permission == ph.Permission.notification) {
       return '通知';
-    } else if (permission == Permission.storage) {
+    } else if (permission == ph.Permission.storage) {
       return '存储';
     }
     return permission.toString().split('.').last;

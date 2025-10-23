@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/providers.dart';
+import '../../../../core/providers/providers.dart';
 import '../../domain/mcp_config.dart';
 import '../mcp_config_screen.dart';
 
