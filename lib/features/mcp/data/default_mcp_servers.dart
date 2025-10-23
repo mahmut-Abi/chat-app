@@ -10,82 +10,13 @@ class DefaultMcpServers {
   /// 初始化示例 MCP 服务器
   static Future<void> initializeExampleServers(McpRepository repository) async {
     _log.info('开始初始化示例 MCP 服务器');
-
-    try {
-      // 检查是否已经初始化过
-      final existingConfigs = await repository.getAllConfigs();
-      final hasExamples = existingConfigs.any(
-        (c) => c.description?.contains('示例') ?? false,
-      );
-
-      if (hasExamples) {
-        _log.info('示例 MCP 服务器已存在，跳过初始化');
-        return;
-      }
-
-      // 创建示例服务器配置
-      final exampleServers = <Future<McpConfig>>[];
-
-      // 1. 天气 API 示例（HTTP 模式）
-      exampleServers.add(
-        repository.createConfig(
-          name: '天气服务示例',
-          connectionType: McpConnectionType.http,
-          endpoint: 'https://api.weatherapi.com/v1',
-          description: '示例：天气查询 API（需要配置 API Key）',
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
-
-      // 2. GitHub API 示例（HTTP 模式）
-      exampleServers.add(
-        repository.createConfig(
-          name: 'GitHub API 示例',
-          connectionType: McpConnectionType.http,
-          endpoint: 'https://api.github.com',
-          description: '示例：GitHub API 服务',
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      // 3. Node.js Stdio 示例（Stdio 模式）
-      exampleServers.add(
-        repository.createConfig(
-          name: 'Node MCP Server 示例',
-          connectionType: McpConnectionType.stdio,
-          endpoint: '/usr/bin/node',
-          args: ['mcp-server.js'],
-          description: '示例：Node.js MCP 服务器（需要创建 mcp-server.js）',
-          env: {'NODE_ENV': 'production'},
-        ),
-      );
-
-      // 4. Python Stdio 示例（Stdio 模式）
-      exampleServers.add(
-        repository.createConfig(
-          name: 'Python MCP Server 示例',
-          connectionType: McpConnectionType.stdio,
-          endpoint: '/usr/bin/python3',
-          args: ['-m', 'mcp_server'],
-          description: '示例：Python MCP 服务器（需要安装 mcp_server 模块）',
-          env: {'PYTHONPATH': '.'},
-        ),
-      );
-
-      // 等待所有示例服务器创建完成
-      await Future.wait(exampleServers);
-
-      _log.info('成功创建 ${exampleServers.length} 个示例 MCP 服务器');
-    } catch (e, stackTrace) {
-      _log.error('初始化示例 MCP 服务器失败', e, stackTrace);
-    }
+    // 被禁用 - 无需内置 MCP 配置
+    return;
   }
 
   /// 创建用户友好的快速开始配置
-  static Future<void> initializeQuickStartServers(
+  // DISABLED - No built-in configs needed
+  //static Future<void> initializeQuickStartServers(
     McpRepository repository,
   ) async {
     _log.info('开始初始化快速开始 MCP 服务器');

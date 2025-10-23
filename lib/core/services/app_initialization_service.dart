@@ -138,7 +138,7 @@ class AppInitializationService {
 
     try {
       final repository = McpRepository(_storage);
-      await DefaultMcpServers.initializeQuickStartServers(repository);
+      // Disabled: await DefaultMcpServers.initializeQuickStartServers(repository);
 
       _log.info('示例 MCP 服务器初始化完成');
     } catch (e, stackTrace) {

@@ -10,6 +10,8 @@ class DefaultAgents {
   static Future<void> initializeDefaultAgents(
     AgentRepository repository,
   ) async {
+    // DISABLED - no built-in agents needed
+    return;
     _log.info('开始初始化默认 Agent');
 
     try {
