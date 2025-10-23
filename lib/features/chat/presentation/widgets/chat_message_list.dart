@@ -70,7 +70,7 @@ class ChatMessageList extends StatelessWidget {
             child: MessageBubble(
               message: message,
               modelName: message.role == MessageRole.assistant
-                  ? currentModelName
+                  ? (message.model ?? currentModelName)
                   : null,
               onDelete: () => onDeleteMessage(index),
               onRegenerate: message.role == MessageRole.assistant

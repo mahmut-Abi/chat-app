@@ -63,32 +63,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
   }
 
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     // 监听 provider 变化并自动刷新对话列表
-    
+
     // 只注册一次监听器避免重复注册
     if (_hasListenersRegistered) return;
     _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
-    print('🔍 ChatScreen: 注册 provider 监听器');
+        print('🔍 ChatScreen: 注册 provider 监听器');
         if (mounted) {
-      print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
+          print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
           setState(() {
             _conversations = conversations;
           });
         }
       });
     });
-    
+
     ref.listen(conversationGroupsProvider, (previous, next) {
       next.whenData((groups) {
         if (mounted) {
-      print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
+          print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
           setState(() {
             _groups = groups;
           });
@@ -96,6 +95,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       });
     });
   }
+
   // 初始化默认模型
   void _initializeDefaultModel() async {
     final settingsRepo = ref.read(settingsRepositoryProvider);
@@ -338,9 +338,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       timestamp: DateTime.now(),
       isStreaming: true,
     );
+    // Store the model being used for this message
+    Message assistantMessageWithModel = assistantMessage.copyWith(
+      model: modelToUse,
+    );
 
     setState(() {
-      _messages.add(assistantMessage);
+      _messages.add(assistantMessageWithModel);
     });
 
     final chatRepo = ref.read(chatRepositoryProvider);
@@ -397,7 +401,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       });
 
       // 计算响应时间
-      final responseDurationMs = DateTime.now().difference(responseStartTime).inMilliseconds;
+      final responseDurationMs = DateTime.now()
+          .difference(responseStartTime)
+          .inMilliseconds;
 
       // 使用 TokenCounter 估算 token 数量
       final estimatedTokens = TokenCounter.estimate(fullContent);
@@ -423,8 +429,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               model: modelToUse,
               responseDurationMs: responseDurationMs,
             );
-
-
           }
         });
 
@@ -500,9 +504,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       timestamp: DateTime.now(),
       isStreaming: true,
     );
+    // Store the model being used for regeneration
+    Message assistantMessageWithModel = assistantMessage.copyWith(
+      model: modelToUseForRegenerate,
+    );
 
     setState(() {
-      _messages.insert(messageIndex, assistantMessage);
+      _messages.insert(messageIndex, assistantMessageWithModel);
     });
 
     final chatRepo = ref.read(chatRepositoryProvider);
@@ -691,17 +699,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: PopScope(
         canPop: !isMobile,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
-        // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
+          // 移动端：canPop=false 会阻止右划手势，但 AppBar 返回按钮依然可用
         },
         child: GestureDetector(
-        onTap: () {
-          // 点击空白区域隐藏键盘
-          _inputFocusNode.unfocus();
-        },
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          extendBodyBehindAppBar: true,
-          extendBody: true,
+          onTap: () {
+            // 点击空白区域隐藏键盘
+            _inputFocusNode.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: true,
+            extendBody: true,
             // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
             onDrawerChanged: PlatformUtils.isIOS
                 ? (isOpened) {
