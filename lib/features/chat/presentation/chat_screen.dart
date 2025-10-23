@@ -385,7 +385,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             (m) => m.id == assistantMessage.id,
           );
           if (index != -1) {
-            _messages[index] = assistantMessage.copyWith(content: fullContent);
+            _messages[index] = assistantMessageWithModel.copyWith(
+              content: fullContent,
+            );
           }
         });
         // 移除自动滚动，让用户可以查看之前的对话
@@ -395,7 +397,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
         if (index != -1) {
-          _messages[index] = _messages[index].copyWith(isStreaming: false);
+          _messages[index] = _messages[index].copyWith(
+            isStreaming: false,
+            model: assistantMessageWithModel.model,
+          );
         }
         _isLoading = false;
       });
@@ -554,7 +559,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             (m) => m.id == assistantMessage.id,
           );
           if (index != -1) {
-            _messages[index] = assistantMessage.copyWith(content: fullContent);
+            _messages[index] = assistantMessageWithModel.copyWith(
+              content: fullContent,
+            );
           }
         });
         // 移除自动滚动，让用户可以查看之前的对话
@@ -564,7 +571,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       setState(() {
         final index = _messages.indexWhere((m) => m.id == assistantMessage.id);
         if (index != -1) {
-          _messages[index] = _messages[index].copyWith(isStreaming: false);
+          _messages[index] = _messages[index].copyWith(
+            isStreaming: false,
+            model: assistantMessageWithModel.model,
+          );
         }
         _isLoading = false;
       });
