@@ -2,144 +2,79 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../shared/themes/app_theme.dart';
-// import './background_settings.dart';
+import '../../../../shared/utils/dialog_helper.dart';
+import '../services/settings_service.dart';
 
+/// 简化后的主题设置 Mixin - 现在委托给 SettingsService
 mixin SettingsThemeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+  late SettingsService _settingsService;
+
+  @override
+  void didChangeDependencies() {
+    _settingsService = SettingsService(ref, context);
+    super.didChangeDependencies();
+  }
+
   Future<void> showThemeDialog() async {
-    final result = await showDialog<String>(
+    final result = await DialogHelper.showChoiceDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('选择主题'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('浅色'),
-              leading: const Icon(Icons.light_mode),
-              onTap: () => Navigator.pop(context, 'light'),
-            ),
-            ListTile(
-              title: const Text('深色'),
-              leading: const Icon(Icons.dark_mode),
-              onTap: () => Navigator.pop(context, 'dark'),
-            ),
-            ListTile(
-              title: const Text('跟随系统'),
-              leading: const Icon(Icons.brightness_auto),
-              onTap: () => Navigator.pop(context, 'system'),
-            ),
-          ],
-        ),
-      ),
+      title: '选择主题',
+      choices: [
+        DialogChoice(label: '浅色', value: 'light'),
+        DialogChoice(label: '深色', value: 'dark'),
+        DialogChoice(label: '跟随系统', value: 'system'),
+      ],
     );
 
     if (result != null) {
-      final currentSettings = await ref.read(appSettingsProvider.future);
-      await ref
-          .read(appSettingsProvider.notifier)
-          .updateSettings(currentSettings.copyWith(themeMode: result));
+      await _settingsService.updateAppSettings(
+        (settings) => settings.copyWith(themeMode: result),
+      );
     }
-  }
-
-  void showBackgroundDialog() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) => Container(),
-      ),
-    );
   }
 
   Future<void> showThemeColorDialog() async {
     final settings = await ref.read(appSettingsProvider.future);
     if (!context.mounted) return;
-    final result = await showDialog<String>(
+
+    final choices = AppTheme.predefinedColors.entries
+        .map((e) => DialogChoice(label: e.key, value: e.key))
+        .toList();
+
+    final result = await DialogHelper.showChoiceDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('选择主题颜色'),
-        content: SizedBox(
-          width: 300,
-          child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-            ),
-            itemCount: AppTheme.predefinedColors.length,
-            itemBuilder: (context, index) {
-              final entry = AppTheme.predefinedColors.entries.elementAt(index);
-              final isSelected = settings.themeColor == entry.key;
-              return InkWell(
-                onTap: () => Navigator.pop(context, entry.key),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: entry.value,
-                    borderRadius: BorderRadius.circular(8),
-                    border: isSelected
-                        ? Border.all(color: Colors.white, width: 3)
-                        : null,
-                  ),
-                  child: isSelected
-                      ? const Center(
-                          child: Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        )
-                      : null,
-                ),
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-        ],
-      ),
+      title: '选择主题颜色',
+      choices: choices,
     );
 
     if (result != null) {
-      updateThemeColor(result);
+      await _settingsService.updateAppSettings(
+        (settings) => settings.copyWith(themeColor: result),
+      );
     }
   }
 
-  Future<void> updateThemeColor(String colorKey) async {
-    final currentSettings = await ref.read(appSettingsProvider.future);
-    await ref
-        .read(appSettingsProvider.notifier)
-        .updateSettings(currentSettings.copyWith(themeColor: colorKey));
-  }
+  Future<void> updateFontSize(double fontSize) =>
+      _settingsService.updateAppSettings(
+        (s) => s.copyWith(fontSize: fontSize),
+      );
 
-  Future<void> updateFontSize(double fontSize) async {
-    final currentSettings = await ref.read(appSettingsProvider.future);
-    await ref
-        .read(appSettingsProvider.notifier)
-        .updateSettings(currentSettings.copyWith(fontSize: fontSize));
-  }
+  Future<void> updateMarkdownEnabled(bool enabled) =>
+      _settingsService.updateAppSettings(
+        (s) => s.copyWith(enableMarkdown: enabled),
+      );
 
-  Future<void> updateMarkdownEnabled(bool enabled) async {
-    final currentSettings = await ref.read(appSettingsProvider.future);
-    await ref
-        .read(appSettingsProvider.notifier)
-        .updateSettings(currentSettings.copyWith(enableMarkdown: enabled));
-  }
+  Future<void> updateCodeHighlightEnabled(bool enabled) =>
+      _settingsService.updateAppSettings(
+        (s) => s.copyWith(enableCodeHighlight: enabled),
+      );
 
-  Future<void> updateCodeHighlightEnabled(bool enabled) async {
-    final currentSettings = await ref.read(appSettingsProvider.future);
-    await ref
-        .read(appSettingsProvider.notifier)
-        .updateSettings(currentSettings.copyWith(enableCodeHighlight: enabled));
-  }
+  Future<void> updateLatexEnabled(bool enabled) =>
+      _settingsService.updateAppSettings(
+        (s) => s.copyWith(enableLatex: enabled),
+      );
 
-  Future<void> updateLatexEnabled(bool enabled) async {
-    final currentSettings = await ref.read(appSettingsProvider.future);
-    await ref
-        .read(appSettingsProvider.notifier)
-        .updateSettings(currentSettings.copyWith(enableLatex: enabled));
+  Future<void> showBackgroundDialog() async {
+    // TODO: 实现背景设置对话框
   }
 }

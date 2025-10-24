@@ -237,7 +237,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
               ),
             ),
           );
-        },
+        }
       ),
     );
   }
@@ -291,7 +291,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
       itemCount: _tabs.length,
       itemBuilder: (context, index) {
         return _buildNavItem(context, colorScheme, index);
-      },
+      }
     );
   }
 
@@ -480,6 +480,7 @@ class _ModernSettingsScreenState extends ConsumerState<ModernSettingsScreen>
         trailing: const Icon(Icons.chevron_right, size: 20),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
   }
 

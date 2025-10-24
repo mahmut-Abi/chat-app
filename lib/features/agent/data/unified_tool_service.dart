@@ -5,6 +5,7 @@ import '../../chat/domain/function_call.dart';
 import '../../mcp/data/mcp_tool_integration.dart';
 import '../../../core/services/log_service.dart';
 import 'dart:convert';
+import 'tool_definitions_service.dart';
 
 /// 统一工具服务
 /// 整合 Agent 工具和 MCP 工具，提供统一的调用接口
@@ -300,43 +301,6 @@ class UnifiedToolService {
 
   /// 获取默认参数定义
   Map<String, dynamic> _getDefaultParameters(AgentToolType type) {
-    switch (type) {
-      case AgentToolType.calculator:
-        return {
-          'type': 'object',
-          'properties': {
-            'expression': {'type': 'string', 'description': '要计算的数学表达式'},
-          },
-          'required': ['expression'],
-        };
-
-      case AgentToolType.search:
-        return {
-          'type': 'object',
-          'properties': {
-            'query': {'type': 'string', 'description': '搜索关键词'},
-          },
-          'required': ['query'],
-        };
-
-      case AgentToolType.fileOperation:
-        return {
-          'type': 'object',
-          'properties': {
-            'operation': {
-              'type': 'string',
-              'description': '操作类型',
-              'enum': ['read', 'write', 'list', 'info', 'delete', 'create'],
-            },
-            'path': {'type': 'string', 'description': '文件或目录路径'},
-            'content': {'type': 'string', 'description': '写入的内容（仅 write 操作）'},
-          },
-          'required': ['operation', 'path'],
-        };
-
-      case AgentToolType.codeExecution:
-      case AgentToolType.custom:
-        return {'type': 'object', 'properties': {}};
-    }
+    return ToolDefinitionsService.getDefaultParameters(type);
   }
 }

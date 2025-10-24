@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'tool_definitions_service.dart';
 import '../domain/agent_tool.dart';
 import 'agent_repository.dart';
 import '../../chat/domain/message.dart';
 import '../../chat/domain/function_call.dart';
 import '../../../core/services/log_service.dart';
 import '../../mcp/data/mcp_tool_integration.dart';
+import 'tool_definitions_service.dart';
 
 /// 增强的 Agent 集成服务
 /// 支持 Function Calling 和工具执行
@@ -219,44 +221,7 @@ class EnhancedAgentIntegration {
 
   /// 获取默认参数定义
   Map<String, dynamic> _getDefaultParameters(AgentToolType type) {
-    switch (type) {
-      case AgentToolType.calculator:
-        return {
-          'type': 'object',
-          'properties': {
-            'expression': {'type': 'string', 'description': '要计算的数学表达式'},
-          },
-          'required': ['expression'],
-        };
-
-      case AgentToolType.search:
-        return {
-          'type': 'object',
-          'properties': {
-            'query': {'type': 'string', 'description': '搜索关键词'},
-          },
-          'required': ['query'],
-        };
-
-      case AgentToolType.fileOperation:
-        return {
-          'type': 'object',
-          'properties': {
-            'operation': {
-              'type': 'string',
-              'description': '操作类型 (read/write/list/info)',
-              'enum': ['read', 'write', 'list', 'info'],
-            },
-            'path': {'type': 'string', 'description': '文件或目录路径'},
-            'content': {'type': 'string', 'description': '写入的内容（仅 write 操作）'},
-          },
-          'required': ['operation', 'path'],
-        };
-
-      case AgentToolType.codeExecution:
-      case AgentToolType.custom:
-        return {'type': 'object', 'properties': {}};
-    }
+    return ToolDefinitionsService.getDefaultParameters(type);
   }
 
   /// 格式化工具结果为可读文本
