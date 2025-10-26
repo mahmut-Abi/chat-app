@@ -1,7 +1,5 @@
-import '../domain/mcp_config.dart';
 import 'mcp_repository.dart';
 import '../../../core/services/log_service.dart';
-import 'package:uuid/uuid.dart';
 
 /// 默认 MCP 服务器配置
 class DefaultMcpServers {

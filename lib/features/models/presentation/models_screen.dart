@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/utils/platform_utils.dart';
 import '../domain/model.dart';
 import '../../settings/domain/api_config.dart';
 import '../../../core/providers/providers.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/utils/message_utils.dart';
 
 class ModelsScreen extends ConsumerStatefulWidget {
   const ModelsScreen({super.key});

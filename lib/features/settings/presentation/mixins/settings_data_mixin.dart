@@ -252,18 +252,24 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         if (mounted) {
           final msg = '导入成功：';
           final counts = [];
-          if (importResult['conversationsCount'] ?? 0 > 0)
+          if (importResult['conversationsCount'] ?? 0 > 0) {
             counts.add('${importResult['conversationsCount']} 对话');
-          if (importResult['apiConfigsCount'] ?? 0 > 0)
+          }
+          if (importResult['apiConfigsCount'] ?? 0 > 0) {
             counts.add('${importResult['apiConfigsCount']} API');
-          if (importResult['mcpConfigsCount'] ?? 0 > 0)
+          }
+          if (importResult['mcpConfigsCount'] ?? 0 > 0) {
             counts.add('${importResult['mcpConfigsCount']} MCP');
-          if (importResult['agentConfigsCount'] ?? 0 > 0)
+          }
+          if (importResult['agentConfigsCount'] ?? 0 > 0) {
             counts.add('${importResult['agentConfigsCount']} Agent');
-          if (importResult['groupsCount'] ?? 0 > 0)
+          }
+          if (importResult['groupsCount'] ?? 0 > 0) {
             counts.add('${importResult['groupsCount']} 分组');
-          if (importResult['promptTemplatesCount'] ?? 0 > 0)
+          }
+          if (importResult['promptTemplatesCount'] ?? 0 > 0) {
             counts.add('${importResult['promptTemplatesCount']} 模板');
+          }
           final message = msg + counts.join(', ');
           MessageUtils.showSuccess(
             context,

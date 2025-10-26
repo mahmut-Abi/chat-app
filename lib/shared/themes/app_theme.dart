@@ -27,17 +27,17 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       textTheme: textTheme,
-      pageTransitionsTheme: PageTransitionsTheme(
+      pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.iOS: _OpaquePageTransitionsBuilder(
-            const CupertinoPageTransitionsBuilder(),
+            CupertinoPageTransitionsBuilder(),
           ),
           TargetPlatform.android: _OpaquePageTransitionsBuilder(
-            const FadeUpwardsPageTransitionsBuilder(),
+            FadeUpwardsPageTransitionsBuilder(),
           ),
-          TargetPlatform.macOS: const NoTransitionBuilder(),
-          TargetPlatform.windows: const NoTransitionBuilder(),
-          TargetPlatform.linux: const NoTransitionBuilder(),
+          TargetPlatform.macOS: NoTransitionBuilder(),
+          TargetPlatform.windows: NoTransitionBuilder(),
+          TargetPlatform.linux: NoTransitionBuilder(),
         },
       ),
       colorScheme: ColorScheme.fromSeed(
@@ -87,17 +87,17 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       textTheme: textTheme,
-      pageTransitionsTheme: PageTransitionsTheme(
+      pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.iOS: _OpaquePageTransitionsBuilder(
-            const CupertinoPageTransitionsBuilder(),
+            CupertinoPageTransitionsBuilder(),
           ),
           TargetPlatform.android: _OpaquePageTransitionsBuilder(
-            const FadeUpwardsPageTransitionsBuilder(),
+            FadeUpwardsPageTransitionsBuilder(),
           ),
-          TargetPlatform.macOS: const NoTransitionBuilder(),
-          TargetPlatform.windows: const NoTransitionBuilder(),
-          TargetPlatform.linux: const NoTransitionBuilder(),
+          TargetPlatform.macOS: NoTransitionBuilder(),
+          TargetPlatform.windows: NoTransitionBuilder(),
+          TargetPlatform.linux: NoTransitionBuilder(),
         },
       ),
       colorScheme: ColorScheme.fromSeed(

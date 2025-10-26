@@ -4,9 +4,7 @@ import '../storage/storage_service.dart';
 import '../../features/agent/data/agent_repository.dart';
 import '../../features/agent/data/tool_executor.dart';
 import '../../features/agent/data/default_agents.dart';
-import '../../features/agent/domain/agent_tool.dart';
 import '../../features/mcp/data/mcp_repository.dart';
-import '../../features/mcp/data/default_mcp_servers.dart';
 import 'log_service.dart';
 
 /// 应用初始化服务

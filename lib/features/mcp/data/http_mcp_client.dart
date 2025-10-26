@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../domain/mcp_config.dart';
 import 'mcp_client_base.dart';
 import '../../../core/services/log_service.dart';
+import 'dart:io' show Platform;
 
 /// HTTP 模式的 MCP 客户端
 class HttpMcpClient extends McpClientBase {
@@ -11,12 +12,30 @@ class HttpMcpClient extends McpClientBase {
   Timer? _heartbeatTimer;
   StreamController<String>? _sseController;
   final LogService _log = LogService();
-  int _failureCount = 0;
-  static const int _maxFailures = 3;
+  
+  // iOS-optimized timeout values
+  static const Duration _connectTimeout = Duration(seconds: 15);
+  static const Duration _receiveTimeout = Duration(seconds: 60);
+  static const Duration _sendTimeout = Duration(seconds: 30);
 
-  HttpMcpClient({required super.config, Dio? dio}) : _dio = dio ?? Dio();
+  HttpMcpClient({required super.config, Dio? dio}) : _dio = dio ?? Dio() {
+    _configureDioForPlatform();
+  }
 
   Dio get dio => _dio;
+
+  /// Configure Dio with platform-specific optimizations
+  void _configureDioForPlatform() {
+    _dio.options.connectTimeout = _connectTimeout;
+    _dio.options.receiveTimeout = _receiveTimeout;
+    _dio.options.sendTimeout = _sendTimeout;
+    _dio.options.validateStatus = (status) => status != null && status < 500;
+
+    if (Platform.isIOS) {
+      _log.info('Configuring iOS-specific parameters');
+      _dio.options.responseType = ResponseType.stream;
+    }
+  }
 
   /// 调整 URL 路径（移除开头的 /）
   String _normalizePath(String path) {
@@ -39,6 +58,13 @@ class HttpMcpClient extends McpClientBase {
 
       // 配置 Dio
       _dio.options.baseUrl = config.endpoint;
+      
+      // Ensure iOS optimizations are reapplied
+      if (Platform.isIOS) {
+        _log.debug('Reapplying iOS optimizations');
+        _configureDioForPlatform();
+      }
+      
       if (config.headers != null) {
         _log.debug('添加请求头', {'headersCount': config.headers!.length});
         _dio.options.headers.addAll(config.headers!);
@@ -367,22 +393,66 @@ class HttpMcpClient extends McpClientBase {
     _heartbeatTimer = null;
   }
 
-  /// SSE 连接
+
+
+  /// Pre-flight connectivity check for SSE endpoint
+  Future<bool> _preFlightSSECheck(String endpoint) async {
+    _log.info('SSE Pre-flight check', {'endpoint': endpoint});
+    try {
+      final response = await _dio.head(
+        endpoint,
+        options: Options(
+          validateStatus: (status) => status != null && status < 500,
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      ).timeout(const Duration(seconds: 10));
+
+      final statusOk = response.statusCode != null && response.statusCode! < 400;
+      _log.info('SSE Pre-flight result', {
+        'status': response.statusCode,
+        'ok': statusOk,
+      });
+      return statusOk;
+    } catch (e) {
+      _log.debug('SSE Pre-flight check error (non-fatal)', {'error': e.toString()});
+      return true; // Continue anyway
+    }
+  }
+
+  /// SSE 连接 (iOS-optimized)
   Future<Stream<String>?> connectSSE(String endpoint) async {
     _log.info('建立 SSE 连接', {'endpoint': endpoint});
     try {
+      // Step 1: Pre-flight check
+      _log.debug('Performing SSE pre-flight connectivity check');
+      await _preFlightSSECheck(endpoint);
+      
       // 使用广播流，支持多个监听器
       _sseController = StreamController<String>.broadcast();
 
+      _log.debug('Initiating SSE stream request');
       final response = await _dio.get<ResponseBody>(
         endpoint,
         options: Options(
           responseType: ResponseType.stream,
-          headers: {'Accept': 'text/event-stream', 'Cache-Control': 'no-cache'},
+          headers: {
+            'Accept': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'User-Agent': 'Flutter-MCP-Client',
+          },
+          receiveTimeout: const Duration(minutes: 5), // SSE needs long timeout
+          validateStatus: (status) => status != null && (status == 200 || status == 201),
         ),
-      );
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
+        throw TimeoutException('SSE connection timeout after 30s');
+      });
 
       if (response.statusCode == 200 && response.data != null) {
+        _log.info('SSE stream established', {
+          'status': response.statusCode,
+          'contentType': response.headers.value('content-type'),
+        });
         response.data!.stream
             .cast<List<int>>()
             .transform(utf8.decoder)
@@ -394,8 +464,8 @@ class HttpMcpClient extends McpClientBase {
                   _sseController!.add(data);
                 }
               },
-              onError: (error) {
-                _log.error('SSE 连接错误', error);
+              onError: (error, stackTrace) {
+                _log.error('SSE 连接错误', error, stackTrace);
                 if (!_sseController!.isClosed) {
                   _sseController!.addError(error);
                 }
@@ -497,5 +567,24 @@ class HttpMcpClient extends McpClientBase {
     _log.debug('HTTP MCP 客户端释放资源', {'endpoint': config.endpoint});
     _stopHeartbeat();
     _closeSseConnection();
+  }
+
+
+  /// Handle iOS-specific network errors
+  String _getDetailedErrorMessage(dynamic error) {
+    if (error is DioException) {
+      final message = error.message ?? '';
+      if (error.type == DioExceptionType.connectionTimeout) {
+        return 'Connection timeout - server may be slow or unreachable';
+      } else if (error.type == DioExceptionType.receiveTimeout) {
+        return 'Receive timeout - server response took too long';
+      } else if (error.type == DioExceptionType.badCertificate) {
+        return 'SSL certificate error - try using HTTP or check server certificate';
+      } else if (error.type == DioExceptionType.unknown && message.contains('CERTIFICATE')) {
+        return 'SSL/TLS certificate validation failed on iOS';
+      }
+      return 'Network error: \$message';
+    }
+    return error.toString();
   }
 }

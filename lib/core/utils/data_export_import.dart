@@ -111,7 +111,7 @@ class DataExportImport {
           final toolMap = tool as Map<String, dynamic>;
           // 使用 saveSetting 因为工具使用 agent_tool_ 前缀
           await _storage.saveSetting(
-            'agent_tool_' + (toolMap['id'] as String),
+            'agent_tool_${toolMap['id'] as String}',
             jsonEncode(toolMap),
           );
           agentToolsCount += 1;

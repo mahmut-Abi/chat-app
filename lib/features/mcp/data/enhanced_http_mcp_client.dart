@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 import '../domain/mcp_config.dart';
 import 'mcp_client_base.dart';
 import '../../../core/services/log_service.dart';
@@ -12,7 +11,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
   final LogService _log = LogService();
   final String? customHealthCheckPath;
   String? _detectedHealthCheckPath;
-  Map<String, String> _detectedEndpoints = {};
+  final Map<String, String> _detectedEndpoints = {};
 
   EnhancedHttpMcpClient({
     required super.config,
@@ -26,7 +25,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
       normalized = normalized.substring(1);
     }
     if (!normalized.startsWith('/')) {
-      normalized = '/' + normalized;
+      normalized = '/$normalized';
     }
     return normalized;
   }
@@ -35,8 +34,8 @@ class EnhancedHttpMcpClient extends McpClientBase {
     try {
       final uri = Uri.parse(endpoint);
       final port = uri.port;
-      final portStr = (port == 80 || port == 443) ? '' : ':' + port.toString();
-      return uri.scheme + '://' + uri.host + portStr;
+      final portStr = (port == 80 || port == 443) ? '' : ':$port';
+      return '${uri.scheme}://${uri.host}$portStr';
     } catch (e) {
       _log.error('解析 URL 失败', e);
       return endpoint;
@@ -151,7 +150,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
         lastHealthCheck = DateTime.now();
         lastError = null;
       } else {
-        lastError = 'HTTP ' + response.statusCode.toString();
+        lastError = 'HTTP ${response.statusCode}';
       }
       return isHealthy;
     } catch (e) {
@@ -172,7 +171,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
     try {
       final url = _buildUrl(
         _extractBaseUrl(config.endpoint),
-        '/context/' + contextId,
+        '/context/$contextId',
       );
       final response = await _dio.get(url);
       return response.statusCode == 200
@@ -191,7 +190,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
     try {
       final url = _buildUrl(
         _extractBaseUrl(config.endpoint),
-        '/context/' + contextId,
+        '/context/$contextId',
       );
       final response = await _dio.post(url, data: context);
       return response.statusCode == 200;
@@ -208,7 +207,7 @@ class EnhancedHttpMcpClient extends McpClientBase {
     try {
       final url = _buildUrl(
         _extractBaseUrl(config.endpoint),
-        '/tools/' + toolName,
+        '/tools/$toolName',
       );
       final response = await _dio.post(url, data: params);
       return response.statusCode == 200
@@ -228,10 +227,12 @@ class EnhancedHttpMcpClient extends McpClientBase {
         final data = response.data;
         if (data is List) return data.cast<Map<String, dynamic>>();
         if (data is Map<String, dynamic>) {
-          if (data['tools'] is List)
+          if (data['tools'] is List) {
             return (data['tools'] as List).cast<Map<String, dynamic>>();
-          if (data['data'] is List)
+          }
+          if (data['data'] is List) {
             return (data['data'] as List).cast<Map<String, dynamic>>();
+          }
         }
       }
       return null;

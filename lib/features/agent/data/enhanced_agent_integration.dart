@@ -6,7 +6,6 @@ import '../../chat/domain/message.dart';
 import '../../chat/domain/function_call.dart';
 import '../../../core/services/log_service.dart';
 import '../../mcp/data/mcp_tool_integration.dart';
-import 'tool_definitions_service.dart';
 
 /// 增强的 Agent 集成服务
 /// 支持 Function Calling 和工具执行
@@ -50,7 +49,7 @@ class EnhancedAgentIntegration {
     // 添加 MCP 工具
     if (includeMcpTools && _mcpIntegration != null) {
       try {
-        final mcpTools = await _mcpIntegration!.getAllMcpToolDefinitions();
+        final mcpTools = await _mcpIntegration.getAllMcpToolDefinitions();
         definitions.addAll(mcpTools);
         _log.debug('MCP 工具已添加', {'count': mcpTools.length});
       } catch (e) {
@@ -193,7 +192,7 @@ class EnhancedAgentIntegration {
       }
 
       // 查找对应的 MCP 配置
-      final mcpConfigId = await _mcpIntegration!.findMcpConfigForTool(
+      final mcpConfigId = await _mcpIntegration.findMcpConfigForTool(
         toolCall.function.name,
       );
 
@@ -205,7 +204,7 @@ class EnhancedAgentIntegration {
       }
 
       // 执行 MCP 工具
-      return await _mcpIntegration!.executeMcpTool(
+      return await _mcpIntegration.executeMcpTool(
         mcpConfigId,
         toolCall.function.name,
         arguments,

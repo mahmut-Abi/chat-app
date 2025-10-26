@@ -75,8 +75,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       next.whenData((conversations) {
         if (kDebugMode) print('🔍 ChatScreen: 注册 provider 监听器');
         if (mounted) {
-          if (kDebugMode)
+          if (kDebugMode) {
             print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
+          }
           setState(() {
             _conversations = conversations;
           });
@@ -206,8 +207,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final allConfigs = await settingsRepo.getAllApiConfigs();
       if (kDebugMode) print('所有 API 配置数量: ${allConfigs.length}');
       for (final config in allConfigs) {
-        if (kDebugMode)
+        if (kDebugMode) {
           print('  配置: ${config.name}, isActive: ${config.isActive}');
+        }
       }
     }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
@@ -346,8 +348,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (kDebugMode) {
         if (kDebugMode) print('ChatScreen: 使用模型 = $modelToUse');
         if (kDebugMode) print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
-        if (kDebugMode)
+        if (kDebugMode) {
           print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
+        }
       }
       final config = ModelConfig(
         model: modelToUse,
@@ -443,8 +446,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       // 获取对话并保存
       var conversation = chatRepo.getConversation(widget.conversationId);
-      if (conversation == null) {
-        conversation = Conversation(
+      conversation ??= Conversation(
           id: widget.conversationId,
           title: '新建对话',
           messages: const [],
@@ -452,7 +454,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           updatedAt: DateTime.now(),
           isTemporary: false, // 已经有消息，不再是临时对话
         );
-      }
 
       // 更新对话消息列表并保存（会自动将 isTemporary 设为 false）
       await chatRepo.saveConversation(
@@ -911,8 +912,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     child: FloatingActionButton.small(
                       onPressed: () => _scrollToBottom(force: true),
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: const Icon(Icons.arrow_downward),
                       tooltip: '滚动到底部',
+                      child: const Icon(Icons.arrow_downward),
                     ),
                   ),
               ],

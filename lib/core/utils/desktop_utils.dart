@@ -1,4 +1,3 @@
-import 'dart:io' if (dart.library.html) 'dart:html' as platform_io;
 import 'platform_utils.dart';
 import 'package:flutter/foundation.dart';
 

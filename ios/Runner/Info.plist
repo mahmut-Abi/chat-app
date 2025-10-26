@@ -64,5 +64,45 @@
 	<!-- 通知权限 -->
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>需要发送通知以提醒您重要消息</string>
+
+	<!-- App Transport Security (ATS) 配置 - 用于 MCP 服务器连接 -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- 允许任意 HTTP 和 HTTPS 连接（开发/本地网络） -->
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<!-- 特定域名异常配置 -->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<!-- localhost 配置 -->
+			<key>localhost</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryThrowsExceptionInsteadOfBlocking</key>
+				<true/>
+				<key>NSAllowsArbitraryLoads</key>
+				<true/>
+			</dict>
+			<!-- .local 域名配置（用于 mDNS） -->
+			<key>local</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryThrowsExceptionInsteadOfBlocking</key>
+				<true/>
+				<key>NSAllowsArbitraryLoads</key>
+				<true/>
+			</dict>
+			<!-- 127.0.0.1 配置 -->
+			<key>127.0.0.1</key>
+			<dict>
+				<key>NSTemporaryThrowsExceptionInsteadOfBlocking</key>
+				<true/>
+				<key>NSAllowsArbitraryLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>

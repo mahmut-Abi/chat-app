@@ -8,7 +8,6 @@ import 'dart:io';
 import '../../../../core/utils/image_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import '../../../../core/utils/message_utils.dart';
 
 /// 聊天功能菜单组件
 class ChatFunctionMenu extends ConsumerStatefulWidget {

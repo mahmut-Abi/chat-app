@@ -115,7 +115,7 @@ class _ApiConfigEditScreenState extends ConsumerState<ApiConfigEditScreen> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _providerController.text,
+            initialValue: _providerController.text,
             items: ['openai', 'azure', 'ollama'].map((provider) => DropdownMenuItem(value: provider, child: Text(_getProviderName(provider)))).toList(),
             onChanged: (value) { if (value != null) { _providerController.text = value; _updateBaseUrlForProvider(value); }},
             decoration: const InputDecoration(labelText: 'AI 提供商 *', border: OutlineInputBorder(), prefixIcon: Icon(Icons.cloud_queue)),

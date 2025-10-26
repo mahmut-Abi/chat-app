@@ -224,7 +224,7 @@ class McpMonitorDiagnosticsService {
     try {
       final response = await _dio
           .get(
-            config.endpoint + '/tools',
+            '${config.endpoint}/tools',
             options: Options(
               headers: config.headers,
               receiveTimeout: const Duration(seconds: 5),

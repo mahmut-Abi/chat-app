@@ -57,7 +57,7 @@ class McpDiagnosticsService {
 
   Future<List<EndpointStatus>> _scanEndpoints(String endpoint) async {
     final uri = Uri.parse(endpoint);
-    final baseUrl = uri.scheme + '://' + uri.host + ':' + uri.port.toString();
+    final baseUrl = '${uri.scheme}://${uri.host}:${uri.port}';
     final endpoints = [
       '/health',
       '/api/health',

@@ -61,8 +61,8 @@ class AgentSelector extends StatelessWidget {
                     child: Row(
                       children: [
                         if (agent.iconName != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8),
                             child: Icon(Icons.build, size: 16),
                           ),
                         Expanded(
@@ -84,7 +84,7 @@ class AgentSelector extends StatelessWidget {
                     ),
                   ),
                 )
-                .toList(),
+                ,
           ],
           onChanged: onChanged,
         ),
@@ -99,7 +99,7 @@ class AgentSelector extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Column(

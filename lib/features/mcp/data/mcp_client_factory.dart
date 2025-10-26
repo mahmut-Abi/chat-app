@@ -1,6 +1,5 @@
 import '../domain/mcp_config.dart';
 import 'mcp_client_base.dart';
-import 'http_mcp_client.dart';
 import 'stdio_mcp_client.dart';
 import 'enhanced_http_mcp_client.dart';
 import 'mcp_resources_client.dart';

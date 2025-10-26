@@ -1,0 +1,37 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/chat/data/chat_repository.dart';
+import '../../features/chat/domain/conversation.dart';
+import 'network_providers.dart';
+
+/// Chat Providers
+/// 对话、消息、分组相关
+
+// ============ Chat 仓一一一 ============
+
+/// Chat 仓一一一 Provider
+final chatRepositoryProvider = Provider<ChatRepository>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  final openAIClient = ref.watch(openAIApiClientProvider);
+  return ChatRepository(
+    ref.watch(storageServiceProvider),
+    dioClient,
+    openAIClient,
+  );
+});
+
+// ============ 对话、消息 ============
+
+/// 所有对话 Provider
+final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>((
+  ref,
+) async {
+  final chatRepo = ref.watch(chatRepositoryProvider);
+  return await chatRepo.getAllConversations();
+});
+
+/// 对话分组 Provider
+final conversationGroupsProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+      final chatRepo = ref.watch(chatRepositoryProvider);
+      return await chatRepo.getConversationGroups();
+    });

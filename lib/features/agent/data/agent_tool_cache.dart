@@ -51,7 +51,7 @@ class AgentToolCache {
 
   String _generateKey(String toolId, Map<String, dynamic> arguments) {
     final sortedKeys = arguments.keys.toList()..sort();
-    return toolId + '_' + sortedKeys.join('_');
+    return '${toolId}_${sortedKeys.join('_')}';
   }
 
   void dispose() {

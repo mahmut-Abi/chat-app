@@ -26,11 +26,9 @@ class BackgroundImageCache {
     }
 
     // 创建新缓存
-    if (_cachedImage == null) {
-      _cachedImage = path.startsWith('assets/')
+    _cachedImage ??= path.startsWith('assets/')
           ? AssetImage(path) as ImageProvider
           : FileImage(File(path));
-    }
 
     return _cachedImage;
   }

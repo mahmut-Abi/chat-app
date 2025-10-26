@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/prompt_template.dart';
 import 'prompt_config_screen.dart';
-import '../../../core/utils/message_utils.dart';
 
 class PromptsScreen extends ConsumerStatefulWidget {
   const PromptsScreen({super.key});
@@ -260,7 +258,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),

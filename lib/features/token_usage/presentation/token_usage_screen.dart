@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/utils/platform_utils.dart';
 import '../../../core/providers/providers.dart';
 import '../domain/token_record.dart';
 import 'package:intl/intl.dart';

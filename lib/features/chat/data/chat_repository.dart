@@ -669,7 +669,7 @@ class ChatRepository {
         messagePreview: messagePreview,
       );
 
-      await _tokenUsageRepo!.addRecord(record);
+      await _tokenUsageRepo.addRecord(record);
       _log.info('Token 使用记录已保存', {
         'conversationId': conversationId,
         'totalTokens': totalTokens,

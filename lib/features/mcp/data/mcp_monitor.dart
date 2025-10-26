@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../domain/mcp_config.dart';
 import '../../../core/services/log_service.dart';
 import 'mcp_health_check_strategy.dart';

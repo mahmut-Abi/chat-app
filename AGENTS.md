@@ -1,271 +1,417 @@
-# Agent 系统开发文档
+# AGENTS.md - Chat App 开发指南
 
-本文档面向开发者，说明 Agent 系统的实现原理和开发指南。
+## 项目概述
 
-> 📖 **用户文档**: 如果你是普通用户，请查看 [Agent 使用指南](docs/agent-user-guide.md)
+**Chat App** 是一个功能丰富的跨平台 AI 聊天应用，支持多个 LLM 提供商、MCP 服务器集成、智能代理系统等。
 
-## 目录
+## 快速开始
 
-- [系统架构](#系统架构)
-- [核心组件](#核心组件)
-- [开发指南](#开发指南)
-- [最佳实践](#最佳实践)
-- [代码规范](#代码规范)
-- [常见问题](#常见问题)
+### 系统要求
+- Flutter SDK >= 3.8.0
+- Dart >= 3.8.0
+- iOS 12.0+ 或 Android 6.0+
 
----
+### 开发环境设置
 
-## 系统架构
+```bash
+# 克隆项目
+git clone https://github.com/your-repo/chat-app.git
+cd chat-app
 
-### 三层架构
+# 安装依赖
+flutter pub get
+
+# 代码生成
+flutter pub run build_runner build
+
+# 运行应用
+flutter run
+```
+
+## 项目结构
 
 ```
-Chat Interface (用户交互层)
-        ↓
-AgentProvider / AgentChatService (状态管理和业务层)
-        ↓
-AgentRepository (数据访问层)
-        ↓
-ToolExecutor / Storage Service (执行层)
+lib/
+├── main.dart                              # 应用入口
+├── core/
+│   ├── services/                          # 核心服务（日志、存储、网络）
+│   ├── storage/                           # 本地存储层
+│   ├── providers/                         # Riverpod providers
+│   └── utils/                             # 工具函数
+├── features/
+│   ├── chat/                              # 聊天功能
+│   │   ├── data/                          # 数据层（Repository）
+│   │   ├── domain/                        # 领域层（Entity）
+│   │   └── presentation/                  # UI 层（Screen、Widget）
+│   ├── agent/                             # Agent 系统
+│   ├── mcp/                               # MCP 集成
+│   ├── models/                            # 模型管理
+│   ├── prompts/                           # 提示词库
+│   ├── settings/                          # 设置
+│   ├── logs/                              # 日志查看
+│   └── token_usage/                       # Token 统计
+└── shared/
+    ├── themes/                            # 主题系统
+    ├── widgets/                           # 共享组件
+    └── utils/                             # 共享工具
 ```
-
-**核心层次**：
-- **Domain Layer**: `AgentConfig`、`AgentTool`、`ToolExecutionResult`、`ToolCall`
-- **Data Layer**: `AgentRepository`、`ToolExecutorManager`、`DefaultAgents`、`EnhancedAgentIntegration`
-- **Presentation Layer**: `AgentProvider`、`AgentSelectorDialog`、`AgentManagementScreen`
-
-### 关键概念
-
-**Agent**: 具有特定功能和专长的 AI 助手
-- 基本信息：名称、描述、图标
-- 工具集合：可用工具 ID 列表
-- 系统提示词：定义 Agent 的角色和行为
-- 元数据：创建时间、更新时间、是否内置
-
-**Tool**: Agent 可以调用的功能模块
-- 内置工具：计算器、搜索、文件操作
-- MCP 工具：通过 MCP 服务提供的工具
-- 自定义工具：开发者定义的扩展工具
-
-**Function Calling**: AI 模型调用工具的机制
-1. AI 生成工具调用请求
-2. 系统执行对应工具
-3. 返回执行结果给 AI
-4. AI 根据结果生成响应
-
----
-
-## 核心组件
-
-### 1. AgentConfig
-
-定义 Agent 的基本配置。详见 `lib/features/agent/domain/agent_tool.dart`
-
-字段：id、name、description、toolIds、systemPrompt、enabled、createdAt、updatedAt、isBuiltIn、iconName
-
-### 2. AgentTool
-
-定义工具的结构和类型。类型包括：calculator、search、fileOperation、codeExecution、custom
-
-字段：id、name、description、type、parameters、enabled、isBuiltIn、iconName
-
-### 3. ToolExecutionResult
-
-工具执行的结果，包含成功状态、结果文本、错误信息和元数据。
-
-### 4. AgentRepository
-
-核心数据访问层。支持：
-- Agent 管理（创建、更新、删除、查询）
-- Tool 管理（创建、更新、删除、查询）
-- Tool 执行（executeTool、updateToolStatus）
-
-### 5. EnhancedAgentIntegration
-
-支持 Function Calling 和工具执行的集成服务。
-
-### 6. ToolExecutor
-
-工具执行器接口，所有工具都需要实现此接口。
-
-### 7. AgentChatService
-
-处理带 Agent 的消息发送和工具调用。支持工具迭代执行和消息管理。
-
-### 8. AgentToolCache
-
-缓存 Agent 和工具配置，提高查询性能。
-
----
-
-## 开发指南
-
-### 添加新工具 (5 步)
-
-#### 1. 定义工具类型
-
-在 `lib/features/agent/domain/agent_tool.dart` 的 `AgentToolType` 枚举中添加新类型。
-
-#### 2. 实现执行器
-
-创建新的工具执行器类，继承 `ToolExecutor` 接口。实现 `execute()` 方法。
-
-#### 3. 注册执行器
-
-在 `lib/features/agent/data/tool_executor.dart` 的 `ToolExecutorManager` 中注册执行器。
-
-#### 4. 创建工具配置
-
-在初始化时使用 `repository.createTool()` 创建工具配置，定义参数和描述。
-
-#### 5. 创建内置 Agent (可选)
-
-在 `lib/features/agent/data/default_agents.dart` 中添加使用此工具的 Agent。
-
----
-
-## 最佳实践
-
-### 1. Agent 设计原则
-
-**单一职责** - 每个 Agent 专注特定领域
-- 好：数学专家、研究助手、文件管理员
-- 坏：万能助手（太宽泛）
-
-**清晰提示词** - 明确 Agent 的能力和使用场景
-- 列出具体的能力
-- 定义操作的行为模式
-- 说明使用场景
-
-### 2. 工具开发原则
-
-**健壮的错误处理** - 验证参数、处理异常
-**清晰的参数定义** - 使用 JSON Schema 格式
-**完整的元数据返回** - 包含执行时间等信息
-**及时的资源释放** - 确保不会泄漏资源
-
-### 3. 性能优化
-
-**并行执行** - 使用 Future.wait 同时执行多个工具
-**工具结果缓存** - 缓存相同查询的结果
-**资源管理** - 及时释放资源
-**限流控制** - 防止过度调用
-
----
 
 ## 代码规范
 
 ### 命名规范
-- **Agent 名称**: 中文，简洁明确，以"助手"或"专家"结尾
-  - 示例: 数学专家、研究助手、文件管理员
-- **工具名称**: snake_case，英文小写
-  - 示例: calculator、web_search、file_reader
-- **类名**: PascalCase
-  - 示例: WeatherTool、EnhancedSearchTool
-- **方法名**: camelCase
-  - 示例: executeToolCall、buildToolResultMessages
-- **常量**: UPPER_SNAKE_CASE
-  - 示例: DEFAULT_CACHE_DURATION、MAX_RETRY_COUNT
 
-### 注释规范
-- 使用 `///` 文档注释
-- 为公共 API 添加详细注释
-- 说明参数、返回值和异常
+#### 文件和目录
+- 目录名：snake_case（全小写，单词用下划线分隔）
+  - ✓ `chat_screen.dart`
+  - ✗ `ChatScreen.dart` 或 `chat-screen.dart`
 
-### 文件组织
-```
-lib/features/agent/
-├── domain/               # 领域模型
-│   └── agent_tool.dart  # AgentConfig、AgentTool、ToolExecutionResult
-├── data/                # 数据访问层
-│   ├── agent_repository.dart           # 主仓库
-│   ├── tool_executor.dart              # 执行器管理
-│   ├── default_agents.dart             # 内置 Agent
-│   ├── enhanced_agent_integration.dart # 集成服务
-│   ├── agent_chat_service.dart         # 聊天服务
-│   ├── unified_tool_service.dart       # 统一工具服务
-│   ├── agent_integration.dart          # Agent 集成
-│   ├── agent_tool_cache.dart           # 工具缓存
-│   └── tools/                          # 工具实现
-│       ├── calculator_tool.dart
-│       ├── search_tool.dart
-│       ├── file_operation_tool.dart
+#### 类名
+- PascalCase（每个单词首字母大写，无分隔）
+  - ✓ `class ChatRepository {}`
+  - ✗ `class chat_repository {}` 或 `class ChatRepository_ {}`
 
-└── presentation/        # UI 层
-    ├── providers/
-    │   └── agent_provider.dart         # Riverpod Provider
-    ├── agent_screen.dart               # 主界面
-    ├── agent_config_screen.dart        # 配置界面
-    ├── tool_config_screen.dart         # 工具配置
-    └── widgets/                        # UI 组件
-        ├── agent_tab.dart
-        ├── tools_tab.dart
-        ├── agent_list_item.dart
-        ├── tool_list_item.dart
-        ├── agent_selector_dialog.dart
-        └── empty_state_widget.dart
-```
+#### 变量和函数
+- camelCase（首字母小写，后续单词首字母大写）
+  - ✓ `final messageList = [];`
+  - ✗ `final MessageList = [];` 或 `final message_list = [];`
 
----
+#### 常量
+- UPPER_SNAKE_CASE（全大写，单词用下划线分隔）
+  - ✓ `const MAX_RETRY_COUNT = 3;`
+  - ✗ `const maxRetryCount = 3;` 或 `const max_retry_count = 3;`
 
-## 相关文档
+### 代码风格
 
-- [Agent 使用指南](docs/agent-user-guide.md) - 用户说明
-- [项目结构](docs/PROJECT_STRUCTURE.md) - 项目组织
-- [架构设计](docs/architecture.md) - 整体架构
-- [MCP 集成](docs/mcp-integration.md) - MCP 工具集成
-
----
-
-## 常见问题
-
-**Q: 如何添加新的 Agent?**  
-A: 有两种方式：
-1. 通过 UI 创建：打开 Agent 管理界面，点击创建按钮
-2. 代码中创建：使用 `repository.createAgent()` 方法
-
-对于内置 Agent，在 `default_agents.dart` 中的 `initializeDefaultAgents` 方法中添加。
-
-**Q: 工具执行失败怎么办?**  
-A: 检查以下几点：
-1. 查看日志输出，找出具体错误
-2. 验证工具参数是否正确
-3. 确认工具执行器已正确实现和注册
-4. 检查工具依赖（如 API Key）是否配置
-
-**Q: 如何添加新的工具类型?**  
-A: 
-1. 在 `AgentToolType` 枚举中添加新类型
-2. 创建相应的执行器类，继承 `ToolExecutor`
-3. 在 `ToolExecutorManager` 中注册执行器
-4. 定义默认参数定义
-5. （可选）添加初始化逻辑
-
-**Q: 如何持久化 Agent 和工具配置?**  
-A: `AgentRepository` 自动使用 `StorageService` 处理持久化。所有配置都存储在本地存储中，无需手动管理。
-
-**Q: 能否动态加载自定义工具?**  
-A: 可以。实现 `ToolExecutor` 接口并调用 `registerExecutor()` 方法注册到 `ToolExecutorManager` 即可。
-
-**Q: 如何集成 MCP 工具?**  
-A: 使用 `McpToolIntegration` 类。MCP 工具会自动添加到 Agent 的工具定义中，可以像内置工具一样使用。
-
-**Q: 工具参数如何定义?**  
-A: 使用 JSON Schema 格式：
+#### 导入
 ```dart
-parameters: {
-  'type': 'object',
-  'properties': {
-    'param_name': {
-      'type': 'string|number|boolean|array|object',
-      'description': '参数描述',
-      'examples': ['示例值'],
-      'required': ['必需参数名'],
-    },
-  },
+// 1. dart 导入
+import 'dart:async';
+import 'dart:convert';
+
+// 2. package 导入
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// 3. 相对导入
+import '../models/chat.dart';
+import '../../core/services/log_service.dart';
+```
+
+#### const 的使用
+- 所有不变的对象都应该标记为 const
+- Widget 构造函数如果没有状态变化，使用 const
+
+```dart
+// 好
+const Center(
+  child: CircularProgressIndicator(),
+)
+
+// 不好
+Center(
+  child: CircularProgressIndicator(),
+)
+```
+
+#### 文档注释
+- 使用 `///` 为公共 API 添加文档注释
+- 简要说明、参数、返回值、异常
+
+```dart
+/// 获取聊天消息列表
+/// 
+/// [conversationId] 会话 ID
+/// [limit] 返回消息数量限制
+/// 
+/// 返回消息列表，按时间排序
+/// 
+/// 抛出 [ChatException] 如果加载失败
+Future<List<Message>> getMessages(
+  String conversationId, {
+  int limit = 50,
+}) async { ... }
+```
+
+### 代码质量
+
+#### Lint 检查
+```bash
+# 检查代码问题
+flutter analyze
+
+# 自动修复
+dart fix --apply
+```
+
+#### 测试
+- 单元测试文件放在 `test/unit/` 目录
+- 集成测试放在 `test/integration/` 目录
+- 测试文件名：`{source_file}_test.dart`
+
+```bash
+# 运行所有测试
+flutter test
+
+# 运行特定测试文件
+flutter test test/unit/chat_repository_test.dart
+
+# 运行测试并生成覆盖率报告
+flutter test --coverage
+```
+
+## 特性模块开发
+
+### 分层架构
+
+每个功能模块遵循三层架构：
+
+```
+features/{feature}/
+├── data/                    # 数据层
+│   ├── {feature}_repository.dart
+│   ├── models/              # 数据模型
+│   ├── local/               # 本地存储
+│   └── remote/              # 远程 API
+├── domain/                  # 领域层
+│   ├── entities/            # 实体定义
+│   └── use_cases/           # 业务逻辑（可选）
+└── presentation/            # 表现层
+    ├── screens/             # 页面
+    ├── widgets/             # 组件
+    └── providers/           # Riverpod providers
+```
+
+### 实现示例
+
+#### 1. 定义实体
+
+```dart
+// domain/chat.dart
+@JsonSerializable()
+class Message {
+  final String id;
+  final String content;
+  final DateTime createdAt;
+  
+  const Message({
+    required this.id,
+    required this.content,
+    required this.createdAt,
+  });
+  
+  factory Message.fromJson(Map<String, dynamic> json) => 
+    _$MessageFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageToJson(this);
 }
 ```
 
----
+#### 2. 创建 Repository
 
-**最后更新**: 2025-01-20 | **版本**: 1.5.0
+```dart
+// data/chat_repository.dart
+class ChatRepository {
+  final StorageService _storage;
+  final ChatApiClient _apiClient;
+  
+  ChatRepository(this._storage, this._apiClient);
+  
+  Future<List<Message>> getMessages(String conversationId) async {
+    try {
+      final messages = await _apiClient.fetchMessages(conversationId);
+      await _storage.saveMessages(messages);
+      return messages;
+    } catch (e) {
+      LogService().error('Failed to fetch messages', e);
+      rethrow;
+    }
+  }
+}
+```
+
+#### 3. 创建 Provider
+
+```dart
+// presentation/providers.dart
+final chatRepositoryProvider = Provider((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  final apiClient = ref.watch(chatApiClientProvider);
+  return ChatRepository(storage, apiClient);
+});
+
+final messagesProvider = FutureProvider.family((ref, String conversationId) {
+  final repository = ref.watch(chatRepositoryProvider);
+  return repository.getMessages(conversationId);
+});
+```
+
+#### 4. 创建 Widget
+
+```dart
+// presentation/screens/chat_screen.dart
+class ChatScreen extends ConsumerWidget {
+  final String conversationId;
+  
+  const ChatScreen({required this.conversationId});
+  
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messagesAsync = ref.watch(
+      messagesProvider(conversationId),
+    );
+    
+    return messagesAsync.when(
+      data: (messages) => _buildMessageList(messages),
+      loading: () => const LoadingWidget(),
+      error: (error, st) => ErrorWidget(error: error),
+    );
+  }
+  
+  Widget _buildMessageList(List<Message> messages) {
+    // 构建消息列表
+    return ListView.builder(
+      itemCount: messages.length,
+      itemBuilder: (context, index) => MessageTile(
+        message: messages[index],
+      ),
+    );
+  }
+}
+```
+
+## 性能优化指南
+
+### 性能目标
+- **启动时间**: < 3 秒
+- **内存占用**: < 150 MB
+- **帧率**: 稳定 60 FPS
+- **网络延迟**: < 2 秒 (P90)
+- **包大小**: < 100 MB
+
+### 关键优化
+
+#### 1. 图片加载
+- 使用 CachedNetworkImage 进行图片缓存
+- 设置合适的缓存大小
+- 提供占位图和错误占位图
+
+```dart
+CachedNetworkImage(
+  imageUrl: 'https://example.com/image.jpg',
+  placeholder: (context, url) => ShimmerLoading(),
+  errorWidget: (context, url, error) => ErrorImage(),
+  cacheManager: _customCacheManager,
+)
+```
+
+#### 2. 列表优化
+- 使用 ListView 的 itemBuilder
+- 避免在 build 中创建大对象
+- 使用 RepaintBoundary 限制重绘范围
+
+#### 3. Provider 优化
+- 使用 select() 缩小监听范围
+- 避免不必要的 watch
+- 合理设置 cache duration
+
+```dart
+// ✓ 好：只监听需要的部分
+final name = ref.watch(
+  userProvider.select((user) => user?.name),
+);
+
+// ✗ 坏：监听整个对象
+final user = ref.watch(userProvider);
+final name = user?.name;
+```
+
+## 常见任务
+
+### 添加新功能
+
+1. 创建功能目录：`lib/features/{feature}/`
+2. 按三层架构组织代码
+3. 创建对应的测试文件
+4. 更新导入和 providers
+5. 运行 lint 检查和测试
+
+### 修复 Bug
+
+1. 创建 test case 重现 bug
+2. 修复代码
+3. 验证 test case 通过
+4. 提交前运行全部测试
+
+### 性能优化
+
+1. 使用 DevTools 分析性能瓶颈
+2. 使用 profile 模式进行基准测试
+3. 实施优化措施
+4. 对比优化前后的指标
+
+## 调试技巧
+
+### 日志记录
+```dart
+final log = LogService();
+log.info('消息加载成功', {'count': messages.length});
+log.warning('连接超时', {'timeout': 30});
+log.error('API 调用失败', exception);
+```
+
+### DevTools
+```bash
+# 启动 DevTools
+flutter pub global run devtools
+
+# 在应用运行时查看性能、日志等
+```
+
+### Profile 模式
+```bash
+# Profile 模式运行
+flutter run --profile
+
+# 生成性能报告
+flutter run --profile --trace-startup
+```
+
+## 常见问题
+
+### Q: 如何处理大列表？
+A: 使用虚拟化滚动（ListView 自动处理），或使用
+```dart
+CustomScrollView(
+  slivers: [
+    SliverList.builder(
+      itemBuilder: (context, index) => ...,
+      itemCount: items.length,
+    ),
+  ],
+)
+```
+
+### Q: 如何处理状态管理？
+A: 使用 Riverpod providers，将状态定义为 provider：
+```dart
+final messageCountProvider = StateProvider((ref) => 0);
+final selectedChatProvider = StateProvider<Chat?>((ref) => null);
+```
+
+### Q: 如何测试异步代码？
+A: 使用 `testWidgets` 和等待：
+```dart
+testWidgets('加载消息', (WidgetTester tester) async {
+  await tester.pumpWidget(const MyApp());
+  await tester.pump(); // 等待异步完成
+  expect(find.text('消息'), findsOneWidget);
+});
+```
+
+## 相关资源
+
+- [Flutter 文档](https://flutter.dev/docs)
+- [Riverpod 文档](https://riverpod.dev)
+- [Dart 代码风格指南](https://dart.dev/guides/language/effective-dart/style)
+- [Project 结构](./docs/PROJECT_STRUCTURE.md)
+- [优化计划](./docs/OPTIMIZATION_PLAN.md)
+- [iOS MCP SSE 修复](./docs/iOS_MCP_SSE_FIXES.md)

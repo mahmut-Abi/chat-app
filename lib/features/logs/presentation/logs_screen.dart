@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/utils/platform_utils.dart';
 import '../../../core/services/log_service.dart';
 import '../../../core/providers/providers.dart';
 import 'package:intl/intl.dart';
-import '../../../core/utils/message_utils.dart';
 
 /// 日志查看界面
 class LogsScreen extends ConsumerStatefulWidget {
@@ -302,7 +300,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),

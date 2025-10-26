@@ -4,7 +4,6 @@ import '../../../../core/utils/platform_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import '../../../../core/utils/message_utils.dart';
 
 class ImageViewerScreen extends StatelessWidget {
   final String imagePath;

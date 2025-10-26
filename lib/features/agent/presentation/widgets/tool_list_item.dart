@@ -64,16 +64,16 @@ class ToolListItem extends ConsumerWidget {
                 },
               )
             else
-              IconButton(
-                icon: const Icon(Icons.edit),
+              const IconButton(
+                icon: Icon(Icons.edit),
                 onPressed: null,
                 tooltip: '内置工具不可编辑',
               ),
             if (!tool.isBuiltIn)
               IconButton(icon: const Icon(Icons.delete), onPressed: onDelete)
             else
-              IconButton(
-                icon: const Icon(Icons.delete),
+              const IconButton(
+                icon: Icon(Icons.delete),
                 onPressed: null,
                 tooltip: '内置工具不可删除',
               ),

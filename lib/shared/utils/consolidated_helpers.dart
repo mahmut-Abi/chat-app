@@ -27,7 +27,7 @@
 /// final service = SettingsService(ref, context);
 /// await service.updateAppSettings((s) => s.copyWith(fontSize: 14.0));
 /// ```
-library consolidated_helpers;
+library;
 
 export 'dialog_helper.dart';
 export 'form_helper.dart';

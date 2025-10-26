@@ -21,7 +21,7 @@ class McpUnifiedResourcesService {
 
       // 尝试是否是 McpResourcesClient
       if (client is McpResourcesClient) {
-        return await (client as McpResourcesClient).getAllResources();
+        return await (client).getAllResources();
       }
 
       // 回退到基本获取
@@ -60,7 +60,7 @@ class McpUnifiedResourcesService {
     try {
       final client = _repository.getClient(configId);
       if (client is McpResourcesClient) {
-        final prompts = await (client as McpResourcesClient)
+        final prompts = await (client)
             .listPromptsWithFallback();
         return prompts != null && prompts.isNotEmpty;
       }
@@ -75,7 +75,7 @@ class McpUnifiedResourcesService {
     try {
       final client = _repository.getClient(configId);
       if (client is McpResourcesClient) {
-        final resources = await (client as McpResourcesClient)
+        final resources = await (client)
             .listResourcesWithFallback();
         return resources != null && resources.isNotEmpty;
       }
@@ -120,7 +120,7 @@ class McpUnifiedResourcesService {
       if (client is! McpResourcesClient) return [];
 
       final prompts =
-          await (client as McpResourcesClient).listPromptsWithFallback() ?? [];
+          await (client).listPromptsWithFallback() ?? [];
       final lowercaseQuery = query.toLowerCase();
 
       return prompts.where((prompt) {
@@ -146,7 +146,7 @@ class McpUnifiedResourcesService {
       if (client is! McpResourcesClient) return [];
 
       final resources =
-          await (client as McpResourcesClient).listResourcesWithFallback() ??
+          await (client).listResourcesWithFallback() ??
           [];
       final lowercaseQuery = query.toLowerCase();
 
