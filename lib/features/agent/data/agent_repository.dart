@@ -97,7 +97,7 @@ class AgentRepository {
 
 
       // 验证保存
-      final saved = _storage.getSetting('agent_${agent.id}');
+      await _storage.getSetting('agent_${agent.id}');
 
     }
     return agent;

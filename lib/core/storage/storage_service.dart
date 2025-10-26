@@ -148,7 +148,7 @@ class StorageService {
     await _settingsBoxInstance.put(key, value);
     if (kDebugMode) {
       // 验证保存
-      final saved = _settingsBoxInstance.get(key);
+      await _settingsBoxInstance.get(key);
 
     }
   }
