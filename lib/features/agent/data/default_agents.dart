@@ -12,6 +12,7 @@ class DefaultAgents {
   ) async {
     // DISABLED - no built-in agents needed
     return;
+    // Code below is disabled and will not execute
     _log.info('开始初始化默认 Agent');
 
     try {
