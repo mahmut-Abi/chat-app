@@ -400,12 +400,6 @@ class ChatRepository {
   Conversation? getConversation(String id) {
     final data = _storage.getConversation(id);
     if (data == null) return null;
-    if (kDebugMode) {
-
-
-
-.length}');
-    }
     return Conversation.fromJson(data);
   }
 
