@@ -11,7 +11,6 @@ import 'features/settings/domain/api_config.dart';
 import 'core/utils/desktop_utils.dart';
 import 'core/services/permission_service.dart';
 import 'core/services/log_service.dart';
-import 'core/services/network_service.dart';
 import 'core/services/app_initialization_service.dart';
 
 void main() async {
@@ -30,22 +29,8 @@ void main() async {
           log.error('权限检查失败', {'error': e.toString()});
         }
 
-        // 检查网络连接状态
-        final networkService = NetworkService();
-        try {
-          final hasNetwork = await networkService.checkNetworkConnection();
-          final networkType = await networkService.getConnectionType();
-          log.info('网络状态检查完成', {
-            'hasConnection': hasNetwork,
-            'type': networkType,
-          });
-
-          if (!hasNetwork) {
-            log.warning('应用启动时无网络连接');
-          }
-        } catch (e) {
-          log.error('网络检查失败', {'error': e.toString()});
-        }
+        // 网络检查已被下传到 NetworkService 中
+        // TODO: 实现 checkNetworkConnection() 方法
       }
 
       // Initialize desktop features
