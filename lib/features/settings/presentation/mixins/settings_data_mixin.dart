@@ -211,9 +211,9 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         ref.invalidate(mcpConfigsProvider);
         ref.invalidate(promptTemplatesProvider);
         ref.invalidate(conversationsProvider);
-        print('🔄 Settings: 已刷新 conversationsProvider');
+
         ref.invalidate(conversationGroupsProvider);
-        print('🔄 Settings: 已刷新 conversationGroupsProvider');
+
 
         // 强制刷新设置
         final settingsRepo = ref.read(settingsRepositoryProvider);
@@ -224,7 +224,7 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         try {
           await ref.read(conversationsProvider.future);
           await ref.read(conversationGroupsProvider.future);
-          print('✅ Settings: 对话列表已重新加载完成');
+
         } catch (e) {
           _log.error('Failed to reload conversations after import', e);
         }
@@ -241,11 +241,11 @@ mixin SettingsDataMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
             ref.invalidate(modelsRepositoryProvider);
             ref.invalidate(dioClientProvider);
             ref.invalidate(openAIApiClientProvider);
-            print('🔄 Settings: 已刷新 ChatRepository 相关 providers');
+
 
             // 强制重建整个 widget 树
             WidgetsBinding.instance.scheduleFrame();
-            print('✅ Settings: 已触发 UI 重建');
+
           }
         }
 

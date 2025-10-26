@@ -80,7 +80,7 @@ class TokenCounter {
       final file = File(imagePath);
       if (!file.existsSync()) {
         if (kDebugMode) {
-          print('[TokenCounter] 图片不存在: $imagePath，使用默认 85 tokens');
+
         }
         return 85; // 默认使用 low detail
       }
@@ -88,7 +88,7 @@ class TokenCounter {
       // 如果是 low detail，直接返回 85
       if (detail == 'low') {
         if (kDebugMode) {
-          print('[TokenCounter] 图片 (low detail): 85 tokens');
+
         }
         return 85;
       }
@@ -113,16 +113,16 @@ class TokenCounter {
 
       final totalTokens = 85 + (tiles * 170);
       if (kDebugMode) {
-        print('[TokenCounter] 图片估算:');
-        print('  文件大小: ${(fileSize / 1024).toStringAsFixed(2)} KB');
-        print('  估算 tiles: $tiles');
-        print('  总 tokens: $totalTokens');
+
+
+
+
       }
       return totalTokens;
     } catch (e) {
       // 如果出错，返回默认值
       if (kDebugMode) {
-        print('[TokenCounter] 估算图片 token 失败: $e，使用默认 85 tokens');
+
       }
       return 85;
     }
@@ -135,14 +135,14 @@ class TokenCounter {
   /// 返回总 Token 数量
   static int estimateImages(List<String> imagePaths, {String detail = 'auto'}) {
     if (kDebugMode) {
-      print('[TokenCounter] 开始估算 ${imagePaths.length} 张图片的 tokens');
+
     }
     int total = 0;
     for (final path in imagePaths) {
       total += estimateImage(path, detail: detail);
     }
     if (kDebugMode) {
-      print('[TokenCounter] 图片总 tokens: $total');
+
     }
     return total;
   }

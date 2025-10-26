@@ -1,4 +1,5 @@
 /// Bug #17: 分组管理功能测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -112,7 +113,7 @@ void main() {
 
     test('should update selected group on change', () {
       // Given: 初始状态
-      String? selectedGroupId = null;
+      String? selectedGroupId;
 
       // When: 选择分组
       selectedGroupId = 'group-1';

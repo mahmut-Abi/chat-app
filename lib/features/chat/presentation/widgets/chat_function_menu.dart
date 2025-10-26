@@ -249,17 +249,14 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   Future<void> _showAgentSelector() async {
     // 强制刷新 Agent 列表，确保获取最新数据
     if (kDebugMode) {
-      print('[ChatFunctionMenu] 开始显示 Agent 选择器');
     }
     ref.invalidate(agentConfigsProvider);
 
     // 等待 Agent 列表加载完成
     if (kDebugMode) {
-      print('[ChatFunctionMenu] 等待 Agent 列表加载...');
     }
     final agents = await ref.read(agentConfigsProvider.future);
     if (kDebugMode) {
-      print('[ChatFunctionMenu] Agent 列表加载完成: ${agents.length} 个配置');
       for (final agent in agents) {
         print(
           '[ChatFunctionMenu]   - ${agent.name} (enabled: ${agent.enabled})',
@@ -332,20 +329,17 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
   Future<void> _showMcpSelector() async {
     // 强制刷新 MCP 列表，确保获取最新数据
     if (kDebugMode) {
-      print('[ChatFunctionMenu] 开始显示 MCP 选择器');
     }
     ref.invalidate(mcpConfigsProvider);
 
     // 等待 MCP 列表加载完成
     if (kDebugMode) {
-      print('[ChatFunctionMenu] 等待 MCP 列表加载...');
     }
     final mcpsAsync = await ref.read(mcpConfigsProvider.future);
     final mcps = mcpsAsync;
     if (kDebugMode) {
-      print('[ChatFunctionMenu] MCP 列表加载完成: ${mcps.length} 个配置');
       for (final mcp in mcps) {
-        print('[ChatFunctionMenu]   - ${mcp.name} (enabled: ${mcp.enabled})');
+
       }
     }
 
@@ -416,30 +410,23 @@ class _ChatFunctionMenuState extends ConsumerState<ChatFunctionMenu> {
     final apiConfigs = await settingsRepo.getAllApiConfigs();
     final modelsRepo = ref.read(modelsRepositoryProvider);
 
-    print('开始获取模型列表...');
-    print('API 配置数量: ${apiConfigs.length}');
 
     List<AiModel> models;
 
     try {
       // 先尝试从本地存储加载模型
       models = await modelsRepo.getCachedModels();
-      print('从本地存储加载模型: ${models.length} 个');
 
       // 如果本地没有模型，尝试从 API 获取
       if (models.isEmpty && apiConfigs.isNotEmpty) {
-        print('本地没有模型，从 API 获取...');
         models = await modelsRepo.getAvailableModels(apiConfigs);
-        print('从 API 获取到 ${models.length} 个模型');
 
         // 自动缓存获取到的模型
         if (models.isNotEmpty) {
           await modelsRepo.cacheModels(models);
-          print('已将 ${models.length} 个模型缓存到本地');
         }
       }
     } catch (e) {
-      print('获取模型失败: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,

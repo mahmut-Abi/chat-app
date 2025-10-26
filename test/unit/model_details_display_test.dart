@@ -1,4 +1,5 @@
 /// Bug #21-22: 模型管理和详细信息测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -43,7 +44,7 @@ void main() {
 
       // When: 格式化定价
       final pricing =
-          'Input: \$${inputPrice}/1K tokens, Output: \$${outputPrice}/1K tokens';
+          'Input: \$$inputPrice/1K tokens, Output: \$$outputPrice/1K tokens';
 
       // Then: 应该格式化正确
       expect(pricing, contains('Input'));
@@ -122,7 +123,7 @@ void main() {
       String? errorMessage = 'Failed to fetch models';
 
       // When: 检查错误
-      final shouldShowError = hasError && errorMessage != null;
+      final shouldShowError = hasError;
 
       // Then: 应该显示错误
       expect(shouldShowError, true);

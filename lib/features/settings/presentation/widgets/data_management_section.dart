@@ -94,10 +94,10 @@ class ImprovedDataManagementSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -188,7 +188,7 @@ class ImprovedDataManagementSection extends StatelessWidget {
         ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(color: colorScheme.error.withOpacity(0.7)),
+          style: TextStyle(color: colorScheme.error.withValues(alpha: 0.7)),
         ),
         trailing: Icon(Icons.chevron_right, size: 20, color: colorScheme.error),
         onTap: onTap,

@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
 import 'package:chat_app/features/mcp/data/mcp_health_check_strategy.dart';
-import 'package:chat_app/features/mcp/domain/mcp_config.dart';
 
 // Mock Dio
 class MockDio extends Mock implements Dio {}

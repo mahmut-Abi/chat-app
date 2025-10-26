@@ -14,7 +14,7 @@ class AgentListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      color: Theme.of(context).cardColor.withOpacity(0.7),
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(

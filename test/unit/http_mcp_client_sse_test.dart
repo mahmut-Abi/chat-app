@@ -1,4 +1,5 @@
 /// Bug #1: SSE (Server-Sent Events) 支持测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:dio/dio.dart';
@@ -243,7 +244,7 @@ void main() {
   group('SSE Heart Beat Tests', () {
     test('should send heartbeat to keep connection alive', () {
       // Given: 心跳间隔
-      final heartbeatInterval = Duration(seconds: 30);
+      final heartbeatInterval = const Duration(seconds: 30);
       var lastHeartbeat = DateTime.now();
 
       // When: 检查是否需要心跳
@@ -256,14 +257,14 @@ void main() {
 
     test('should update last heartbeat timestamp', () {
       // Given: 上次心跳时间
-      var lastHeartbeat = DateTime.now().subtract(Duration(minutes: 1));
+      var lastHeartbeat = DateTime.now().subtract(const Duration(minutes: 1));
 
       // When: 发送新心跳
       lastHeartbeat = DateTime.now();
 
       // Then: 应该更新时间戳
       expect(
-        lastHeartbeat.isAfter(DateTime.now().subtract(Duration(seconds: 5))),
+        lastHeartbeat.isAfter(DateTime.now().subtract(const Duration(seconds: 5))),
         true,
       );
     });

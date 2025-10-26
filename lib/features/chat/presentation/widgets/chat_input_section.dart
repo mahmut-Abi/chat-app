@@ -168,7 +168,7 @@ class _ChatInputSectionState extends State<ChatInputSection> {
     return Container(
       height: 80,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListView.builder(

@@ -1,4 +1,5 @@
 /// 加载组件 Widget 测试
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

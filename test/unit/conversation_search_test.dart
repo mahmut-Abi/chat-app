@@ -147,7 +147,7 @@ void main() {
         Conversation(
           id: 'empty',
           title: '',
-          messages: [],
+          messages: const [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -165,7 +165,7 @@ void main() {
       final convWithNoMessages = Conversation(
         id: 'no-msg',
         title: 'Test Conversation',
-        messages: [],
+        messages: const [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

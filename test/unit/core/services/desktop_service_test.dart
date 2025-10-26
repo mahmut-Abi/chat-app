@@ -1,4 +1,5 @@
 /// 桌面端服务测试
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chat_app/core/services/desktop_service.dart';

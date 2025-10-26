@@ -58,19 +58,19 @@ class McpRepository {
   Future<McpConfig> addConfig(McpConfig config) async {
     _log.info('添加 MCP 配置', {'configId': config.id, 'name': config.name});
     if (kDebugMode) {
-      print('[McpRepository] 添加 MCP 配置: ${config.name}');
-      print('[McpRepository]   ID: ${config.id}');
-      print('[McpRepository]   存储键: mcp_config_${config.id}');
+
+
+
     }
     await _storage.saveSetting(
       'mcp_config_${config.id}',
       jsonEncode(config.toJson()),
     );
     if (kDebugMode) {
-      print('[McpRepository] MCP 配置已保存到存储');
+
       // 验证保存是否成功
       final saved = _storage.getSetting('mcp_config_${config.id}');
-      print('[McpRepository] 验证保存: ${saved != null ? '成功' : '失败'}');
+
     }
     return config;
   }
@@ -79,18 +79,18 @@ class McpRepository {
   Future<List<McpConfig>> getAllConfigs() async {
     _log.info('开始获取所有 MCP 配置');
     if (kDebugMode) {
-      print('[McpRepository] 开始获取所有 MCP 配置');
+
     }
     try {
       final keys = await _storage.getAllKeys();
       _log.info('获取到所有存储键', {'总数': keys.length});
       if (kDebugMode) {
-        print('[McpRepository] 存储中的所有键: $keys');
+
       }
       final mcpKeys = keys.where((k) => k.startsWith('mcp_config_')).toList();
       _log.info('过滤出 MCP 配置键', {'数量': mcpKeys.length});
       if (kDebugMode) {
-        print('[McpRepository] MCP 配置键: $mcpKeys');
+
       }
 
       final configs = <McpConfig>[];
@@ -108,13 +108,13 @@ class McpRepository {
               continue;
             }
             if (kDebugMode) {
-              print('[McpRepository] 成功解析配置: ${json['name']}');
+
             }
             configs.add(McpConfig.fromJson(json));
           } catch (e) {
             _log.warning('解析 MCP 配置失败', {'key': key, 'error': e.toString()});
             if (kDebugMode) {
-              print('[McpRepository] 解析配置失败: key=$key, error=$e');
+
             }
           }
         }
@@ -122,14 +122,14 @@ class McpRepository {
 
       _log.info('成功获取 MCP 配置', {'数量': configs.length});
       if (kDebugMode) {
-        print('[McpRepository] 返回 ${configs.length} 个配置');
+
       }
 
       return configs;
     } catch (e) {
       _log.error('获取 MCP 配置异常: ${e.toString()}', e, StackTrace.current);
       if (kDebugMode) {
-        print('[McpRepository] 获取配置异常: $e');
+
       }
       return [];
     }
@@ -164,13 +164,13 @@ class McpRepository {
       // 验证连接成功 - 检查一下实际状态
       if (kDebugMode) {
         final status = _clients[config.id]?.status;
-        print('[McpRepository] 验证连接成功: status=$status');
+
       }
     } else {
       _log.warning('MCP 连接失败: name=${config.name}');
       // 突出打印失败信息
       if (kDebugMode) {
-        print('[McpRepository] 连接失败 - 简介: ${config.endpoint}');
+
       }
     }
 
@@ -190,7 +190,7 @@ class McpRepository {
       client.dispose();
       _clients.remove(configId);
       if (kDebugMode) {
-        print('[McpRepository] 客户端实例已离惧清理');
+
       }
     }
   }
@@ -204,7 +204,7 @@ class McpRepository {
   McpConnectionStatus? getConnectionStatus(String configId) {
     final status = _clients[configId]?.status;
     if (kDebugMode && status != null) {
-      print('[McpRepository.getConnectionStatus] id=$configId, status=$status');
+
     }
     return status;
   }

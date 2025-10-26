@@ -353,7 +353,7 @@ class ChatRepository {
     // 暂不保存到存储，等待用户发送第一条消息
 
     if (kDebugMode) {
-      print('createConversation: 创建并保存新对话 ${conversation.id}');
+
     }
 
     return conversation;
@@ -363,7 +363,7 @@ class ChatRepository {
     // 跳过保存空对话
     if (conversation.messages.isEmpty) {
       if (kDebugMode) {
-        print('saveConversation: 跳过保存空对话 ${conversation.id}');
+
       }
       return;
     }
@@ -401,10 +401,10 @@ class ChatRepository {
     final data = _storage.getConversation(id);
     if (data == null) return null;
     if (kDebugMode) {
-      print('ChatRepository.getConversation:');
-      print('  id: $id');
-      print('  title: ${data['title']}');
-      print('  messages: ${(data['messages'] as List).length}');
+
+
+
+.length}');
     }
     return Conversation.fromJson(data);
   }

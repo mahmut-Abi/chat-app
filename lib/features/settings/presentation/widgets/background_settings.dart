@@ -234,13 +234,13 @@ class _BackgroundSettingsScreenState
       fit: StackFit.expand,
       children: [
         imageWidget,
-        Container(color: Colors.white.withOpacity(1.0 - _opacity)),
+        Container(color: Colors.white.withValues(alpha: 1.0 - _opacity)),
         // 移除模糊效果功能
         Center(
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Text(
@@ -386,7 +386,7 @@ class _BackgroundSettingsScreenState
           border: Border.all(
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
             width: isSelected ? 3 : 1,
           ),
         ),
@@ -401,7 +401,7 @@ class _BackgroundSettingsScreenState
               ),
               if (isSelected)
                 Container(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                   child: Center(
                     child: Icon(
                       Icons.check_circle,
@@ -422,7 +422,7 @@ class _BackgroundSettingsScreenState
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                     ),
                   ),

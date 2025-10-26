@@ -74,7 +74,7 @@ class ImprovedApiConfigSection extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.3),
+          color: colorScheme.outline.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -203,7 +203,7 @@ class ImprovedApiConfigSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           side: BorderSide(
-            color: colorScheme.primary.withOpacity(0.5),
+            color: colorScheme.primary.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
@@ -216,10 +216,10 @@ class ImprovedApiConfigSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),

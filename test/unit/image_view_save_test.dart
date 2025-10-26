@@ -1,4 +1,5 @@
 /// Bug #8-9: 图片查看和保存功能测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

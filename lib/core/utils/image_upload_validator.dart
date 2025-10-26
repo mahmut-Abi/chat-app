@@ -188,18 +188,18 @@ class ImageUploadValidator {
   /// 打印验证报告
   static void printReport(ValidationResult result) {
     if (kDebugMode) {
-      print('\n=== 图片上传验证报告 ===');
+
       for (final message in result.messages) {
-        print(message);
+
       }
       if (result.warnings.isNotEmpty) {
-        print('\n警告:');
+
         for (final warning in result.warnings) {
-          print(warning);
+
         }
       }
-      print('\n总体状态: ${result.isValid ? "有效" : "无效"}');
-      print('===========================\n');
+
+
     }
   }
 }

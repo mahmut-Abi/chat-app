@@ -32,16 +32,16 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
     });
 
     try {
-      print('=== 开始加载模型 ===');
+
       final settingsRepo = ref.read(settingsRepositoryProvider);
       _apiConfigs = await settingsRepo.getAllApiConfigs();
-      print('获取到 API 配置数量: ${_apiConfigs.length}');
+
 
       final modelsRepo = ref.read(modelsRepositoryProvider);
 
       // 先加载缓存的模型列表
       final cachedModels = await modelsRepo.getCachedModels();
-      print('缓存模型数量: ${cachedModels.length}');
+
 
       if (cachedModels.isNotEmpty) {
         // 如果有缓存，直接显示
@@ -60,7 +60,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
             (config) => config.baseUrl.isNotEmpty && config.apiKey.isNotEmpty,
           )
           .toList();
-      print('有效 API 配置数量: ${validConfigs.length}');
+
 
       if (validConfigs.isEmpty) {
         setState(() {
@@ -72,9 +72,9 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
       }
 
       // 无缓存时，从 API 加载
-      print('开始从 API 加载模型...');
+
       final models = await modelsRepo.refreshModels(validConfigs);
-      print('从 API 获取到模型数量: ${models.length}');
+
 
       if (mounted) {
         setState(() {
@@ -83,7 +83,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
         });
       }
     } catch (e) {
-      print('加载模型失败: $e');
+
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -328,7 +328,7 @@ class _ModelsScreenState extends ConsumerState<ModelsScreen> {
 
   Widget _buildModelCard(AiModel model, ColorScheme colorScheme) {
     return Card(
-      color: Theme.of(context).cardColor.withOpacity(0.7),
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(

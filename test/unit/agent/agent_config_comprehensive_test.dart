@@ -314,7 +314,7 @@ void main() {
         );
 
         expect(tool.parameters, params);
-        expect(tool.parameters?['properties'], isNotNull);
+        expect(tool.parameters['properties'], isNotNull);
       });
 
       test('should handle null parameters', () {
@@ -327,7 +327,7 @@ void main() {
           enabled: true,
         );
 
-        expect(tool.parameters is Map || tool.parameters == null, true);
+        expect(tool.parameters is Map, true);
       });
     });
   });

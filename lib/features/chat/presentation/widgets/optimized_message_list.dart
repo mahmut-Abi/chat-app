@@ -8,8 +8,8 @@ class OptimizedMessageList extends StatefulWidget {
   const OptimizedMessageList({
     required this.messages,
     this.scrollController,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   
   @override
   State<OptimizedMessageList> createState() => _OptimizedMessageListState();

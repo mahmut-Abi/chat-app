@@ -20,7 +20,7 @@ class AgentSelector extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.amber.withOpacity(0.1),
+          color: Colors.amber.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -99,7 +99,7 @@ class AgentSelector extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Column(

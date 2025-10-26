@@ -156,8 +156,8 @@ class AgentSelectorDialog extends ConsumerWidget {
         height: 40,
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Colors.grey.withOpacity(0.1),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+              : Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -180,7 +180,7 @@ class AgentSelectorDialog extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text(

@@ -73,10 +73,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
-        if (kDebugMode) print('🔍 ChatScreen: 注册 provider 监听器');
+        if (kDebugMode)
         if (mounted) {
           if (kDebugMode) {
-            print('🔄 ChatScreen: 对话列表更新: ${conversations.length} 个对话');
+
           }
           setState(() {
             _conversations = conversations;
@@ -88,7 +88,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.listen(conversationGroupsProvider, (previous, next) {
       next.whenData((groups) {
         if (mounted) {
-          if (kDebugMode) print('🔄 ChatScreen: 对话分组更新: ${groups.length} 个分组');
+          if (kDebugMode)
           setState(() {
             _groups = groups;
           });
@@ -122,7 +122,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           }
         }
       } catch (e) {
-        if (kDebugMode) print('初始化默认模型失败: $e');
+        if (kDebugMode)
       }
     }
   }
@@ -196,25 +196,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     // 检查是否配置了 API
     if (kDebugMode) {
-      if (kDebugMode) print('ChatScreen: 检查 API 配置...');
+      if (kDebugMode)
     }
     // 打印调试信息
     final storage = ref.read(storageServiceProvider);
     final settingsRepo = ref.read(settingsRepositoryProvider);
     if (kDebugMode) {
       final allKeys = await storage.getAllKeys();
-      if (kDebugMode) print('所有存储的 keys: $allKeys');
+      if (kDebugMode)
       final allConfigs = await settingsRepo.getAllApiConfigs();
-      if (kDebugMode) print('所有 API 配置数量: ${allConfigs.length}');
+      if (kDebugMode)
       for (final config in allConfigs) {
         if (kDebugMode) {
-          print('  配置: ${config.name}, isActive: ${config.isActive}');
+
         }
       }
     }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
     if (kDebugMode) {
-      if (kDebugMode) print('ChatScreen: activeApiConfig = $activeApiConfig');
+      if (kDebugMode)
     }
     if (activeApiConfig == null) {
       if (mounted) {
@@ -282,9 +282,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           final mimeType = ImageUtils.getImageMimeType(imageFile.path);
 
           // 记录图片信息
-          if (kDebugMode) print('图片信息: ${imageFile.path}');
-          if (kDebugMode) print('  MIME: $mimeType');
-          if (kDebugMode) print('  Base64 长度: ${base64Data.length}');
+          if (kDebugMode)
+          if (kDebugMode)
+          if (kDebugMode)
 
           imageAttachments.add(
             ImageAttachment(
@@ -346,10 +346,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
       final modelToUse = _selectedModel?.id ?? activeApiConfig.defaultModel;
       if (kDebugMode) {
-        if (kDebugMode) print('ChatScreen: 使用模型 = $modelToUse');
-        if (kDebugMode) print('ChatScreen: 选择的模型 = ${_selectedModel?.name}');
+        if (kDebugMode)
+        if (kDebugMode)
         if (kDebugMode) {
-          print('ChatScreen: API 配置默认模型 = ${activeApiConfig.defaultModel}');
+
         }
       }
       final config = ModelConfig(

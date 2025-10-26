@@ -4,9 +4,9 @@ import '../services/log_service.dart';
 /// 简单的内存缓存制䯠
 class SimpleCache<K, V> {
   final Map<K, V> _cache = {};
-  final Duration? _ttl;
+  late final Duration? _ttl;
   final Map<K, DateTime> _timestamps = {};
-  final _log = LogService();
+  final _logService = LogService();
 
   SimpleCache({Duration? ttl}) : _ttl = ttl;
 
@@ -25,11 +25,11 @@ class SimpleCache<K, V> {
     }
 
     if (_cache.containsKey(key)) {
-      _log.debug('缓存命中', {'key': key.toString()});
+      _logService.debug('缓存命中', {'key': key.toString()});
       return _cache[key]!;
     }
 
-    _log.debug('缓存未命中，开始获取', {'key': key.toString()});
+    _logService.debug('缓存未命中，开始获取', {'key': key.toString()});
     final value = await fetcher();
     _cache[key] = value;
     _timestamps[key] = DateTime.now();
@@ -40,21 +40,21 @@ class SimpleCache<K, V> {
   void set(K key, V value) {
     _cache[key] = value;
     _timestamps[key] = DateTime.now();
-    _log.debug('缓存已设置', {'key': key.toString()});
+    _logService.debug('缓存已设置', {'key': key.toString()});
   }
 
   /// 清除指定的缓存
   void remove(K key) {
     _cache.remove(key);
     _timestamps.remove(key);
-    _log.debug('缓存已清除', {'key': key.toString()});
+    _logService.debug('缓存已清除', {'key': key.toString()});
   }
 
   /// 清空所有缓存
   void clear() {
     _cache.clear();
     _timestamps.clear();
-    _log.info('所有缓存已清除');
+    _logService.info('所有缓存已清除');
   }
 
   /// 获取缓存大小
@@ -64,9 +64,9 @@ class SimpleCache<K, V> {
 /// 可以针对方法结果缓存的装饰器
 class CachedFunction<T> {
   final Future<T> Function() _fn;
-  final Duration? _ttl;
+  late final Duration? _ttl;
   late final SimpleCache<String, T> _cache;
-  final _log = LogService();
+  final _logService = LogService();
 
   CachedFunction(this._fn, {Duration? ttl})
       : _ttl = ttl {

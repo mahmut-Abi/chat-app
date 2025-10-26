@@ -5,7 +5,7 @@ void main() {
   group('AppSettings 序列化测试', () {
     test('所有字段都能正确序列化和反序列化', () {
       // 创建一个包含所有字段的 AppSettings
-      final settings = AppSettings(
+      final settings = const AppSettings(
         themeMode: 'dark',
         language: 'zh',
         fontSize: 16.0,
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('copyWith 方法能正确更新字段', () {
-      final original = AppSettings(
+      final original = const AppSettings(
         themeMode: 'light',
         fontSize: 14.0,
         backgroundImage: 'old.jpg',
@@ -87,7 +87,7 @@ void main() {
     });
 
     test('默认值能正确应用', () {
-      final defaultSettings = AppSettings();
+      final defaultSettings = const AppSettings();
 
       expect(defaultSettings.themeMode, 'system');
       expect(defaultSettings.language, 'en');

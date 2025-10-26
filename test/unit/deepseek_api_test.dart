@@ -5,7 +5,7 @@ import 'dart:convert';
 void main() {
   group('DeepSeek API 参数序列化', () {
     test('ChatCompletionRequest 应该使用 snake_case 序列化', () {
-      final request = ChatCompletionRequest(
+      final request = const ChatCompletionRequest(
         model: 'deepseek-chat',
         messages: [
           {'role': 'user', 'content': 'Hello'},
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('ChatCompletionRequest JSON 应该符合 OpenAI API 格式', () {
-      final request = ChatCompletionRequest(
+      final request = const ChatCompletionRequest(
         model: 'deepseek-chat',
         messages: [
           {'role': 'user', 'content': 'Test message'},
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('Usage 应该使用 snake_case 序列化', () {
-      final usage = Usage(
+      final usage = const Usage(
         promptTokens: 100,
         completionTokens: 200,
         totalTokens: 300,
@@ -76,9 +76,9 @@ void main() {
     });
 
     test('Choice 应该使用 snake_case 序列化', () {
-      final choice = Choice(
+      final choice = const Choice(
         index: 0,
-        message: const MessageData(role: 'assistant', content: 'Hello'),
+        message: MessageData(role: 'assistant', content: 'Hello'),
         finishReason: 'stop',
       );
 

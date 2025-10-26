@@ -172,8 +172,8 @@ void main() {
         'models': List.generate(
           100,
           (i) => {
-            'id': 'model-' + i.toString(),
-            'name': 'Model ' + i.toString(),
+            'id': 'model-$i',
+            'name': 'Model $i',
           },
         ),
       };

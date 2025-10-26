@@ -104,16 +104,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Future<void> _createNewConversation() async {
     final chatRepo = ref.read(chatRepositoryProvider);
     if (kDebugMode) {
-      print('HomeScreen._createNewConversation: 开始创建');
+
     }
 
     final conversation = await chatRepo.createConversation(title: '新建对话');
 
     if (kDebugMode) {
-      print('HomeScreen._createNewConversation: 创建完成');
-      print('  id: \${conversation.id}');
-      print('  title: \${conversation.title}');
-      print('  isTemporary: \${conversation.isTemporary}');
+
+
+
+
     }
 
     // 不更新 _conversations，因为临时对话不应该显示在侧边栏
@@ -125,7 +125,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
 
     if (kDebugMode) {
-      print('HomeScreen._createNewConversation: 状态已更新');
+
     }
 
     if (mounted) {
@@ -321,7 +321,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         },
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          drawerScrimColor: Colors.black.withOpacity(0.5),
+          drawerScrimColor: Colors.black.withValues(alpha: 0.5),
           drawerEnableOpenDragGesture: true,
           endDrawerEnableOpenDragGesture: false,
           // 在 iOS 上，监听抽屉状态变化，防止键盘异常弹出
@@ -370,11 +370,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       decoration: BoxDecoration(
                         color: Theme.of(
                           context,
-                        ).colorScheme.surface.withOpacity(0.8),
+                        ).colorScheme.surface.withValues(alpha: 0.8),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),

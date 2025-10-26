@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chat_app/core/utils/pdf_export.dart';
 import 'package:chat_app/features/chat/domain/conversation.dart';
 import 'package:chat_app/features/chat/domain/message.dart';
 
@@ -32,7 +31,7 @@ void main() {
         ],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-        tags: ['测试', '中文', 'PDF导出'],
+        tags: const ['测试', '中文', 'PDF导出'],
         systemPrompt: '你是一个友好的 AI 助手，请用中文回答问题。',
       );
 

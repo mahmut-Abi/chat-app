@@ -1,4 +1,5 @@
 /// Bug #18: 移除会话分享功能测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

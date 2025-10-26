@@ -1,4 +1,5 @@
 /// 玻璃容器 Widget 测试
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,8 +9,8 @@ void main() {
   group('GlassContainer Widget 测试', () {
     testWidgets('应该能够渲染 GlassContainer', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: GlassContainer(child: const Text('测试文本'))),
+        const MaterialApp(
+          home: Scaffold(body: GlassContainer(child: Text('测试文本'))),
         ),
       );
 
@@ -18,9 +19,9 @@ void main() {
 
     testWidgets('应该能够设置自定义 blur 值', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: GlassContainer(blur: 30.0, child: const Text('模糊测试')),
+            body: GlassContainer(blur: 30.0, child: Text('模糊测试')),
           ),
         ),
       );
@@ -30,9 +31,9 @@ void main() {
 
     testWidgets('应该能够设置自定义 opacity 值', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: GlassContainer(opacity: 0.5, child: const Text('透明度测试')),
+            body: GlassContainer(opacity: 0.5, child: Text('透明度测试')),
           ),
         ),
       );
@@ -44,8 +45,8 @@ void main() {
   group('GlassCard Widget 测试', () {
     testWidgets('应该能够渲染 GlassCard', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: GlassCard(child: const Text('卡片测试'))),
+        const MaterialApp(
+          home: Scaffold(body: GlassCard(child: Text('卡片测试'))),
         ),
       );
 

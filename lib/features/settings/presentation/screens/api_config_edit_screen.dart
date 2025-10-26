@@ -99,7 +99,7 @@ class _ApiConfigEditScreenState extends ConsumerState<ApiConfigEditScreen> {
   }
 
   Widget _buildBasicSection() => Card(
-    color: Theme.of(context).cardColor.withOpacity(0.7),
+    color: Theme.of(context).cardColor.withValues(alpha: 0.7),
     elevation: 2,
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -128,7 +128,7 @@ class _ApiConfigEditScreenState extends ConsumerState<ApiConfigEditScreen> {
   );
 
   Widget _buildConnectionSection() => Card(
-    color: Theme.of(context).cardColor.withOpacity(0.7),
+    color: Theme.of(context).cardColor.withValues(alpha: 0.7),
     elevation: 2,
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -167,7 +167,7 @@ class _ApiConfigEditScreenState extends ConsumerState<ApiConfigEditScreen> {
   );
 
   Widget _buildProxySection() => Card(
-    color: Theme.of(context).cardColor.withOpacity(0.7),
+    color: Theme.of(context).cardColor.withValues(alpha: 0.7),
     elevation: 2,
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -189,7 +189,7 @@ class _ApiConfigEditScreenState extends ConsumerState<ApiConfigEditScreen> {
   );
 
   Widget _buildModelParametersSection() => Card(
-    color: Theme.of(context).cardColor.withOpacity(0.7),
+    color: Theme.of(context).cardColor.withValues(alpha: 0.7),
     elevation: 2,
     child: Padding(
       padding: const EdgeInsets.all(16),

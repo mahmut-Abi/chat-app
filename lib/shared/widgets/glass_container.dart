@@ -39,15 +39,15 @@ class GlassContainer extends StatelessWidget {
             color:
                 backgroundColor ??
                 (isDark
-                    ? Colors.black.withOpacity(opacity)
-                    : Colors.white.withOpacity(opacity)),
+                    ? Colors.black.withValues(alpha: opacity)
+                    : Colors.white.withValues(alpha: opacity)),
             borderRadius: borderRadius,
             border:
                 border ??
                 Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.1)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
                   width: 1,
                 ),
           ),
@@ -60,12 +60,12 @@ class GlassContainer extends StatelessWidget {
     final effectiveBackgroundColor =
         backgroundColor ??
         (isDark
-            ? Colors.black.withOpacity(opacity)
-            : Colors.white.withOpacity(opacity));
+            ? Colors.black.withValues(alpha: opacity)
+            : Colors.white.withValues(alpha: opacity));
 
     final borderColor = isDark
-        ? Colors.white.withOpacity(0.1)
-        : Colors.black.withOpacity(0.05);
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.05);
 
     return ClipRRect(
       borderRadius: borderRadius ?? BorderRadius.zero,
@@ -75,7 +75,7 @@ class GlassContainer extends StatelessWidget {
                 borderRadius: borderRadius,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 4),
                   ),
@@ -91,7 +91,7 @@ class GlassContainer extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 effectiveBackgroundColor,
-                effectiveBackgroundColor.withOpacity(opacity * 0.8),
+                effectiveBackgroundColor.withValues(alpha: opacity * 0.8),
               ],
             ),
             borderRadius: borderRadius,

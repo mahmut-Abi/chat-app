@@ -193,7 +193,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       h6: TextStyle(
         fontSize: h6Size,
         fontWeight: FontWeight.w600,
-        color: textColor.withOpacity(0.8),
+        color: textColor.withValues(alpha: 0.8),
         height: 1.5,
       ),
       h6Padding: EdgeInsets.only(
@@ -214,17 +214,17 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       blockquote: TextStyle(
         fontSize: baseFontSize,
         fontStyle: FontStyle.italic,
-        color: textColor.withOpacity(0.7),
+        color: textColor.withValues(alpha: 0.7),
         height: 1.6,
       ),
       blockquoteDecoration: BoxDecoration(
         color: isDarkMode
-            ? Colors.white.withOpacity(0.03)
-            : Colors.black.withOpacity(0.03),
+            ? Colors.white.withValues(alpha: 0.03)
+            : Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(isMobile ? 6.0 : 8.0),
         border: Border(
           left: BorderSide(
-            color: theme.colorScheme.primary.withOpacity(0.6),
+            color: theme.colorScheme.primary.withValues(alpha: 0.6),
             width: isMobile ? 3.0 : 4.0,
           ),
         ),
@@ -249,7 +249,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       horizontalRuleDecoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: textColor.withOpacity(0.1),
+            color: textColor.withValues(alpha: 0.1),
             width: isMobile ? 1.5 : 2.0,
           ),
         ),
@@ -259,7 +259,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       a: TextStyle(
         color: theme.colorScheme.primary,
         decoration: TextDecoration.underline,
-        decorationColor: theme.colorScheme.primary.withOpacity(0.4),
+        decorationColor: theme.colorScheme.primary.withValues(alpha: 0.4),
         fontWeight: FontWeight.w500,
         fontSize: baseFontSize,
       ),
@@ -271,7 +271,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
       // 删除线样式
       del: TextStyle(
         decoration: TextDecoration.lineThrough,
-        color: textColor.withOpacity(0.6),
+        color: textColor.withValues(alpha: 0.6),
       ),
 
       // 表格样式 - 移动端使用较小字号和内边距
@@ -281,7 +281,7 @@ class EnhancedMarkdownMessage extends ConsumerWidget {
         color: textColor,
       ),
       tableBody: TextStyle(fontSize: isMobile ? 13.0 : 14.0, color: textColor),
-      tableBorder: TableBorder.all(color: textColor.withOpacity(0.2), width: 1),
+      tableBorder: TableBorder.all(color: textColor.withValues(alpha: 0.2), width: 1),
       tableHeadAlign: TextAlign.left,
       tableCellsPadding: EdgeInsets.symmetric(
         horizontal: isMobile ? 8.0 : 12.0,
@@ -384,13 +384,13 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withOpacity(0.1)
-              : Colors.black.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDarkMode ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.05),
             blurRadius: isMobile ? 4.0 : 8.0,
             offset: Offset(0, isMobile ? 1.0 : 2.0),
           ),
@@ -413,8 +413,8 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
               border: Border(
                 bottom: BorderSide(
                   color: isDarkMode
-                      ? Colors.white.withOpacity(0.1)
-                      : Colors.black.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),
@@ -425,11 +425,11 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
                 if (!isMobile) ...[
                   Row(
                     children: [
-                      _buildDot(Colors.red.withOpacity(0.8), dotSize),
+                      _buildDot(Colors.red.withValues(alpha: 0.8), dotSize),
                       SizedBox(width: dotSpacing),
-                      _buildDot(Colors.yellow.withOpacity(0.8), dotSize),
+                      _buildDot(Colors.yellow.withValues(alpha: 0.8), dotSize),
                       SizedBox(width: dotSpacing),
-                      _buildDot(Colors.green.withOpacity(0.8), dotSize),
+                      _buildDot(Colors.green.withValues(alpha: 0.8), dotSize),
                     ],
                   ),
                   const SizedBox(width: 16),
@@ -519,7 +519,7 @@ class CodeBlockBuilder extends MarkdownElementBuilder {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.4),
+            color: color.withValues(alpha: 0.4),
             blurRadius: 2,
             spreadRadius: 0,
           ),
@@ -583,8 +583,8 @@ class _CopyButtonState extends State<_CopyButton> {
           decoration: BoxDecoration(
             color: _copied
                 ? (widget.isDarkMode
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.green.withOpacity(0.1))
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.green.withValues(alpha: 0.1))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),

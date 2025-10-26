@@ -19,7 +19,7 @@ class McpListItem extends ConsumerWidget {
     );
 
     return Card(
-      color: Theme.of(context).cardColor.withOpacity(0.7),
+      color: Theme.of(context).cardColor.withValues(alpha: 0.7),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
@@ -95,7 +95,7 @@ class McpListItem extends ConsumerWidget {
                         final success =
                             await ref.read(mcpRepositoryProvider).connect(config);
                         if (kDebugMode) {
-                          print('[MCP] Connect result: $success');
+
                         }
                         await Future.delayed(
                           const Duration(milliseconds: 800),
@@ -161,7 +161,7 @@ class McpListItem extends ConsumerWidget {
     BuildContext context,
     McpConnectionStatus status,
   ) {
-    return _getStatusColor(status).withOpacity(0.2);
+    return _getStatusColor(status).withValues(alpha: 0.2);
   }
 
   String _getStatusText(McpConnectionStatus status) {

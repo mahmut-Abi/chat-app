@@ -1,4 +1,5 @@
 /// AI 模型数据测试
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chat_app/features/models/domain/model.dart';

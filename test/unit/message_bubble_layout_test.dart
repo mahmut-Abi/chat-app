@@ -1,4 +1,5 @@
 /// Bug #12-14: 头像位置和模型名称显示测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -29,7 +30,7 @@ void main() {
     test('should display assistant role with model name', () {
       // Given: AI 消息，有模型名
       final isUser = false;
-      final String? modelName = 'GPT-4';
+      final String modelName = 'GPT-4';
 
       // When: 确定显示名称
       final displayName = isUser ? '用户' : (modelName ?? 'AI 助手');
@@ -147,13 +148,13 @@ void main() {
   group('Edge Cases', () {
     test('should handle empty model name', () {
       // Given: 空模型名
-      final String? modelName = '';
+      final String modelName = '';
       final isUser = false;
 
       // When: 确定显示名称
       final displayName = isUser
           ? '用户'
-          : (modelName == null || modelName.isEmpty ? 'AI 助手' : modelName);
+          : (modelName.isEmpty ? 'AI 助手' : modelName);
 
       // Then: 应该显示默认名
       expect(displayName, 'AI 助手');

@@ -177,18 +177,18 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
   @override
   Future<AppSettings> build() async {
     if (kDebugMode) {
-      print('AppSettingsNotifier.build() called');
+
     }
     try {
       final settingsRepo = ref.watch(settingsRepositoryProvider);
       final settings = await settingsRepo.getSettings();
       if (kDebugMode) {
-        print('Loaded settings: ${settings.toJson()}');
+
       }
       return settings;
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to load settings: $e');
+
       }
       return const AppSettings();
     }
@@ -196,14 +196,14 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> updateSettings(AppSettings settings) async {
     if (kDebugMode) {
-      print('AppSettingsNotifier.updateSettings() called');
-      print('New settings: ${settings.toJson()}');
+
+
     }
     final settingsRepo = ref.read(settingsRepositoryProvider);
     await settingsRepo.saveSettings(settings);
     state = AsyncValue.data(settings);
     if (kDebugMode) {
-      print('Settings saved and state updated');
+
     }
   }
 }
@@ -238,7 +238,7 @@ final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>((
 ) async {
   final chatRepo = ref.watch(chatRepositoryProvider);
   if (kDebugMode) {
-    print('🔄 conversationsProvider: 重新获取数据');
+
   }
   return chatRepo.getAllConversations();
 });
@@ -248,7 +248,7 @@ final conversationGroupsProvider =
     FutureProvider.autoDispose<List<ConversationGroup>>((ref) async {
       final chatRepo = ref.watch(chatRepositoryProvider);
       if (kDebugMode) {
-        print('🔄 conversationGroupsProvider: 重新获取数据');
+
       }
       return chatRepo.getAllGroups();
     });

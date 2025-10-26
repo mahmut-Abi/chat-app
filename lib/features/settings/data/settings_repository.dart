@@ -110,11 +110,11 @@ class SettingsRepository {
   Future<ApiConfig?> getActiveApiConfig() async {
     _log.debug('获取活动 API 配置');
     if (kDebugMode) {
-      print('SettingsRepository.getActiveApiConfig: 开始检查...');
+
     }
     final configs = await getAllApiConfigs();
     if (kDebugMode) {
-      print('SettingsRepository.getActiveApiConfig: 找到 ${configs.length} 个配置');
+
       for (final config in configs) {
         print(
           '  - ${config.name} (id: ${config.id}, isActive: ${config.isActive})',
@@ -195,7 +195,7 @@ class SettingsRepository {
       'fontSize': settings.fontSize,
     });
     if (kDebugMode) {
-      print('saveSettings: \${settings.toJson()}');
+
     }
     await _storage.saveAppSettings(settings.toJson());
   }
@@ -203,24 +203,24 @@ class SettingsRepository {
   Future<AppSettings> getSettings() async {
     _log.debug('读取应用设置');
     if (kDebugMode) {
-      print('getSettings: 读取 app_settings');
+
     }
     try {
       final data = await _storage.getAppSettings();
       if (kDebugMode) {
-        print('getSettings: data=\$data');
+
       }
       if (data == null) {
         if (kDebugMode) {
-          print('getSettings: 没有保存的设置，返回默认值');
+
         }
         return const AppSettings();
       }
       return AppSettings.fromJson(data);
     } catch (e, stack) {
       if (kDebugMode) {
-        print('getSettings 错误: \$e');
-        print('Stack: \$stack');
+
+
       }
       _log.error('读取应用设置失败', e, stack);
       return const AppSettings();

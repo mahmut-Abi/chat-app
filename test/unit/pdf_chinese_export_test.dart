@@ -1,4 +1,5 @@
 /// Bug #31: PDF 中文导出乱码修复测试
+library;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
