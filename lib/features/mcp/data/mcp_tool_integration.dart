@@ -84,12 +84,35 @@ class McpToolIntegration {
 
   /// 将 MCP 工具转换为 Function Definition
   ToolDefinition _convertMcpToolToDefinition(Map<String, dynamic> mcpTool) {
+    // 确保参数定义的格式完整
+    var parameters = mcpTool['parameters'] as Map<String, dynamic>? ?? {};
+    
+    // 如果参数为空，使用默认的空对象参数定义
+    if (parameters.isEmpty) {
+      parameters = {
+        'type': 'object',
+        'properties': {},
+        'required': [],
+      };
+    }
+    
+    // 确保参数有type字段
+    if (!parameters.containsKey('type')) {
+      parameters = {
+        'type': 'object',
+        ...parameters,
+      };
+    }
+    
+    // 规范化工具名称
+    final toolName = (mcpTool['name'] as String? ?? 'unknown').trim();
+    
     return ToolDefinition(
       type: 'function',
       function: FunctionDefinition(
-        name: mcpTool['name'] as String? ?? 'unknown',
+        name: toolName,
         description: mcpTool['description'] as String? ?? '',
-        parameters: mcpTool['parameters'] as Map<String, dynamic>? ?? {},
+        parameters: parameters,
       ),
     );
   }
