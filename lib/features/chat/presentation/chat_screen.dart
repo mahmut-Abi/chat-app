@@ -73,7 +73,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _hasListenersRegistered = true;
     ref.listen(conversationsProvider, (previous, next) {
       next.whenData((conversations) {
-        if (kDebugMode)
+        if (kDebugMode) {} 
         if (mounted) {
           if (kDebugMode) {
 
@@ -88,7 +88,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.listen(conversationGroupsProvider, (previous, next) {
       next.whenData((groups) {
         if (mounted) {
-          if (kDebugMode)
+          if (kDebugMode) {} 
           setState(() {
             _groups = groups;
           });
@@ -122,7 +122,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           }
         }
       } catch (e) {
-        if (kDebugMode)
+        if (kDebugMode) {} 
       }
     }
   }
@@ -196,16 +196,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     // 检查是否配置了 API
     if (kDebugMode) {
-      if (kDebugMode)
+      if (kDebugMode) {} 
     }
     // 打印调试信息
     final storage = ref.read(storageServiceProvider);
     final settingsRepo = ref.read(settingsRepositoryProvider);
     if (kDebugMode) {
       final allKeys = await storage.getAllKeys();
-      if (kDebugMode)
+      if (kDebugMode) {} 
       final allConfigs = await settingsRepo.getAllApiConfigs();
-      if (kDebugMode)
+      if (kDebugMode) {} 
       for (final config in allConfigs) {
         if (kDebugMode) {
 
@@ -214,7 +214,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
     final activeApiConfig = await ref.read(activeApiConfigProvider.future);
     if (kDebugMode) {
-      if (kDebugMode)
+      if (kDebugMode) {} 
     }
     if (activeApiConfig == null) {
       if (mounted) {
@@ -282,9 +282,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           final mimeType = ImageUtils.getImageMimeType(imageFile.path);
 
           // 记录图片信息
-          if (kDebugMode)
-          if (kDebugMode)
-          if (kDebugMode)
+          if (kDebugMode) {} 
+          if (kDebugMode) {} 
+          if (kDebugMode) {} 
 
           imageAttachments.add(
             ImageAttachment(
@@ -346,8 +346,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 使用用户选择的模型，如果没有选择则使用 API 配置中的默认模型
       final modelToUse = _selectedModel?.id ?? activeApiConfig.defaultModel;
       if (kDebugMode) {
-        if (kDebugMode)
-        if (kDebugMode)
+        if (kDebugMode) {} 
+        if (kDebugMode) {} 
         if (kDebugMode) {
 
         }

@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// 网络服务 - 统一的网络请求同闏
 /// 支持重试、缓存、操作阈测
@@ -41,5 +42,17 @@ class NetworkService {
     return Future.wait(
       requests.map((request) => executeWithRetry(request)),
     );
+  }
+
+  /// Check if device has network connection
+  Future<bool> checkNetworkConnection() async {
+    final connectivity = Connectivity();
+    final result = await connectivity.checkConnectivity();
+    return !result.contains(ConnectivityResult.none);
+  }
+  
+  /// Listen to connectivity changes
+  Stream<List<ConnectivityResult>> get onConnectivityChanged {
+    return Connectivity().onConnectivityChanged;
   }
 }
